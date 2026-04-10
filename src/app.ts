@@ -1,42 +1,98 @@
 // ============================================================
-// app.ts — Entry point
+// app.ts
+// Entry point — prüft Auth-Status und zeigt Login oder App
 // ============================================================
 
-import { StorageService } from "./services/StorageService.js";
+import { AuthService } from "./services/AuthService.js";
 import { TaskService } from "./services/TaskService.js";
 import { TaskFormModal } from "./components/TaskFormModal.js";
 import { TodoView } from "./components/TodoView.js";
 import { StatsView } from "./components/StatsView.js";
 import { CategoryView } from "./components/CategoryView.js";
+import { LoginView } from "./components/LoginView.js";
+import { getAuth, getRedirectResult } from "firebase/auth";
+import { StorageService, firebaseApp } from "./services/StorageService.js";
 
 type Route = "todo" | "stats" | "kategorien";
 
 class App {
+  private readonly authService = new AuthService();
   private readonly storage = new StorageService();
   private readonly taskService = new TaskService(this.storage);
-  private readonly modal: TaskFormModal;
-  private readonly todoView: TodoView;
-  private readonly statsView: StatsView;
-  private readonly categoryView: CategoryView;
   private readonly mainEl: HTMLElement;
+  private readonly sidebarEl: HTMLElement;
+  private modal!: TaskFormModal;
+  private todoView!: TodoView;
+  private statsView!: StatsView;
+  private categoryView!: CategoryView;
+  private loginView: LoginView;
 
   constructor() {
     this.mainEl = document.getElementById("main-content")!;
+    this.sidebarEl = document.querySelector(".sidebar")!;
+    this.loginView = new LoginView(this.authService, this.mainEl);
+
+    // Redirect-Ergebnis abholen wenn User von Google zurückkommt
+    getRedirectResult(getAuth(firebaseApp)).catch(console.error);
+
+    // Auth-Status beobachten — wird automatisch aufgerufen wenn:
+    // - App startet (prüft ob User noch eingeloggt ist)
+    // - User einloggt
+    // - User ausloggt
+    this.authService.onAuthChange((user) => {
+      if (user) {
+        console.log("[App] Eingeloggt als:", user.displayName);
+        this.initApp(user.displayName ?? "User");
+      } else {
+        console.log("[App] Nicht eingeloggt");
+        this.showLogin();
+      }
+    });
+  }
+
+  // ─── Login-Screen ─────────────────────────────────────────
+
+  private showLogin(): void {
+    this.sidebarEl.classList.add("hidden");
+    this.loginView.render();
+  }
+
+  // ─── App initialisieren ───────────────────────────────────
+
+  private initApp(displayName: string): void {
+    this.sidebarEl.classList.remove("hidden");
+
+    const footer = document.querySelector(".sidebar-footer")!;
+    footer.innerHTML = `
+      <div class="user-info">
+        <span class="user-name">${displayName}</span>
+      </div>
+      <button class="btn btn-ghost" id="btn-export" style="width:100%;justify-content:center;">
+        ↓ Export JSON
+      </button>
+      <button class="btn btn-ghost" id="btn-logout" style="width:100%;justify-content:center;margin-top:6px;">
+        Abmelden
+      </button>
+    `;
+
     this.modal = new TaskFormModal(this.taskService);
     this.todoView = new TodoView(this.taskService, this.modal, this.mainEl);
     this.statsView = new StatsView(this.taskService, this.mainEl);
     this.categoryView = new CategoryView(this.taskService, this.mainEl);
 
     this.modal.onTaskSaved(async () => {
-      const route = this.currentRoute();
-      if (route === "todo") await this.todoView.render();
-      else if (route === "stats") await this.statsView.render();
+      const r = this.currentRoute();
+      if (r === "todo") await this.todoView.render();
+      else if (r === "kategorien") await this.categoryView.render();
+      else await this.statsView.render();
     });
 
     this.setupNav();
-    this.setupImportExport();
+    this.setupButtons();
     this.navigate(this.currentRoute());
   }
+
+  // ─── Navigation ───────────────────────────────────────────
 
   private currentRoute(): Route {
     const h = location.hash.replace("#", "") as Route;
@@ -50,9 +106,9 @@ class App {
     document.querySelectorAll(".nav-link").forEach((el) => {
       el.classList.toggle("active", el.getAttribute("data-route") === route);
     });
-    if (route === "todo") this.todoView.render();
-    else if (route === "stats") this.statsView.render();
+    if (route === "stats") this.statsView.render();
     else if (route === "kategorien") this.categoryView.render();
+    else this.todoView.render();
   }
 
   private setupNav(): void {
@@ -62,32 +118,13 @@ class App {
     window.addEventListener("hashchange", () => this.navigate(this.currentRoute()));
   }
 
-  private setupImportExport(): void {
+  private setupButtons(): void {
     document.getElementById("btn-export")?.addEventListener("click", () => {
       this.storage.exportJSON();
     });
 
-    const fileInput = document.getElementById("f-import") as HTMLInputElement;
-    document.getElementById("btn-import")?.addEventListener("click", () => {
-      fileInput.value = "";
-      fileInput.click();
-    });
-
-    fileInput?.addEventListener("change", async () => {
-      const file = fileInput.files?.[0];
-      if (!file) return;
-      const btn = document.getElementById("btn-import") as HTMLButtonElement;
-      btn.textContent = "Importiere…";
-      btn.disabled = true;
-      try {
-        await this.storage.importJSON(file);
-        this.navigate(this.currentRoute());
-      } catch {
-        alert("Fehler beim Importieren. Bitte prüfe das JSON-Format.");
-      } finally {
-        btn.textContent = "↑ Import JSON";
-        btn.disabled = false;
-      }
+    document.getElementById("btn-logout")?.addEventListener("click", async () => {
+      await this.authService.logout();
     });
   }
 }
