@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        TaskFlow
+        <span>Aufgabenverwaltung</span>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-link active" data-route="todo">
+          <span class="nav-icon">☑</span>
+          <span>Heute</span>
+        </button>
+        <button class="nav-link" data-route="stats">
+          <span class="nav-icon">◈</span>
+          <span>Statistik</span>
+        </button>
+        <button class="nav-link" data-route="kategorien">
+          <span class="nav-icon">⊞</span>
+          <span>Kategorien</span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-ghost" id="btn-export" style="width:100%;justify-content:center;">
+          ↓ Export JSON
+        </button>
+        <button class="btn btn-ghost" id="btn-import" style="width:100%;justify-content:center;margin-top:6px;">
+          ↑ Import JSON
+        </button>
+        <input type="file" id="f-import" accept=".json" class="hidden" />
+      </div>
+    </aside>
+    <main class="main-content" id="main-content"></main>
+  </div>
+  <script type="module" src="dist/bundle.js"></script>
+</body>
+</html>
