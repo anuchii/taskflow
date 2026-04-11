@@ -132,7 +132,12 @@ export class TodoView {
       none: "Einmalig", daily: "Täglich", weekly: "Wöchentlich", monthly: "Monatlich",
     };
     const base = map[task.repeat.unit] ?? task.repeat.unit;
-    if (task.repeat.endDate && task.repeat.unit !== "none") {
+    if (task.repeat.unit === "none") {
+      const sd = task.startDate ?? task.createdAt.slice(0, 10);
+      const d = new Date(sd + "T00:00:00");
+      return `${base} · ${d.toLocaleDateString("de-AT", { day: "2-digit", month: "short", year: "numeric" })}`;
+    }
+    if (task.repeat.endDate) {
       const d = new Date(task.repeat.endDate + "T00:00:00");
       return `${base} bis ${d.toLocaleDateString("de-AT", { day: "2-digit", month: "short", year: "numeric" })}`;
     }

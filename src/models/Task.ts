@@ -31,6 +31,7 @@ export interface Task {
   description: string;
   category: string;
   createdAt: string;
+  startDate: string;  
   repeat: RepeatConfig;
   archived: boolean;
 }

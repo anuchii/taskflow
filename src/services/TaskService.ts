@@ -5,7 +5,7 @@
 import type { Task, Category, RepeatConfig } from "../models/Task.js";
 import { DEFAULT_CATEGORIES } from "../models/Task.js";
 import { StorageService } from "./StorageService.js";
-import { today, parseDate } from "../utils/DateUtils.js";
+import { today, parseDate, addDays } from "../utils/DateUtils.js";
 
 export interface DayStat {
   date: string;
@@ -18,7 +18,7 @@ export class TaskService {
 
   // ─── Task CRUD ────────────────────────────────────────────
 
-  async createTask(title: string, description: string, category: string, repeat: RepeatConfig): Promise<Task> {
+  async createTask(title: string, description: string, category: string, repeat: RepeatConfig, startDate?: string): Promise<Task> {
     const data = await this.storage.load();
     const task: Task = {
       id: crypto.randomUUID(),
@@ -26,6 +26,7 @@ export class TaskService {
       description,
       category: category || "sonstiges",
       createdAt: new Date().toISOString(),
+      startDate: startDate ?? today(),
       repeat,
       archived: false,
     };
@@ -102,20 +103,20 @@ export class TaskService {
   }
 
   isActiveOn(task: Task, dateStr: string): boolean {
-    const createdDate = task.createdAt.slice(0, 10);
-    if (dateStr < createdDate) return false;
+    const startDate = task.startDate ?? task.createdAt.slice(0, 10);
+    if (dateStr < startDate) return false;
     const { unit, endDate } = task.repeat;
     if (endDate && dateStr > endDate) return false;
-    if (unit === "none") return dateStr === createdDate;
+    if (unit === "none") return dateStr === startDate;
     if (unit === "daily") return true;
     if (unit === "weekly") {
       const diffDays = Math.round(
-        (parseDate(dateStr).getTime() - parseDate(createdDate).getTime()) / 86_400_000
+        (parseDate(dateStr).getTime() - parseDate(startDate).getTime()) / 86_400_000
       );
       return diffDays % 7 === 0;
     }
     if (unit === "monthly") {
-      return parseDate(createdDate).getDate() === parseDate(dateStr).getDate();
+      return parseDate(startDate).getDate() === parseDate(dateStr).getDate();
     }
     return false;
   }
