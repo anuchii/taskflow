@@ -21,12 +21,12 @@ export function addDays(dateStr: string, n: number): string {
   return toDateString(d);
 }
 
-/** Returns all ISO date strings for the current week (Mon–Sun) */
+
 export function currentWeekDates(): string[] {
   return weekDates(0);
 }
 
-/** Returns all ISO date strings for the week at `offsetWeeks` from current (0 = this week, -1 = last week, …) */
+
 export function weekDates(offsetWeeks: number): string[] {
   const now = new Date();
   const day = now.getDay() === 0 ? 7 : now.getDay(); // Mon=1
@@ -39,12 +39,12 @@ export function weekDates(offsetWeeks: number): string[] {
   });
 }
 
-/** Short weekday label in German */
+
 export function formatWeekday(iso: string): string {
   return parseDate(iso).toLocaleDateString("de-AT", { weekday: "short" });
 }
 
-/** Returns all ISO date strings for the current month */
+
 export function currentMonthDates(): string[] {
   const now = new Date();
   const year = now.getFullYear();

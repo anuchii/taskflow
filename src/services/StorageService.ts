@@ -40,12 +40,7 @@ const db = getFirestore(firebaseApp);
 export class StorageService {
   private cache: AppData | null = null;
 
-  /**
-   * Gibt die Firestore-Referenz für den aktuellen User zurück.
-   * Wirft einen Fehler wenn niemand eingeloggt ist.
-   *
-   * Pfad: users/{userId}/appdata/main
-   */
+ 
   private dataRef() {
     const auth = getAuth(firebaseApp);
     const user = auth.currentUser;
@@ -53,12 +48,12 @@ export class StorageService {
     return doc(db, "users", user.uid, "appdata", "main");
   }
 
-  /** Leert den In-Memory-Cache (z.B. beim Logout) */
+
   clearCache(): void {
     this.cache = null;
   }
 
-  /** Lädt alle App-Daten — aus Cache oder Firestore */
+
   async load(): Promise<AppData> {
     if (this.cache) return structuredClone(this.cache);
     try {
@@ -74,7 +69,7 @@ export class StorageService {
     }
   }
 
-  /** Speichert alle App-Daten in Firestore und aktualisiert den Cache */
+  
   async save(data: AppData): Promise<void> {
     try {
       await setDoc(this.dataRef(), JSON.parse(JSON.stringify(data)));
@@ -84,7 +79,7 @@ export class StorageService {
     }
   }
 
-  /** Exportiert die Daten als JSON-Datei */
+
   async exportJSON(): Promise<void> {
     const data = await this.load();
     const blob = new Blob([JSON.stringify(data, null, 2)], {

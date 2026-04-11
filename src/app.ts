@@ -32,13 +32,10 @@ class App {
     this.sidebarEl = document.querySelector(".sidebar")!;
     this.loginView = new LoginView(this.authService, this.mainEl);
 
-    // Redirect-Ergebnis abholen wenn User von Google zurückkommt
+    
     getRedirectResult(getAuth(firebaseApp)).catch(console.error);
 
-    // Auth-Status beobachten — wird automatisch aufgerufen wenn:
-    // - App startet (prüft ob User noch eingeloggt ist)
-    // - User einloggt
-    // - User ausloggt
+
     this.authService.onAuthChange((user) => {
       if (user) {
         console.log("[App] Eingeloggt als:", user.displayName);
