@@ -84,7 +84,6 @@ export class TaskService {
     await this.storage.save(data);
   }
 
-  /** Returns 0 on success, or the count of active tasks using this category (blocking deletion). */
   async deleteCategory(id: string): Promise<number> {
     const data = await this.storage.load();
     if (!data.categories) return 0;
@@ -154,5 +153,60 @@ export class TaskService {
       ).length;
       return { date, total: tasks.length, completed };
     });
+  }
+  // ─── Überfällige Aufgaben ────────────────────────────
+
+  isOverdue(task: Task, data: { completions: Array<{ taskId: string; completedAt: string }> }): number {
+    const startDate = task.startDate ?? task.createdAt.slice(0, 10);
+
+    if (task.repeat.unit === "none") {
+      const todayStr = today();
+      if (startDate >= todayStr) return 0;
+      const hasCompletion = data.completions.some(c => c.taskId === task.id);
+      if (hasCompletion) return 0;
+      return Math.round(
+        (parseDate(todayStr).getTime() - parseDate(startDate).getTime()) / 86_400_000
+      );
+    }
+
+    let daysOverdue = 0;
+    for (let i = 1; i <= 30; i++) {
+      const dateStr = addDays(today(), -i);
+      if (dateStr < startDate) break;
+      if (!this.isActiveOn(task, dateStr)) continue;
+      const wasCompleted = data.completions.some(
+        (c) => c.taskId === task.id && c.completedAt.startsWith(dateStr)
+      );
+      if (!wasCompleted) {
+        daysOverdue = i;
+      } else {
+        break;
+      }
+    }
+    return daysOverdue;
+  }
+
+  async getTasksForDateWithOverdue(dateStr: string): Promise<(Task & { daysOverdue: number })[]> {
+    const data = await this.storage.load();
+
+    const scheduledTasks = data.tasks.filter((t) => !t.archived && this.isActiveOn(t, dateStr));
+
+    const overdueOnceTasks = data.tasks.filter((t) => {
+      if (t.archived || t.repeat.unit !== "none") return false;
+      const sd = t.startDate ?? t.createdAt.slice(0, 10);
+      if (sd >= dateStr) return false;
+      return !data.completions.some(c => c.taskId === t.id);
+    });
+
+    const seen = new Set(scheduledTasks.map(t => t.id));
+    const combined = [
+      ...scheduledTasks,
+      ...overdueOnceTasks.filter(t => !seen.has(t.id)),
+    ];
+
+    return combined.map((t) => ({
+      ...t,
+      daysOverdue: this.isOverdue(t, data),
+    }));
   }
 }

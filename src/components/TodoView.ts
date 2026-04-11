@@ -7,6 +7,8 @@ import type { TaskService } from "../services/TaskService.js";
 import type { TaskFormModal } from "./TaskFormModal.js";
 import { today, formatDisplay } from "../utils/DateUtils.js";
 
+type TaskWithOverdue = Task & { daysOverdue: number };
+
 export class TodoView {
   constructor(
     private readonly taskService: TaskService,
@@ -17,10 +19,10 @@ export class TodoView {
   async render(): Promise<void> {
     this.container.innerHTML = `<div class="loading">Lädt…</div>`;
     const todayStr = today();
-    const tasks = await this.taskService.getTasksForDate(todayStr);
+    const tasks = await this.taskService.getTasksForDateWithOverdue(todayStr);
 
-    const pending: Task[] = [];
-    const done: Task[] = [];
+    const pending: TaskWithOverdue[] = [];
+    const done: TaskWithOverdue[] = [];
     for (const t of tasks) {
       if (await this.taskService.isCompletedOn(t.id, todayStr)) done.push(t);
       else pending.push(t);
@@ -103,17 +105,20 @@ export class TodoView {
     });
   }
 
-  private async taskCard(task: Task, isDone: boolean): Promise<string> {
+  private async taskCard(task: TaskWithOverdue, isDone: boolean): Promise<string> {
     const cat = await this.taskService.getCategoryById(task.category);
     const repeatLabel = this.repeatLabel(task);
+    const overdue = !isDone && task.daysOverdue > 0;
+    const overdueLabel = task.daysOverdue === 1 ? "1 Tag überfällig" : `${task.daysOverdue} Tage überfällig`;
     return `
-      <div class="task-card ${isDone ? "is-done" : ""}" data-id="${task.id}">
+      <div class="task-card ${isDone ? "is-done" : ""} ${overdue ? "is-overdue" : ""}" data-id="${task.id}">
         <button class="check-btn ${isDone ? "checked" : ""}" data-id="${task.id}" data-done="${isDone}">
           ${isDone ? "✓" : ""}
         </button>
         <div class="task-body">
           <div class="task-top">
             <span class="task-title">${escapeHtml(task.title)}</span>
+            ${overdue ? `<span class="overdue-badge">${overdueLabel}</span>` : ""}
             ${cat ? `<span class="cat-badge" style="--cat-color:${cat.color}">${escapeHtml(cat.label)}</span>` : ""}
           </div>
           ${task.description ? `<span class="task-desc">${escapeHtml(task.description)}</span>` : ""}

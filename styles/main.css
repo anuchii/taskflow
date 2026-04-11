@@ -653,3 +653,25 @@ body {
 
 .cat-edit-actions { display: flex; gap: 6px; justify-content: flex-end; }
 .cat-delete-btn:hover { color: var(--red) !important; }
+
+.task-card.is-overdue {
+  border-color: var(--red);
+  background: color-mix(in srgb, var(--red) 5%, var(--surface));
+}
+.overdue-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--red-dim);
+  color: var(--red);
+  border: 1px solid color-mix(in srgb, var(--red) 40%, transparent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.overdue-hint {
+  color: var(--red);
+  font-weight: 600;
+}
