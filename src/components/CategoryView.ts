@@ -65,7 +65,7 @@ export class CategoryView {
         const id = btn.dataset.id!;
         const count = await this.taskService.deleteCategory(id);
         if (count > 0) {
-          alert(`Diese Kategorie wird von ${count} Aufgabe${count !== 1 ? "n" : ""} verwendet.\nBitte weise ihnen zuerst eine andere Kategorie zu.`);
+          showToast(`Kategorie wird von ${count} Aufgabe${count !== 1 ? "n" : ""} verwendet – bitte zuerst neu zuweisen.`, "error");
         } else {
           await this.render();
         }
@@ -106,7 +106,7 @@ export class CategoryView {
         await this.render();
       } catch (e) {
         console.error("[CategoryView] Kategorie konnte nicht gespeichert werden:", e);
-        alert("Fehler beim Speichern der Kategorie. Bitte prüfe deine Internetverbindung und versuche es erneut.");
+        showToast("Fehler beim Speichern – Internetverbindung prüfen.", "error");
         saveBtn.disabled = false;
         saveBtn.textContent = "Speichern";
       }
@@ -147,7 +147,7 @@ export class CategoryView {
         await this.render();
       } catch (e) {
         console.error("[CategoryView] Kategorie konnte nicht erstellt werden:", e);
-        alert("Fehler beim Erstellen der Kategorie. Bitte prüfe deine Internetverbindung und versuche es erneut.");
+        showToast("Fehler beim Erstellen – Internetverbindung prüfen.", "error");
         saveBtn.disabled = false;
         saveBtn.textContent = "Erstellen";
       }
@@ -157,4 +157,12 @@ export class CategoryView {
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function showToast(message: string, type: "success" | "error" | "info" = "info"): void {
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 4000);
 }
