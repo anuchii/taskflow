@@ -50,6 +50,7 @@ class App {
   // ─── Login-Screen ─────────────────────────────────────────
 
   private showLogin(): void {
+    this.storage.clearCache(); // Cache leeren, damit beim nächsten Login frische Daten aus Firestore geladen werden
     this.sidebarEl.classList.add("hidden");
     this.loginView.render();
   }
@@ -107,12 +108,20 @@ class App {
     else if (route === "kategorien") this.categoryView.render();
     else this.todoView.render();
   }
+  private navInitialized = false;
 
   private setupNav(): void {
     document.querySelectorAll<HTMLElement>(".nav-link").forEach((el) => {
-      el.addEventListener("click", () => this.navigate(el.dataset.route as Route));
+      const clone = el.cloneNode(true) as HTMLElement;
+      el.parentNode?.replaceChild(clone, el);
+      clone.addEventListener("click", () => this.navigate(clone.dataset.route as Route));
     });
-    window.addEventListener("hashchange", () => this.navigate(this.currentRoute()));
+
+
+    if (!this.navInitialized) {
+      window.addEventListener("hashchange", () => this.navigate(this.currentRoute()));
+      this.navInitialized = true;
+    }
   }
 
   private setupButtons(): void {

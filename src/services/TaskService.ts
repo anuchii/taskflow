@@ -77,7 +77,7 @@ export class TaskService {
 
   async updateCategory(id: string, label: string, color: string): Promise<void> {
     const data = await this.storage.load();
-    if (!data.categories) return;
+    if (!data.categories) data.categories = DEFAULT_CATEGORIES.map(c => ({ ...c }));
     const idx = data.categories.findIndex(c => c.id === id);
     if (idx === -1) return;
     data.categories[idx] = { ...data.categories[idx], label, color };
@@ -86,7 +86,7 @@ export class TaskService {
 
   async deleteCategory(id: string): Promise<number> {
     const data = await this.storage.load();
-    if (!data.categories) return 0;
+    if (!data.categories) data.categories = DEFAULT_CATEGORIES.map(c => ({ ...c }));
     const usedCount = data.tasks.filter(t => !t.archived && t.category === id).length;
     if (usedCount > 0) return usedCount;
     data.categories = data.categories.filter(c => c.id !== id);
