@@ -98,8 +98,18 @@ export class CategoryView {
       const label = form.querySelector<HTMLInputElement>(".cat-edit-label")!.value.trim();
       if (!label) { form.querySelector<HTMLInputElement>(".cat-edit-label")!.focus(); return; }
       const color = form.querySelector<HTMLInputElement>(".cat-edit-color")!.value;
-      await this.taskService.updateCategory(cat.id, label, color);
-      await this.render();
+      const saveBtn = form.querySelector<HTMLButtonElement>(".cat-edit-save")!;
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Speichert…";
+      try {
+        await this.taskService.updateCategory(cat.id, label, color);
+        await this.render();
+      } catch (e) {
+        console.error("[CategoryView] Kategorie konnte nicht gespeichert werden:", e);
+        alert("Fehler beim Speichern der Kategorie. Bitte prüfe deine Internetverbindung und versuche es erneut.");
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Speichern";
+      }
     });
   }
 
@@ -129,8 +139,18 @@ export class CategoryView {
       const label = item.querySelector<HTMLInputElement>(".cat-edit-label")!.value.trim();
       if (!label) { item.querySelector<HTMLInputElement>(".cat-edit-label")!.focus(); return; }
       const color = item.querySelector<HTMLInputElement>(".cat-edit-color")!.value;
-      await this.taskService.createCategory(label, color);
-      await this.render();
+      const saveBtn = item.querySelector<HTMLButtonElement>(".cat-edit-save")!;
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Erstellt…";
+      try {
+        await this.taskService.createCategory(label, color);
+        await this.render();
+      } catch (e) {
+        console.error("[CategoryView] Kategorie konnte nicht erstellt werden:", e);
+        alert("Fehler beim Erstellen der Kategorie. Bitte prüfe deine Internetverbindung und versuche es erneut.");
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Erstellen";
+      }
     });
   }
 }

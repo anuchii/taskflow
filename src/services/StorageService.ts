@@ -76,6 +76,7 @@ export class StorageService {
       this.cache = structuredClone(data);
     } catch (e) {
       console.error("[StorageService] Fehler beim Speichern:", e);
+      throw e;
     }
   }
 
