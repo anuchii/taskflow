@@ -111,17 +111,14 @@ class App {
   private navInitialized = false;
 
   private setupNav(): void {
+    if (this.navInitialized) return;
+    this.navInitialized = true;
+
     document.querySelectorAll<HTMLElement>(".nav-link").forEach((el) => {
-      const clone = el.cloneNode(true) as HTMLElement;
-      el.parentNode?.replaceChild(clone, el);
-      clone.addEventListener("click", () => this.navigate(clone.dataset.route as Route));
+      el.addEventListener("click", () => this.navigate(el.dataset.route as Route));
     });
 
-
-    if (!this.navInitialized) {
-      window.addEventListener("hashchange", () => this.navigate(this.currentRoute()));
-      this.navInitialized = true;
-    }
+    window.addEventListener("hashchange", () => this.navigate(this.currentRoute()));
   }
 
   private setupButtons(): void {
