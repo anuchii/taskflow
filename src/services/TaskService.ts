@@ -18,7 +18,7 @@ export class TaskService {
 
   // ─── Task CRUD ────────────────────────────────────────────
 
-  async createTask(title: string, description: string, category: string, repeat: RepeatConfig, startDate?: string): Promise<Task> {
+  async createTask(title: string, description: string, category: string, repeat: RepeatConfig, startDate?: string, estimatedMinutes?: number): Promise<Task> {
     const data = await this.storage.load();
     const task: Task = {
       id: crypto.randomUUID(),
@@ -29,6 +29,7 @@ export class TaskService {
       startDate: startDate ?? today(),
       repeat,
       archived: false,
+      ...(estimatedMinutes != null && { estimatedMinutes }),
     };
     data.tasks.push(task);
     await this.storage.save(data);

@@ -61,6 +61,11 @@ export class TaskFormModal {
         </div>
 
         <div class="form-group">
+          <label for="f-est">Zeitschätzung (Min)</label>
+          <input id="f-est" type="number" min="1" max="1440" placeholder="z.B. 45" />
+        </div>
+
+        <div class="form-group">
           <label for="f-repeat">Wiederholung</label>
           <select id="f-repeat">
             <option value="none">Einmalig</option>
@@ -112,6 +117,7 @@ export class TaskFormModal {
     const endDate = this.overlay.querySelector<HTMLInputElement>("#f-end")!;
     const endGroup = this.overlay.querySelector<HTMLElement>("#f-end-group")!;
     const modalTitle = this.overlay.querySelector<HTMLElement>(".modal-title")!;
+    const est = this.overlay.querySelector<HTMLInputElement>("#f-est")!;
 
     // Rebuild category chips dynamically
     const catPicker = this.overlay.querySelector<HTMLElement>("#f-category")!;
@@ -141,6 +147,7 @@ export class TaskFormModal {
       repeat.value = task.repeat.unit;
       startDate.value = task.startDate ?? task.createdAt.slice(0, 10);
       endDate.value = task.repeat.endDate ?? "";
+      est.value = task.estimatedMinutes != null ? String(task.estimatedMinutes) : "";
       const isOnce = task.repeat.unit === "none";
       endGroup.classList.toggle("hidden", isOnce);
       dateLabel.textContent = isOnce ? "Datum" : "Startdatum";
@@ -151,6 +158,7 @@ export class TaskFormModal {
       repeat.value = "none";
       startDate.value = today();
       endDate.value = addDays(today(), 30);
+      est.value = "";
       endGroup.classList.add("hidden");
       dateLabel.textContent = "Datum";
       modalTitle.textContent = "Neue Aufgabe";
@@ -168,6 +176,8 @@ export class TaskFormModal {
     const endDateVal = this.overlay.querySelector<HTMLInputElement>("#f-end")!.value;
     const catPicker = this.overlay.querySelector<HTMLElement>("#f-category")!;
     const selectedCat = catPicker.querySelector<HTMLButtonElement>(".cat-chip.selected")?.dataset.id ?? "sonstiges";
+    const estRaw = this.overlay.querySelector<HTMLInputElement>("#f-est")!.value;
+    const estimatedMinutes = estRaw ? Math.max(1, parseInt(estRaw, 10)) : undefined;
 
     const repeat: RepeatConfig = {
       unit: repeatUnit,
@@ -180,9 +190,9 @@ export class TaskFormModal {
     saveBtn.disabled = true;
 
     if (this.editingId) {
-      await this.taskService.updateTask(this.editingId, { title, description: desc, category: selectedCat, repeat, startDate: startDateVal });
+      await this.taskService.updateTask(this.editingId, { title, description: desc, category: selectedCat, repeat, startDate: startDateVal, estimatedMinutes });
     } else {
-      await this.taskService.createTask(title, desc, selectedCat, repeat, startDateVal);
+      await this.taskService.createTask(title, desc, selectedCat, repeat, startDateVal, estimatedMinutes);
     }
 
     saveBtn.textContent = "Speichern";

@@ -35,11 +35,14 @@ export class TodoView {
     const pendingCards = taskCards.slice(0, pending.length);
     const doneCards = taskCards.slice(pending.length);
 
+    const totalMinutes = tasks.reduce((sum, t) => sum + (t.estimatedMinutes ?? 0), 0);
+    const timeLabel = totalMinutes > 0 ? ` · ~${formatEstimatedTime(totalMinutes)} geplant` : "";
+
     this.container.innerHTML = `
       <div class="view-header">
         <div>
           <h1 class="view-title">Heute</h1>
-          <p class="view-subtitle">${formatDisplay(todayStr)} · ${done.length}/${tasks.length} erledigt</p>
+          <p class="view-subtitle">${formatDisplay(todayStr)} · ${done.length}/${tasks.length} erledigt${timeLabel}</p>
         </div>
         <button class="btn btn-primary" id="btn-new-task">+ Aufgabe</button>
       </div>
@@ -152,4 +155,11 @@ export class TodoView {
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function formatEstimatedTime(minutes: number): string {
+  if (minutes < 60) return `${minutes} Min`;
+  const rounded = Math.round((minutes / 60) * 2) / 2;
+  const display = rounded % 1 === 0 ? String(rounded) : rounded.toFixed(1).replace(".", ",");
+  return `${display} Std`;
 }
