@@ -3,6 +3,13 @@
 // ============================================================
 
 import type { Task, Category, RepeatConfig } from "../models/Task.js";
+
+export interface TimeEntry {
+  task: Task;
+  date: string;
+  estimated?: number;
+  actual?: number;
+}
 import { DEFAULT_CATEGORIES } from "../models/Task.js";
 import { StorageService } from "./StorageService.js";
 import { today, parseDate, addDays } from "../utils/DateUtils.js";
@@ -143,6 +150,37 @@ export class TaskService {
   async isCompletedOn(taskId: string, dateStr: string): Promise<boolean> {
     const data = await this.storage.load();
     return data.completions.some((c) => c.taskId === taskId && c.completedAt.startsWith(dateStr));
+  }
+
+  async getActualMinutes(taskId: string, dateStr: string): Promise<number | undefined> {
+    const data = await this.storage.load();
+    return data.completions.find(
+      (c) => c.taskId === taskId && c.completedAt.startsWith(dateStr)
+    )?.actualMinutes;
+  }
+
+  async logActualTime(taskId: string, dateStr: string, minutes: number): Promise<void> {
+    const data = await this.storage.load();
+    const idx = data.completions.findIndex(
+      (c) => c.taskId === taskId && c.completedAt.startsWith(dateStr)
+    );
+    if (idx === -1) return;
+    data.completions[idx] = { ...data.completions[idx], actualMinutes: minutes };
+    await this.storage.save(data);
+  }
+
+  async getTimeComparisonForDates(dates: string[]): Promise<TimeEntry[]> {
+    const data = await this.storage.load();
+    const results: TimeEntry[] = [];
+    for (const dateStr of dates) {
+      for (const c of data.completions.filter((c) => c.completedAt.startsWith(dateStr))) {
+        const task = data.tasks.find((t) => t.id === c.taskId);
+        if (!task) continue;
+        if (task.estimatedMinutes == null && c.actualMinutes == null) continue;
+        results.push({ task, date: dateStr, estimated: task.estimatedMinutes, actual: c.actualMinutes });
+      }
+    }
+    return results;
   }
 
   async getStatsForDates(dates: string[]): Promise<DayStat[]> {

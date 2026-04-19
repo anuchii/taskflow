@@ -40,6 +40,7 @@ export interface Task {
 export interface CompletionLog {
   taskId: string;
   completedAt: string;
+  actualMinutes?: number;
 }
 
 export interface AppData {

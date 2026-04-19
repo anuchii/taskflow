@@ -28,12 +28,13 @@ export class TodoView {
       else pending.push(t);
     }
 
-    const taskCards = await Promise.all([
-      ...pending.map(t => this.taskCard(t, false)),
-      ...done.map(t => this.taskCard(t, true)),
-    ]);
-    const pendingCards = taskCards.slice(0, pending.length);
-    const doneCards = taskCards.slice(pending.length);
+    const pendingCards = await Promise.all(pending.map((t) => this.taskCard(t, false)));
+    const doneCards = await Promise.all(
+      done.map(async (t) => {
+        const actual = await this.taskService.getActualMinutes(t.id, todayStr);
+        return this.taskCard(t, true, actual);
+      })
+    );
 
     const totalMinutes = tasks.reduce((sum, t) => sum + (t.estimatedMinutes ?? 0), 0);
     const timeLabel = totalMinutes > 0 ? ` · ~${formatEstimatedTime(totalMinutes)} geplant` : "";
@@ -83,9 +84,15 @@ export class TodoView {
           await this.render();
         } else {
           btn.closest<HTMLElement>(".task-card")?.classList.add("completing");
-          setTimeout(async () => {
-            await this.taskService.markDone(id);
-            await this.render();
+          const task = tasks.find((t) => t.id === id);
+          setTimeout(() => {
+            this.showTimeDialog(task?.estimatedMinutes, async (actualMinutes) => {
+              await this.taskService.markDone(id);
+              if (actualMinutes != null) {
+                await this.taskService.logActualTime(id, todayStr, actualMinutes);
+              }
+              await this.render();
+            });
           }, 350);
         }
       });
@@ -106,13 +113,97 @@ export class TodoView {
         }
       });
     });
+
+    this.container.querySelectorAll<HTMLButtonElement>(".log-time-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.id!;
+        const pre = btn.dataset.est ?? "";
+        const timeLog = btn.closest<HTMLElement>(".time-log")!;
+        timeLog.innerHTML = `
+          <div class="log-time-inline">
+            <input type="number" class="log-time-input" value="${pre}" min="1" max="1440" placeholder="Min" />
+            <button class="log-time-confirm" title="Speichern">✓</button>
+            <button class="log-time-cancel" title="Abbrechen">✕</button>
+          </div>`;
+        const input = timeLog.querySelector<HTMLInputElement>(".log-time-input")!;
+        input.focus();
+        input.select();
+
+        timeLog.querySelector(".log-time-confirm")!.addEventListener("click", async () => {
+          const mins = parseInt(input.value, 10);
+          if (mins > 0) {
+            await this.taskService.logActualTime(id, todayStr, mins);
+            await this.render();
+          }
+        });
+        input.addEventListener("keydown", async (e) => {
+          if (e.key === "Enter") {
+            const mins = parseInt(input.value, 10);
+            if (mins > 0) {
+              await this.taskService.logActualTime(id, todayStr, mins);
+              await this.render();
+            }
+          }
+        });
+        timeLog.querySelector(".log-time-cancel")!.addEventListener("click", () => this.render());
+      });
+    });
   }
 
-  private async taskCard(task: TaskWithOverdue, isDone: boolean): Promise<string> {
+  private showTimeDialog(estimated: number | undefined, onConfirm: (minutes: number | undefined) => void): void {
+    const overlay = document.createElement("div");
+    overlay.className = "time-dialog-overlay";
+    overlay.innerHTML = `
+      <div class="time-dialog-card">
+        <p class="time-dialog-title">Wie lange hast du gebraucht?</p>
+        ${estimated != null
+          ? `<p class="time-dialog-hint">Schätzung: ${estimated} Min — Enter zum Übernehmen</p>`
+          : `<p class="time-dialog-hint">Minuten eingeben oder überspringen</p>`}
+        <div class="time-dialog-row">
+          <input type="number" class="time-dialog-input" placeholder="${estimated ?? "z.B. 30"}" min="1" max="1440" />
+          <span class="time-dialog-unit">Min</span>
+        </div>
+        <div class="time-dialog-actions">
+          <button class="btn btn-ghost time-dialog-skip">Überspringen</button>
+          <button class="btn btn-primary time-dialog-confirm">Speichern</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    const input = overlay.querySelector<HTMLInputElement>(".time-dialog-input")!;
+    setTimeout(() => input.focus(), 50);
+
+    const confirm = () => {
+      const val = input.value.trim();
+      const mins = val ? parseInt(val, 10) : estimated;
+      overlay.remove();
+      onConfirm(mins && mins > 0 ? mins : undefined);
+    };
+    const skip = () => { overlay.remove(); onConfirm(undefined); };
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") confirm();
+      if (e.key === "Escape") skip();
+    });
+    overlay.querySelector(".time-dialog-confirm")!.addEventListener("click", confirm);
+    overlay.querySelector(".time-dialog-skip")!.addEventListener("click", skip);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) skip(); });
+  }
+
+  private async taskCard(task: TaskWithOverdue, isDone: boolean, actualMinutes?: number): Promise<string> {
     const cat = await this.taskService.getCategoryById(task.category);
     const repeatLabel = this.repeatLabel(task);
     const overdue = !isDone && task.daysOverdue > 0;
     const overdueLabel = task.daysOverdue === 1 ? "1 Tag überfällig" : `${task.daysOverdue} Tage überfällig`;
+
+    const timeLogHtml = isDone ? `
+      <div class="time-log" data-id="${task.id}">
+        ${task.estimatedMinutes != null ? `<span class="time-est">⏱ ${task.estimatedMinutes} Min geplant</span>` : ""}
+        ${actualMinutes != null
+          ? `<span class="time-actual">✓ ${actualMinutes} Min</span>`
+          : `<button class="log-time-btn" data-id="${task.id}" data-est="${task.estimatedMinutes ?? ""}">Zeit eintragen</button>`}
+      </div>` : "";
+
     return `
       <div class="task-card ${isDone ? "is-done" : ""} ${overdue ? "is-overdue" : ""}" data-id="${task.id}">
         <button class="check-btn ${isDone ? "checked" : ""}" data-id="${task.id}" data-done="${isDone}">
@@ -126,6 +217,7 @@ export class TodoView {
           </div>
           ${task.description ? `<span class="task-desc">${escapeHtml(task.description)}</span>` : ""}
           <span class="task-meta">${repeatLabel}</span>
+          ${timeLogHtml}
         </div>
         <div class="task-actions">
           <button class="icon-btn edit-btn" data-id="${task.id}" title="Bearbeiten">✎</button>

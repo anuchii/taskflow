@@ -696,3 +696,146 @@ body {
   from { transform: translateX(400px); opacity: 0; }
   to   { transform: translateX(0);     opacity: 1; }
 }
+
+/* ── Zeit-Dialog beim Erledigen ── */
+.time-dialog-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 150ms ease;
+}
+.time-dialog-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: min(320px, calc(100vw - 40px));
+  animation: slideUp 180ms ease;
+}
+.time-dialog-title {
+  font-family: var(--font-mono);
+  font-size: 14px; font-weight: 700;
+  margin-bottom: 6px;
+}
+.time-dialog-hint {
+  font-size: 12px; color: var(--text-muted);
+  margin-bottom: 14px;
+}
+.time-dialog-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 18px;
+}
+.time-dialog-input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 26px; font-weight: 700;
+  padding: 10px 14px;
+  outline: none;
+  text-align: center;
+}
+.time-dialog-unit {
+  font-family: var(--font-mono);
+  font-size: 14px; color: var(--text-muted);
+}
+.time-dialog-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(14px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* ── Time log in done task cards ── */
+.time-log {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+.time-est   { font-size: 11px; font-family: var(--font-mono); color: var(--accent-dim); }
+.time-actual { font-size: 11px; font-family: var(--font-mono); color: var(--green); }
+.log-time-btn {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 7px;
+  cursor: pointer;
+  height: auto; width: auto;
+  transition: color var(--transition), border-color var(--transition);
+}
+.log-time-btn:hover { color: var(--accent); border-color: var(--accent); background: none; }
+.log-time-inline { display: flex; align-items: center; gap: 4px; }
+.log-time-input {
+  width: 64px;
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  outline: none;
+}
+.log-time-confirm, .log-time-cancel {
+  width: 22px; height: 22px;
+  border: none; border-radius: 4px;
+  cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--transition);
+}
+.log-time-confirm { background: var(--green-dim); color: var(--green); }
+.log-time-confirm:hover { background: var(--green); color: #000; }
+.log-time-cancel  { background: none; color: var(--text-muted); }
+.log-time-cancel:hover { background: var(--surface2); color: var(--text); }
+
+/* ── Time comparison chart ── */
+.time-chart-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-top: 24px;
+}
+.tc-empty {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 20px 0 8px;
+  line-height: 1.7;
+}
+.tc-task-row {
+  display: grid;
+  grid-template-columns: 150px 1fr 72px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tc-task-row:last-of-type { border-bottom: none; }
+.tc-task-name {
+  font-size: 13px; font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.tc-task-date { font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px; }
+.tc-bars { display: flex; flex-direction: column; gap: 5px; }
+.tc-bar-line { display: flex; align-items: center; gap: 6px; }
+.tc-bar-label { font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); width: 70px; flex-shrink: 0; }
+.tc-bar-track { flex: 1; height: 8px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
+.tc-bar-fill  { height: 100%; border-radius: 99px; transition: width 0.4s ease; min-width: 3px; }
+.tc-bar-fill--est    { background: var(--accent); }
+.tc-bar-fill--actual { background: var(--green); }
+.tc-bar-value { font-size: 10px; font-family: var(--font-mono); color: var(--text-muted); width: 44px; flex-shrink: 0; text-align: right; }
+.tc-diff { font-family: var(--font-mono); font-size: 11px; text-align: right; }
+.tc-legend {
+  display: flex; gap: 16px; align-items: center;
+  margin-top: 14px; padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 12px; color: var(--text-muted);
+}
