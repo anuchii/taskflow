@@ -238,3 +238,43 @@
 **Als** Entwickler  
 **möchte ich** dass alle verwendeten Bibliotheken kontinuierlich auf Sicherheitslücken geprüft werden und regelmäßige Penetrationstests stattfinden,  
 **damit** TaskFlow dauerhaft sicher bleibt und Schwachstellen frühzeitig erkannt werden.
+
+---
+
+**Als** User 
+**möchte ich** bei einem Gerätewechsel oder nach Geräteverlust wieder Zugriff auf meine verschlüsselten Daten bekommen, ohne dass meine Daten für immer verloren sind.
+
+---
+
+**Als**  User
+**möchte ich** sicher sein, dass meine TaskFlow-Daten auch in iCloud Backups geschützt sind und nicht unverschlüsselt in der Cloud landen.
+
+---
+
+**Als**  User 
+**möchte ich** bei Geräteverlust alle aktiven Sessions remote abmelden können, 
+**damit** niemand anderes auf meine Aufgaben, Kalender-Daten und Reflexionen zugreifen kann.
+
+---
+**Als** User 
+**möchte ich** TaskFlow auch ohne Internetverbindung vollständig nutzen können,
+ **damit** ich im Zug, in der Bibliothek oder ohne Empfang keine Funktionen verliere.
+
+---
+
+**Als**  Entwickler 
+**möchte ich** sicherstellen dass alle Texteingaben (Aufgabentitel, Reflexionen, Regel-Namen) validiert und sicher gerendert werden,
+**damit** kein schädlicher Code in der App ausgeführt werden kann.
+
+---
+
+**Als** User 
+**möchte ich** dass sensible Inhalte wie Reflexionen, Kalender-Details und persönliche Notizen nicht unbeabsichtigt in die Zwischenablage kopiert werden können, 
+**damit** andere Apps oder Personen keinen Zugriff auf meine privaten Daten bekommen.
+
+---
+
+**Als** Entwickler 
+**cmöchte ich** Crash-Reports und Logs nutzen können um Fehler zu beheben, ohne dass dabei sensible Nutzerdaten wie Aufgabentitel, Reflexionen oder Kalender-Inhalte übertragen werden.
+
+---
