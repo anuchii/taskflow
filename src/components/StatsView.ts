@@ -2,7 +2,7 @@
 // components/StatsView.ts
 // ============================================================
 
-import type { TaskService, DayStat } from "../services/TaskService.js";
+import type { TaskService, DayStat, TimeEntry } from "../services/TaskService.js";
 import {
   currentWeekDates, currentMonthDates, weekDates,
   formatShort, formatDisplay, formatWeekday, today,
@@ -25,9 +25,10 @@ export class StatsView {
     const chartDates = this.getChartDates();
     const tableDates = weekDates(this.tableWeekOffset);
 
-    const [chartStats, tableStats] = await Promise.all([
+    const [chartStats, tableStats, timeEntries] = await Promise.all([
       this.taskService.getStatsForDates(chartDates),
       this.taskService.getStatsForDates(tableDates),
+      this.taskService.getTimeComparisonForDates(tableDates),
     ]);
 
     const totalAll = chartStats.reduce((s, d) => s + d.total, 0);
@@ -104,6 +105,15 @@ export class StatsView {
             }).join("")}
           </tbody>
         </table>
+      </div>
+
+      <div class="time-chart-section">
+        <div class="chart-toolbar">
+          <span class="chart-title">Zeitschätzung vs. Tatsächlich</span>
+        </div>
+        ${timeEntries.length === 0
+          ? `<p class="tc-empty">Keine Zeitdaten für diese Woche.<br>Trage bei erledigten Aufgaben die tatsächliche Zeit ein.</p>`
+          : this.buildTimeRows(timeEntries)}
       </div>
     `;
 
@@ -218,4 +228,52 @@ export class StatsView {
     if (this.activePeriod === "week") return "Diese Woche";
     return "Dieser Monat";
   }
+
+  private buildTimeRows(entries: TimeEntry[]): string {
+    const maxMin = Math.max(...entries.map((e) => Math.max(e.estimated ?? 0, e.actual ?? 0)), 1);
+    const rows = entries.map((e) => {
+      const estPct = e.estimated ? Math.round((e.estimated / maxMin) * 100) : 0;
+      const actPct = e.actual   ? Math.round((e.actual   / maxMin) * 100) : 0;
+
+      let diffHtml = "<span style=\"color:var(--text-muted)\">—</span>";
+      if (e.estimated != null && e.actual != null) {
+        const diff = e.actual - e.estimated;
+        const color = diff > 0 ? "var(--red)" : diff < 0 ? "var(--green)" : "var(--text-muted)";
+        diffHtml = `<span style="color:${color};font-weight:700">${diff > 0 ? "+" : ""}${diff} Min</span>`;
+      }
+
+      const estBar = e.estimated != null ? `
+        <div class="tc-bar-line">
+          <span class="tc-bar-label">Geplant</span>
+          <div class="tc-bar-track"><div class="tc-bar-fill tc-bar-fill--est" style="width:${estPct}%"></div></div>
+          <span class="tc-bar-value">${e.estimated} Min</span>
+        </div>` : "";
+      const actBar = e.actual != null ? `
+        <div class="tc-bar-line">
+          <span class="tc-bar-label">Tatsächlich</span>
+          <div class="tc-bar-track"><div class="tc-bar-fill tc-bar-fill--actual" style="width:${actPct}%"></div></div>
+          <span class="tc-bar-value">${e.actual} Min</span>
+        </div>` : "";
+
+      return `
+        <div class="tc-task-row">
+          <div>
+            <div class="tc-task-name">${escapeHtml(e.task.title)}</div>
+            <div class="tc-task-date">${formatShort(e.date)}</div>
+          </div>
+          <div class="tc-bars">${estBar}${actBar}</div>
+          <div class="tc-diff">${diffHtml}</div>
+        </div>`;
+    }).join("");
+
+    return `${rows}
+      <div class="tc-legend">
+        <span class="legend-dot" style="background:var(--accent)"></span><span>Geplant</span>
+        <span class="legend-dot" style="background:var(--green)"></span><span>Tatsächlich</span>
+      </div>`;
+  }
+}
+
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
