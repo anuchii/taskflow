@@ -1,0 +1,19 @@
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 20px; right: 20px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  animation: slideIn 0.3s ease-out;
+  z-index: 9999;
+}
+.toast-error   { background-color: #dc2626; }
+.toast-success { background-color: #16a34a; }
+.toast-info    { background-color: #2563eb; }
+
+@keyframes slideIn {
+  from { transform: translateX(400px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
