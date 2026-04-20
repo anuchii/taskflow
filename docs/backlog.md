@@ -6,31 +6,31 @@
 
 
 ## User Stories
-**Als** Benutzer ✅ 
+** ✅Als** Benutzer 
 **möchte ich** mich mit meinem Google Account anmelden können,  
 **damit** meine Daten sicher gespeichert sind und nur ich sie sehen kann.
 
 ---
 
-**Als** Student ✅
+**✅Als** Student 
 **möchte ich** dass überfällige Aufgaben automatisch erkannt werden und ein "Überfällig"-Label auf der Task-Card angezeigt wird,  
 **damit** ich sofort sehe welche Aufgaben dringend nachgeholt werden müssen.
 
 ---
 
-**Als** Student ✅ 
+**✅Als** Student  
 **möchte ich** bei jeder Aufgabe eine Zeitschätzung hinterlegen können,  
 **damit** TaskFlow meinen Tagesplan realistisch berechnen kann und ich weiß wie viel Zeit ich einplanen muss.
 
 ---
 
-**Als** Student ✅ 
+**✅Als** Student  
 **möchte ich** sehen wie genau meine Zeitschätzungen im Vergleich zur tatsächlich benötigten Zeit waren,  
 **damit** ich lerne realistischer zu schätzen und meine Planung mit der Zeit immer präziser wird.
 
 ---
 
-**Als** User ✅ 
+**✅ Als** User 
 **möchte ich** beim Erstellen einer Aufgabe ein Startdatum setzen können,  
 **damit** ich Aufgaben auch für vergangene oder zukünftige Tage erfassen kann.
 
@@ -54,7 +54,7 @@
 
 ---
 
-**Als** User  
+**🧡Als** User  
 **möchte ich** eine Tages-Reflexion schreiben können,  
 **damit** ich zurückschauen kann und auf meinen Erfahrungen lernen kann.
 
@@ -278,3 +278,44 @@
 **cmöchte ich** Crash-Reports und Logs nutzen können um Fehler zu beheben, ohne dass dabei sensible Nutzerdaten wie Aufgabentitel, Reflexionen oder Kalender-Inhalte übertragen werden.
 
 ---
+
+Als Benutzer möchte ich in der Statistik standardmäßig eine kompakte Übersicht der Zeitschätzungen sehen, damit ich schnell den Überblick behalte, ohne von Details überwältigt zu werden. Nur wenn ich es anfordere, möchte ich den detaillierten Vergleich pro Aufgabe sehen.
+
+---
+
+Als User möchte ich bei jeder Regel exakt steuern, wann die erstellte Aufgabe fällig ist und welches Label sie bekommt — relativ zum Trigger-Event oder als fixer Wert — damit ich die volle Kontrolle über automatisch erstellte Aufgaben behalte.
+
+---
+
+Als User möchte ich, dass jede Regel eine Standard-Zeitschätzung mitgibt — und TaskFlow diese mit der Zeit anhand meiner echten Erledigungszeiten automatisch verbessert, damit meine Tagesplanung immer genauer wird.
+
+---
+
+Als User möchte ich Regeln sowohl visuell (Wenn-Dann-Builder mit Dropdowns) als auch per natürlicher Sprache erstellen können — TaskFlow soll meine Eingabe interpretieren und eine Regel vorschlagen, die ich dann bestätigen oder anpassen kann.
+
+---
+
+Als User möchte ich, dass sich TaskFlow auf bevorstehende Abgaben vorbereitet und mir automatisch mehrstufige Aufgaben erstellt — z.B. 1 Woche vorher "Präsentation beginnen", 2 Tage vorher "Folien finalisieren", 1 Tag vorher "Generalprobe".
+
+---
+
+Als User möchte ich Regeln auf Basis meiner Kalender-Events auslösen — z.B. wenn morgen eine Vorlesung ist, soll automatisch eine Vorbereitungsaufgabe erscheinen.
+
+---
+
+Als User möchte ich, dass Regeln der erstellten Aufgabe automatisch eine Priorität mitgeben — und diese Priorität sich dynamisch erhöht, je näher die Deadline rückt.
+
+---
+
+Als User möchte ich, dass TaskFlow eine automatisch erstellte Aufgabe nicht nur anlegt, sondern sie direkt in meinen Tagesplan einplant — basierend auf freien Zeitfenstern und der Zeitschätzung der Aufgabe.
+
+---
+
+Als User möchte ich meine erledigten Routinen und Aufgaben pro Monat als wertvolle Daten gespeichert sehen, um Fortschritte zu verfolgen, mich zu motivieren und Muster zu erkennen.
+
+---
+
+Als User möchte ich meine erledigten Routinen und Aufgaben pro Monat als wertvolle Daten gespeichert sehen, um Fortschritte zu verfolgen, mich zu motivieren und Muster zu erkennen.
+
+---
+
