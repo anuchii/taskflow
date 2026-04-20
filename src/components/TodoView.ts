@@ -42,7 +42,7 @@ export class TodoView {
     this.container.innerHTML = `
       <div class="view-header">
         <div>
-          <h1 class="view-title">Heute</h1>
+          <h1 class="view-title">Aufgaben</h1>
           <p class="view-subtitle">${formatDisplay(todayStr)} · ${done.length}/${tasks.length} erledigt${timeLabel}</p>
         </div>
         <button class="btn btn-primary" id="btn-new-task">+ Aufgabe</button>
