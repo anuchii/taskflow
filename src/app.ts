@@ -7,13 +7,14 @@ import { AuthService } from "./services/AuthService.js";
 import { TaskService } from "./services/TaskService.js";
 import { TaskFormModal } from "./components/TaskFormModal.js";
 import { TodoView } from "./components/TodoView.js";
+import { UpcomingView } from "./components/UpcomingView.js";
 import { StatsView } from "./components/StatsView.js";
 import { CategoryView } from "./components/CategoryView.js";
 import { LoginView } from "./components/LoginView.js";
 import { getAuth, getRedirectResult } from "firebase/auth";
 import { StorageService, firebaseApp } from "./services/StorageService.js";
 
-type Route = "todo" | "stats" | "kategorien";
+type Route = "todo" | "upcoming" | "stats" | "kategorien" | "reflexion";
 
 class App {
   private readonly authService = new AuthService();
@@ -23,6 +24,7 @@ class App {
   private readonly sidebarEl: HTMLElement;
   private modal!: TaskFormModal;
   private todoView!: TodoView;
+  private upcomingView!: UpcomingView;
   private statsView!: StatsView;
   private categoryView!: CategoryView;
   private loginView: LoginView;
@@ -75,12 +77,14 @@ class App {
 
     this.modal = new TaskFormModal(this.taskService);
     this.todoView = new TodoView(this.taskService, this.modal, this.mainEl);
+    this.upcomingView = new UpcomingView(this.taskService, this.modal, this.mainEl);
     this.statsView = new StatsView(this.taskService, this.mainEl);
     this.categoryView = new CategoryView(this.taskService, this.mainEl);
 
     this.modal.onTaskSaved(async () => {
       const r = this.currentRoute();
       if (r === "todo") await this.todoView.render();
+      else if (r === "upcoming") await this.upcomingView.render();
       else if (r === "kategorien") await this.categoryView.render();
       else await this.statsView.render();
     });
@@ -96,6 +100,8 @@ class App {
     const h = location.hash.replace("#", "") as Route;
     if (h === "stats") return "stats";
     if (h === "kategorien") return "kategorien";
+    if (h === "reflexion") return "reflexion";
+    if (h === "upcoming") return "upcoming";
     return "todo";
   }
 
@@ -106,6 +112,8 @@ class App {
     });
     if (route === "stats") this.statsView.render();
     else if (route === "kategorien") this.categoryView.render();
+    else if (route === "reflexion") this.reflectionView.render();
+    else if (route === "upcoming") this.upcomingView.render();
     else this.todoView.render();
   }
   private navInitialized = false;

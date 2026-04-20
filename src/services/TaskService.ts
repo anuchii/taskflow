@@ -2,7 +2,7 @@
 // services/TaskService.ts
 // ============================================================
 
-import type { Task, Category, RepeatConfig } from "../models/Task.js";
+import type { Task, Category, RepeatConfig, DailyReflection } from "../models/Task.js";
 
 export interface TimeEntry {
   task: Task;
@@ -247,5 +247,34 @@ export class TaskService {
       ...t,
       daysOverdue: this.isOverdue(t, data),
     }));
+  }
+
+  // ─── Upcoming ─────────────────────────────────────────────
+
+  async getUpcomingByDate(days = 30): Promise<{ date: string; tasks: Task[] }[]> {
+    const data = await this.storage.load();
+    const result: { date: string; tasks: Task[] }[] = [];
+    for (let i = 1; i <= days; i++) {
+      const dateStr = addDays(today(), i);
+      const tasks = data.tasks.filter((t) => !t.archived && this.isActiveOn(t, dateStr));
+      if (tasks.length > 0) result.push({ date: dateStr, tasks });
+    }
+    return result;
+  }
+
+  // ─── Tages-Reflexion ──────────────────────────────────────
+
+  async getReflectionForDate(date: string): Promise<DailyReflection | null> {
+    const data = await this.storage.load();
+    return (data.reflections ?? []).find((r) => r.date === date) ?? null;
+  }
+
+  async saveReflection(reflection: DailyReflection): Promise<void> {
+    const data = await this.storage.load();
+    if (!data.reflections) data.reflections = [];
+    const idx = data.reflections.findIndex((r) => r.date === reflection.date);
+    if (idx >= 0) data.reflections[idx] = reflection;
+    else data.reflections.push(reflection);
+    await this.storage.save(data);
   }
 }
