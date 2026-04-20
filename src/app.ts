@@ -10,6 +10,7 @@ import { TodoView } from "./components/TodoView.js";
 import { UpcomingView } from "./components/UpcomingView.js";
 import { StatsView } from "./components/StatsView.js";
 import { CategoryView } from "./components/CategoryView.js";
+import { ReflectionView } from "./components/ReflectionView.js";
 import { LoginView } from "./components/LoginView.js";
 import { getAuth, getRedirectResult } from "firebase/auth";
 import { StorageService, firebaseApp } from "./services/StorageService.js";
@@ -27,6 +28,7 @@ class App {
   private upcomingView!: UpcomingView;
   private statsView!: StatsView;
   private categoryView!: CategoryView;
+  private reflectionView!: ReflectionView;
   private loginView: LoginView;
 
   constructor() {
@@ -80,6 +82,7 @@ class App {
     this.upcomingView = new UpcomingView(this.taskService, this.modal, this.mainEl);
     this.statsView = new StatsView(this.taskService, this.mainEl);
     this.categoryView = new CategoryView(this.taskService, this.mainEl);
+    this.reflectionView = new ReflectionView(this.taskService, this.mainEl);
 
     this.modal.onTaskSaved(async () => {
       const r = this.currentRoute();

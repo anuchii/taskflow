@@ -43,9 +43,18 @@ export interface CompletionLog {
   actualMinutes?: number;
 }
 
+export interface DailyReflection {
+  date: string;
+  dayRating: number;
+  motivationRating: number;
+  funTaskIds: string[];
+  funCategoryIds: string[];
+}
+
 export interface AppData {
   version: number;
   tasks: Task[];
   completions: CompletionLog[];
   categories: Category[];
+  reflections?: DailyReflection[];
 }
