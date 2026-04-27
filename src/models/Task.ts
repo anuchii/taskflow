@@ -35,6 +35,7 @@ export interface Task {
   repeat: RepeatConfig;
   archived: boolean;
   estimatedMinutes?: number;
+  dueDate?: string;
 }
 
 export interface CompletionLog {

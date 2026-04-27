@@ -25,7 +25,7 @@ export class TaskService {
 
   // ─── Task CRUD ────────────────────────────────────────────
 
-  async createTask(title: string, description: string, category: string, repeat: RepeatConfig, startDate?: string, estimatedMinutes?: number): Promise<Task> {
+  async createTask(title: string, description: string, category: string, repeat: RepeatConfig, startDate?: string, estimatedMinutes?: number, dueDate?: string): Promise<Task> {
     const data = await this.storage.load();
     const task: Task = {
       id: crypto.randomUUID(),
@@ -37,6 +37,7 @@ export class TaskService {
       repeat,
       archived: false,
       ...(estimatedMinutes != null && { estimatedMinutes }),
+      ...(dueDate ? { dueDate } : {}),
     };
     data.tasks.push(task);
     await this.storage.save(data);
@@ -207,33 +208,29 @@ export class TaskService {
   // ─── Überfällige Aufgaben ────────────────────────────
 
   isOverdue(task: Task, data: { completions: Array<{ taskId: string; completedAt: string }> }): number {
-    const startDate = task.startDate ?? task.createdAt.slice(0, 10);
+    const todayStr = today();
+    const hasAnyCompletion = data.completions.some(c => c.taskId === task.id);
 
+    // Condition 1: dueDate exceeded
+    if (task.dueDate && task.dueDate < todayStr) {
+      if (!hasAnyCompletion) {
+        return Math.round(
+          (parseDate(todayStr).getTime() - parseDate(task.dueDate).getTime()) / 86_400_000
+        );
+      }
+      return 0;
+    }
+
+    // Condition 2: one-time task not done on its day
     if (task.repeat.unit === "none") {
-      const todayStr = today();
-      if (startDate >= todayStr) return 0;
-      const hasCompletion = data.completions.some(c => c.taskId === task.id);
-      if (hasCompletion) return 0;
+      const startDate = task.startDate ?? task.createdAt.slice(0, 10);
+      if (startDate >= todayStr || hasAnyCompletion) return 0;
       return Math.round(
         (parseDate(todayStr).getTime() - parseDate(startDate).getTime()) / 86_400_000
       );
     }
 
-    let daysOverdue = 0;
-    for (let i = 1; i <= 30; i++) {
-      const dateStr = addDays(today(), -i);
-      if (dateStr < startDate) break;
-      if (!this.isActiveOn(task, dateStr)) continue;
-      const wasCompleted = data.completions.some(
-        (c) => c.taskId === task.id && c.completedAt.startsWith(dateStr)
-      );
-      if (!wasCompleted) {
-        daysOverdue = i;
-      } else {
-        break;
-      }
-    }
-    return daysOverdue;
+    return 0;
   }
 
   async getTasksForDateWithOverdue(dateStr: string): Promise<(Task & { daysOverdue: number })[]> {
@@ -248,10 +245,16 @@ export class TaskService {
       return !data.completions.some(c => c.taskId === t.id);
     });
 
+    const overdueDueDateTasks = data.tasks.filter((t) => {
+      if (t.archived || !t.dueDate || t.dueDate >= dateStr) return false;
+      return !data.completions.some(c => c.taskId === t.id);
+    });
+
     const seen = new Set(scheduledTasks.map(t => t.id));
     const combined = [
       ...scheduledTasks,
       ...overdueOnceTasks.filter(t => !seen.has(t.id)),
+      ...overdueDueDateTasks.filter(t => { const isNew = !seen.has(t.id); seen.add(t.id); return isNew; }),
     ];
 
     return combined.map((t) => ({
