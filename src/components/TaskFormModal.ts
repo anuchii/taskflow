@@ -80,6 +80,11 @@ export class TaskFormModal {
           <input id="f-end" type="date" />
         </div>
 
+        <div class="form-group">
+          <label for="f-due">Fälligkeitsdatum (optional)</label>
+          <input id="f-due" type="date" />
+        </div>
+
         <div class="form-actions">
           <button class="btn btn-ghost" id="f-cancel">Abbrechen</button>
           <button class="btn btn-primary" id="f-save">Speichern</button>
@@ -118,6 +123,7 @@ export class TaskFormModal {
     const endGroup = this.overlay.querySelector<HTMLElement>("#f-end-group")!;
     const modalTitle = this.overlay.querySelector<HTMLElement>(".modal-title")!;
     const est = this.overlay.querySelector<HTMLInputElement>("#f-est")!;
+    const dueDate = this.overlay.querySelector<HTMLInputElement>("#f-due")!;
 
     // Rebuild category chips dynamically
     const catPicker = this.overlay.querySelector<HTMLElement>("#f-category")!;
@@ -148,6 +154,7 @@ export class TaskFormModal {
       startDate.value = task.startDate ?? task.createdAt.slice(0, 10);
       endDate.value = task.repeat.endDate ?? "";
       est.value = task.estimatedMinutes != null ? String(task.estimatedMinutes) : "";
+      dueDate.value = task.dueDate ?? "";
       const isOnce = task.repeat.unit === "none";
       endGroup.classList.toggle("hidden", isOnce);
       dateLabel.textContent = isOnce ? "Datum" : "Startdatum";
@@ -159,6 +166,7 @@ export class TaskFormModal {
       startDate.value = today();
       endDate.value = addDays(today(), 30);
       est.value = "";
+      dueDate.value = "";
       endGroup.classList.add("hidden");
       dateLabel.textContent = "Datum";
       modalTitle.textContent = "Neue Aufgabe";
@@ -178,6 +186,7 @@ export class TaskFormModal {
     const selectedCat = catPicker.querySelector<HTMLButtonElement>(".cat-chip.selected")?.dataset.id ?? "sonstiges";
     const estRaw = this.overlay.querySelector<HTMLInputElement>("#f-est")!.value;
     const estimatedMinutes = estRaw ? Math.max(1, parseInt(estRaw, 10)) : undefined;
+    const dueDateVal = this.overlay.querySelector<HTMLInputElement>("#f-due")!.value || undefined;
 
     const repeat: RepeatConfig = {
       unit: repeatUnit,
@@ -190,9 +199,9 @@ export class TaskFormModal {
     saveBtn.disabled = true;
 
     if (this.editingId) {
-      await this.taskService.updateTask(this.editingId, { title, description: desc, category: selectedCat, repeat, startDate: startDateVal, estimatedMinutes });
+      await this.taskService.updateTask(this.editingId, { title, description: desc, category: selectedCat, repeat, startDate: startDateVal, estimatedMinutes, dueDate: dueDateVal });
     } else {
-      await this.taskService.createTask(title, desc, selectedCat, repeat, startDateVal, estimatedMinutes);
+      await this.taskService.createTask(title, desc, selectedCat, repeat, startDateVal, estimatedMinutes, dueDateVal);
     }
 
     saveBtn.textContent = "Speichern";
