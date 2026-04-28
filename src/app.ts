@@ -70,6 +70,9 @@ class App {
       <button class="btn btn-ghost" id="btn-export" style="width:100%;justify-content:center;">
         ↓ Export JSON
       </button>
+      <button class="btn btn-ghost" id="btn-import" style="width:100%;justify-content:center;margin-top:6px;">
+        ↑ Import JSON
+      </button>
       <button class="btn btn-ghost" id="btn-logout" style="width:100%;justify-content:center;margin-top:6px;">
         Abmelden
       </button>
@@ -130,6 +133,15 @@ class App {
   private setupButtons(): void {
     document.getElementById("btn-export")?.addEventListener("click", () => {
       this.storage.exportJSON();
+    });
+
+    document.getElementById("btn-import")?.addEventListener("click", async () => {
+      try {
+        await this.storage.importJSON();
+        this.navigate(this.currentRoute());
+      } catch (e) {
+        console.error("[App] Import fehlgeschlagen:", e);
+      }
     });
 
     document.getElementById("btn-logout")?.addEventListener("click", async () => {
