@@ -654,6 +654,45 @@ body {
 .cat-edit-actions { display: flex; gap: 6px; justify-content: flex-end; }
 .cat-delete-btn:hover { color: var(--red) !important; }
 
+/* ── Priority Picker (Modal) ── */
+.priority-picker {
+  display: flex;
+  gap: 8px;
+}
+
+.priority-chip {
+  padding: 5px 14px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.priority-chip:hover { border-color: var(--text-muted); color: var(--text); }
+
+.priority-chip[data-value="high"].selected   { background: color-mix(in srgb, var(--red) 15%, transparent); color: var(--red); border-color: var(--red); font-weight: 600; }
+.priority-chip[data-value="medium"].selected { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); border-color: var(--accent); font-weight: 600; }
+.priority-chip[data-value="low"].selected    { background: color-mix(in srgb, var(--text-muted) 15%, transparent); color: var(--text-muted); border-color: var(--text-muted); font-weight: 600; }
+
+/* ── Priority Badge (Task Card) ── */
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.priority-badge.priority-high   { background: color-mix(in srgb, var(--red) 15%, transparent); color: var(--red); border: 1px solid color-mix(in srgb, var(--red) 35%, transparent); }
+.priority-badge.priority-medium { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
+.priority-badge.priority-low    { background: color-mix(in srgb, var(--text-muted) 12%, transparent); color: var(--text-muted); border: 1px solid color-mix(in srgb, var(--text-muted) 25%, transparent); }
+
 .task-card.is-overdue {
   border-color: var(--red);
   background: color-mix(in srgb, var(--red) 5%, var(--surface));

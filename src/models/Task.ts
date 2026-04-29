@@ -4,6 +4,8 @@
 
 export type RepeatUnit = "none" | "daily" | "weekly" | "monthly";
 
+export type Priority = "high" | "medium" | "low";
+
 export interface RepeatConfig {
   unit: RepeatUnit;
   interval: number;
@@ -36,6 +38,7 @@ export interface Task {
   archived: boolean;
   estimatedMinutes?: number;
   dueDate?: string;
+  priority?: Priority;
 }
 
 export interface CompletionLog {
