@@ -2,7 +2,7 @@
 // services/TaskService.ts
 // ============================================================
 
-import type { Task, Category, RepeatConfig } from "../models/Task.js";
+import type { Task, Category, RepeatConfig, Priority } from "../models/Task.js";
 
 export interface TimeEntry {
   task: Task;
@@ -25,7 +25,7 @@ export class TaskService {
 
   // ─── Task CRUD ────────────────────────────────────────────
 
-  async createTask(title: string, description: string, category: string, repeat: RepeatConfig, startDate?: string, estimatedMinutes?: number, dueDate?: string): Promise<Task> {
+  async createTask(title: string, description: string, category: string, repeat: RepeatConfig, startDate?: string, estimatedMinutes?: number, dueDate?: string, priority?: Priority): Promise<Task> {
     const data = await this.storage.load();
     const task: Task = {
       id: crypto.randomUUID(),
@@ -38,6 +38,7 @@ export class TaskService {
       archived: false,
       ...(estimatedMinutes != null && { estimatedMinutes }),
       ...(dueDate ? { dueDate } : {}),
+      ...(priority ? { priority } : {}),
     };
     data.tasks.push(task);
     await this.storage.save(data);

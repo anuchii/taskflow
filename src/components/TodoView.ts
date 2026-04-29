@@ -28,7 +28,11 @@ export class TodoView {
       else pending.push(t);
     }
 
+    const priorityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 };
     pending.sort((a, b) => {
+      const pa = priorityOrder[a.priority ?? ""] ?? 3;
+      const pb = priorityOrder[b.priority ?? ""] ?? 3;
+      if (pa !== pb) return pa - pb;
       if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
       if (a.dueDate) return -1;
       if (b.dueDate) return 1;
@@ -202,6 +206,9 @@ export class TodoView {
     const overdue = !isDone && task.daysOverdue > 0;
     const overdueLabel = task.daysOverdue === 1 ? "1 Tag überfällig" : `${task.daysOverdue} Tage überfällig`;
     const dueDateHtml = task.dueDate ? ` · 📅 ${formatDueDate(task.dueDate)}` : "";
+    const priorityMap = { high: { label: "↑ Hoch", cls: "priority-high" }, medium: { label: "→ Mittel", cls: "priority-medium" }, low: { label: "↓ Niedrig", cls: "priority-low" } };
+    const priorityInfo = task.priority ? priorityMap[task.priority] : null;
+    const priorityHtml = priorityInfo ? `<span class="priority-badge ${priorityInfo.cls}">${priorityInfo.label}</span>` : "";
 
     const timeLogHtml = isDone ? `
       <div class="time-log" data-id="${task.id}">
@@ -218,6 +225,7 @@ export class TodoView {
         </button>
         <div class="task-body">
           <div class="task-top">
+            ${priorityHtml}
             <span class="task-title">${escapeHtml(task.title)}</span>
             ${overdue ? `<span class="overdue-badge">${overdueLabel}</span>` : ""}
             ${cat ? `<span class="cat-badge" style="--cat-color:${cat.color}">${escapeHtml(cat.label)}</span>` : ""}
