@@ -15,6 +15,8 @@ import { StorageService } from "./StorageService.js";
 import { today, parseDate, addDays } from "../utils/DateUtils.js";
 import { aggregateCategoryStats } from "../utils/categoryStatsUtils.js";
 import type { CategoryTimeStat } from "../utils/categoryStatsUtils.js";
+import { computeCategoryAnalytics } from "../utils/categoryAnalyticsUtils.js";
+import type { CategoryAnalytics } from "../utils/categoryAnalyticsUtils.js";
 
 export interface DayStat {
   date: string;
@@ -191,6 +193,12 @@ export class TaskService {
     const data = await this.storage.load();
     const categories = data.categories ?? DEFAULT_CATEGORIES.map((c) => ({ ...c }));
     return aggregateCategoryStats(data.tasks, data.completions, categories, dates);
+  }
+
+  async getCategoryAnalytics(weekRange: string[]): Promise<CategoryAnalytics> {
+    const data = await this.storage.load();
+    const categories = data.categories ?? DEFAULT_CATEGORIES.map((c) => ({ ...c }));
+    return computeCategoryAnalytics(data.tasks, data.completions, categories, weekRange);
   }
 
   async getStatsForDates(dates: string[]): Promise<DayStat[]> {

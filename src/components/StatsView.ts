@@ -8,6 +8,7 @@ import {
   formatShort, formatDisplay, formatWeekday, today,
 } from "../utils/DateUtils.js";
 import { CategoryTimeStatsWidget } from "./CategoryTimeStatsWidget.js";
+import { CategoryAnalyticsWidget } from "./CategoryAnalyticsWidget.js";
 
 type Period = "week" | "month";
 
@@ -15,6 +16,7 @@ export class StatsView {
   private activePeriod: Period = "month";
   private tableWeekOffset: number = 0;
   private readonly catWidget = new CategoryTimeStatsWidget();
+  private readonly analyticsWidget = new CategoryAnalyticsWidget();
 
   constructor(
     private readonly taskService: TaskService,
@@ -27,11 +29,13 @@ export class StatsView {
     const chartDates = this.getChartDates();
     const tableDates = weekDates(this.tableWeekOffset);
 
-    const [chartStats, tableStats, timeEntries, catStats] = await Promise.all([
+    const currentWeek = currentWeekDates();
+    const [chartStats, tableStats, timeEntries, catStats, analytics] = await Promise.all([
       this.taskService.getStatsForDates(chartDates),
       this.taskService.getStatsForDates(tableDates),
       this.taskService.getTimeComparisonForDates(tableDates),
       this.taskService.getCategoryTimeStats(tableDates),
+      this.taskService.getCategoryAnalytics(currentWeek),
     ]);
 
     const totalAll = chartStats.reduce((s, d) => s + d.total, 0);
@@ -69,6 +73,8 @@ export class StatsView {
         </div>
         ${this.catWidget.render(catStats)}
       </div>
+
+      ${this.analyticsWidget.render(analytics)}
 
       <div class="chart-section">
         <div class="chart-toolbar">
