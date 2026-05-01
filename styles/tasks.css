@@ -1,0 +1,175 @@
+/* ── Progress bar ── */
+.progress-bar-wrap {
+  height: 3px;
+  background: var(--border);
+  border-radius: 99px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Task Cards ── */
+.task-section { display: flex; flex-direction: column; gap: 8px; }
+
+.task-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  transition: border-color var(--transition), transform var(--transition), opacity var(--transition);
+}
+.task-card:hover { border-color: var(--accent-dim); }
+.task-card.completing { opacity: 0; transform: translateX(20px); }
+.task-card.is-done { opacity: 0.55; }
+
+.check-btn {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  color: var(--green);
+  transition: border-color var(--transition), background var(--transition);
+}
+.check-btn:hover { border-color: var(--accent); }
+.check-btn.checked { background: var(--green-dim); border-color: var(--green); }
+
+.task-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.task-title { font-weight: 500; font-size: 14px; }
+.task-desc { font-size: 12px; color: var(--text-muted); }
+.task-meta { font-size: 11px; color: var(--accent-dim); font-family: var(--font-mono); margin-top: 2px; }
+.is-done .task-title { text-decoration: line-through; }
+
+.task-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.task-card:hover .task-actions { opacity: 1; }
+
+/* ── Done section ── */
+.done-section {
+  margin-top: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.done-section summary {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+  background: var(--surface);
+  list-style: none;
+  user-select: none;
+}
+.done-section summary::-webkit-details-marker { display: none; }
+.done-list { padding: 8px 8px; background: var(--surface); }
+
+/* ── Empty state ── */
+.empty-state { text-align: center; padding: 48px 20px; color: var(--text-muted); }
+.empty-icon { display: block; font-size: 36px; color: var(--border); margin-bottom: 12px; }
+
+/* ── Category badge on task card ── */
+.task-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.cat-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--cat-color) 15%, transparent);
+  color: var(--cat-color);
+  border: 1px solid color-mix(in srgb, var(--cat-color) 30%, transparent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Overdue ── */
+.task-card.is-overdue {
+  border-color: var(--red);
+  background: color-mix(in srgb, var(--red) 5%, var(--surface));
+}
+.overdue-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--red-dim);
+  color: var(--red);
+  border: 1px solid color-mix(in srgb, var(--red) 40%, transparent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.overdue-hint { color: var(--red); font-weight: 600; }
+
+/* ── Time log in done task cards ── */
+.time-log {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+.time-est   { font-size: 11px; font-family: var(--font-mono); color: var(--accent-dim); }
+.time-actual { font-size: 11px; font-family: var(--font-mono); color: var(--green); }
+.log-time-btn {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 7px;
+  cursor: pointer;
+  height: auto; width: auto;
+  transition: color var(--transition), border-color var(--transition);
+}
+.log-time-btn:hover { color: var(--accent); border-color: var(--accent); background: none; }
+.log-time-inline { display: flex; align-items: center; gap: 4px; }
+.log-time-input {
+  width: 64px;
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  outline: none;
+}
+.log-time-confirm, .log-time-cancel {
+  width: 22px; height: 22px;
+  border: none; border-radius: 4px;
+  cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--transition);
+}
+.log-time-confirm { background: var(--green-dim); color: var(--green); }
+.log-time-confirm:hover { background: var(--green); color: #000; }
+.log-time-cancel  { background: none; color: var(--text-muted); }
+.log-time-cancel:hover { background: var(--surface2); color: var(--text); }

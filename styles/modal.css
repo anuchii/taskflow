@@ -1,0 +1,139 @@
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+  opacity: 0; pointer-events: none;
+  transition: opacity 200ms ease;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.active { opacity: 1; pointer-events: all; }
+
+.modal-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  width: min(480px, calc(100vw - 40px));
+  position: relative;
+  transform: translateY(12px);
+  transition: transform 200ms ease;
+}
+.modal-overlay.active .modal-card { transform: translateY(0); }
+
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 30px; height: 30px;
+  border: none; background: none;
+  color: var(--text-muted); cursor: pointer;
+  font-size: 15px; border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover { background: var(--surface2); color: var(--text); }
+
+.modal-title {
+  font-family: var(--font-mono);
+  font-size: 18px; font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color var(--transition);
+}
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus { border-color: var(--accent); }
+.form-group select { cursor: pointer; }
+.form-group textarea { resize: vertical; min-height: 60px; }
+
+.form-actions {
+  display: flex; justify-content: flex-end; gap: 8px;
+  margin-top: 20px; padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Category picker in modal ── */
+.category-picker { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.cat-chip {
+  padding: 5px 12px;
+  border-radius: 99px;
+  border: 1px solid color-mix(in srgb, var(--cat-color) 35%, transparent);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.cat-chip:hover {
+  background: color-mix(in srgb, var(--cat-color) 12%, transparent);
+  color: var(--cat-color);
+  border-color: var(--cat-color);
+}
+.cat-chip.selected {
+  background: color-mix(in srgb, var(--cat-color) 18%, transparent);
+  color: var(--cat-color);
+  border-color: var(--cat-color);
+  font-weight: 600;
+}
+
+/* ── Time dialog ── */
+.time-dialog-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 150ms ease;
+}
+.time-dialog-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: min(320px, calc(100vw - 40px));
+  animation: slideUp 180ms ease;
+}
+.time-dialog-title { font-family: var(--font-mono); font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.time-dialog-hint { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; }
+.time-dialog-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.time-dialog-input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 26px; font-weight: 700;
+  padding: 10px 14px;
+  outline: none;
+  text-align: center;
+}
+.time-dialog-unit { font-family: var(--font-mono); font-size: 14px; color: var(--text-muted); }
+.time-dialog-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(14px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }

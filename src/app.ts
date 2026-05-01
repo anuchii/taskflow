@@ -10,11 +10,12 @@ import { TodoView } from "./components/TodoView.js";
 import { UpcomingView } from "./components/UpcomingView.js";
 import { StatsView } from "./components/StatsView.js";
 import { CategoryView } from "./components/CategoryView.js";
+import { ReflectionView } from "./components/ReflectionView.js";
 import { LoginView } from "./components/LoginView.js";
 import { getAuth, getRedirectResult } from "firebase/auth";
 import { StorageService, firebaseApp } from "./services/StorageService.js";
 
-type Route = "todo" | "upcoming" | "stats" | "kategorien";
+type Route = "todo" | "upcoming" | "stats" | "kategorien" | "reflexion";
 
 class App {
   private readonly authService = new AuthService();
@@ -27,6 +28,7 @@ class App {
   private upcomingView!: UpcomingView;
   private statsView!: StatsView;
   private categoryView!: CategoryView;
+  private reflectionView!: ReflectionView;
   private loginView: LoginView;
 
   constructor() {
@@ -83,6 +85,7 @@ class App {
     this.upcomingView = new UpcomingView(this.taskService, this.modal, this.mainEl);
     this.statsView = new StatsView(this.taskService, this.mainEl);
     this.categoryView = new CategoryView(this.taskService, this.mainEl);
+    this.reflectionView = new ReflectionView(this.taskService, this.mainEl);
 
     this.modal.onTaskSaved(async () => {
       const r = this.currentRoute();
@@ -103,6 +106,7 @@ class App {
     const h = location.hash.replace("#", "") as Route;
     if (h === "stats") return "stats";
     if (h === "kategorien") return "kategorien";
+    if (h === "reflexion") return "reflexion";
     if (h === "upcoming") return "upcoming";
     return "todo";
   }
@@ -114,6 +118,7 @@ class App {
     });
     if (route === "stats") this.statsView.render();
     else if (route === "kategorien") this.categoryView.render();
+    else if (route === "reflexion") this.reflectionView.render();
     else if (route === "upcoming") this.upcomingView.render();
     else this.todoView.render();
   }
