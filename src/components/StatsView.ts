@@ -7,12 +7,14 @@ import {
   currentWeekDates, currentMonthDates, weekDates,
   formatShort, formatDisplay, formatWeekday, today,
 } from "../utils/DateUtils.js";
+import { CategoryTimeStatsWidget } from "./CategoryTimeStatsWidget.js";
 
 type Period = "week" | "month";
 
 export class StatsView {
   private activePeriod: Period = "month";
   private tableWeekOffset: number = 0;
+  private readonly catWidget = new CategoryTimeStatsWidget();
 
   constructor(
     private readonly taskService: TaskService,
@@ -25,10 +27,11 @@ export class StatsView {
     const chartDates = this.getChartDates();
     const tableDates = weekDates(this.tableWeekOffset);
 
-    const [chartStats, tableStats, timeEntries] = await Promise.all([
+    const [chartStats, tableStats, timeEntries, catStats] = await Promise.all([
       this.taskService.getStatsForDates(chartDates),
       this.taskService.getStatsForDates(tableDates),
       this.taskService.getTimeComparisonForDates(tableDates),
+      this.taskService.getCategoryTimeStats(tableDates),
     ]);
 
     const totalAll = chartStats.reduce((s, d) => s + d.total, 0);
@@ -49,19 +52,22 @@ export class StatsView {
         </div>
       </div>
 
-      <div class="stats-kpi-row">
-        <div class="kpi-card">
-          <span class="kpi-value">${todayDone}/${todayTotal}</span>
-          <span class="kpi-label">Heute</span>
+      <div class="stats-top-area">
+        <div class="stats-kpi-row">
+          <div class="kpi-card">
+            <span class="kpi-value">${todayDone}/${todayTotal}</span>
+            <span class="kpi-label">Heute</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-value">${completedAll}/${totalAll}</span>
+            <span class="kpi-label">${this.periodLabel()}</span>
+          </div>
+          <div class="kpi-card ${rate >= 80 ? "kpi-good" : rate >= 50 ? "kpi-ok" : "kpi-low"}">
+            <span class="kpi-value">${rate}%</span>
+            <span class="kpi-label">Erledigungsrate</span>
+          </div>
         </div>
-        <div class="kpi-card">
-          <span class="kpi-value">${completedAll}/${totalAll}</span>
-          <span class="kpi-label">${this.periodLabel()}</span>
-        </div>
-        <div class="kpi-card ${rate >= 80 ? "kpi-good" : rate >= 50 ? "kpi-ok" : "kpi-low"}">
-          <span class="kpi-value">${rate}%</span>
-          <span class="kpi-label">Erledigungsrate</span>
-        </div>
+        ${this.catWidget.render(catStats)}
       </div>
 
       <div class="chart-section">
