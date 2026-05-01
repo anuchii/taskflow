@@ -4,6 +4,40 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,300;400;500;600&display=swap');
 
+/* Layout */
+@import './layout/_app-shell.css';
+@import './layout/_sidebar.css';
+
+/* Shared */
+@import './shared/_view-header.css';
+@import './shared/_buttons.css';
+@import './shared/_forms.css';
+@import './shared/_badges.css';
+@import './shared/_empty-state.css';
+@import './shared/_toast.css';
+@import './shared/_scrollbar.css';
+@import './shared/_animations.css';
+@import './shared/_helpers.css';
+
+/* Components */
+@import './components/_category-time-stats.css';
+@import './components/_task-card.css';
+@import './components/_flashcards.css';
+@import './components/_modal.css';
+@import './components/_category-picker.css';
+@import './components/_priority-picker.css';
+@import './components/_time-dialog.css';
+@import './components/_time-log.css';
+
+/* Views */
+@import './views/_learning-view.css';
+@import './views/_todo-view.css';
+@import './views/_upcoming-view.css';
+@import './views/_stats-view.css';
+@import './views/_category-view.css';
+
+/* Responsive */
+@import './_responsive.css';
 @import './base.css';
 @import './tasks.css';
 @import './modal.css';

@@ -1,9 +1,22 @@
+/* Top area: KPI cards + category time widget side-by-side on large screens */
+.stats-top-area {
+  margin-bottom: 28px;
+}
+
+@media (min-width: 1280px) {
+  .stats-top-area {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+    align-items: start;
+  }
+}
+
 /* KPI row */
 .stats-kpi-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
-  margin-bottom: 28px;
 }
 .kpi-card {
   background: var(--surface);

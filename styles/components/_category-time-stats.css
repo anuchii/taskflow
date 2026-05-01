@@ -1,0 +1,215 @@
+/* ============================================================
+   styles/components/_category-time-stats.css
+   Widget: weekly category time (estimated vs. actual).
+   All selectors are prefixed with cat-time- to avoid collisions.
+   Angular migration: move to category-time-stats.component.scss
+   and enable ViewEncapsulation (default) — the prefix becomes
+   unnecessary once Angular's shadow DOM scoping is active.
+   ============================================================ */
+
+/* ── Widget card — matches KPI card style ── */
+.cat-time-widget {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+}
+
+/* ── Summary (accordion trigger on small screens) ── */
+.cat-time-widget__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  user-select: none;
+}
+.cat-time-widget__summary::-webkit-details-marker { display: none; }
+.cat-time-widget__summary::marker { display: none; }
+
+.cat-time-widget__title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.cat-time-widget__toggle {
+  font-size: 14px;
+  color: var(--text-muted);
+  transition: transform var(--transition);
+  line-height: 1;
+}
+.cat-time-widget[open] .cat-time-widget__toggle {
+  transform: rotate(180deg);
+}
+
+/* ── Body ── */
+.cat-time-widget__body {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Empty state ── */
+.cat-time-widget__empty {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 12px 0 6px;
+  line-height: 1.7;
+}
+
+/* ── Rows container — 2-col grid on medium screens ── */
+.cat-time-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Category row ── */
+.cat-time-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cat-time-row__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.cat-time-row__name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.cat-time-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cat-time-row__values {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Bars ── */
+.cat-time-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cat-time-bar-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cat-time-bar-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  width: 68px;
+  flex-shrink: 0;
+}
+
+.cat-time-bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--surface2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.cat-time-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s ease;
+  min-width: 2px;
+}
+
+/* ── Legend — two stacked rows ── */
+.cat-time-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.cat-time-legend__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.cat-time-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.cat-time-legend__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ── Responsive: medium screens — 2-col category rows ── */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .cat-time-rows {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 24px;
+  }
+}
+
+/* ── Responsive: medium+ screens — disable accordion, hide toggle ── */
+@media (min-width: 768px) {
+  .cat-time-widget__toggle {
+    display: none;
+  }
+  .cat-time-widget > summary {
+    pointer-events: none;
+    cursor: default;
+  }
+}
+
+/* ── Responsive: small screens — compact padding, enable toggle ── */
+@media (max-width: 767px) {
+  .cat-time-widget {
+    padding: 14px 16px;
+  }
+  .cat-time-widget__body {
+    margin-top: 12px;
+  }
+  .cat-time-widget__summary {
+    cursor: pointer;
+  }
+}
