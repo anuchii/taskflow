@@ -1,0 +1,163 @@
+/* ============================================================
+   components/_category-analytics.css — Category analytics dashboard
+   Prefix: ca-  (category analytics)
+   ============================================================ */
+
+/* ─── Section wrapper ────────────────────────────────────── */
+
+.ca-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.ca-header {
+  margin-bottom: 16px;
+}
+
+.ca-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+/* ─── Three-column card grid ─────────────────────────────── */
+
+.ca-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 960px) {
+  .ca-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 600px) {
+  .ca-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── Card ───────────────────────────────────────────────── */
+
+.ca-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: border-color var(--transition);
+}
+
+.ca-card:hover { border-color: var(--accent-dim); }
+
+.ca-card--alert { border-color: var(--red-dim); }
+.ca-card--alert:hover { border-color: var(--red); }
+
+/* ─── Card label (section title) ─────────────────────────── */
+
+.ca-card-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+
+/* ─── Category name row ──────────────────────────────────── */
+
+.ca-cat-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.ca-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ─── Primary metric value ───────────────────────────────── */
+
+.ca-value {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.15;
+}
+
+.ca-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+/* ─── Mini progress bar ──────────────────────────────────── */
+
+.ca-bar-track {
+  height: 5px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.ca-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s ease;
+  min-width: 3px;
+}
+
+/* ─── Streak list ────────────────────────────────────────── */
+
+.ca-streak-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.ca-streak-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ca-streak-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.ca-streak-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ─── Empty state ────────────────────────────────────────── */
+
+.ca-empty {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 4px 0 0;
+}

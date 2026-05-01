@@ -20,6 +20,7 @@
 @import './shared/_helpers.css';
 
 /* Components */
+@import './components/_category-analytics.css';
 @import './components/_category-time-stats.css';
 @import './components/_task-card.css';
 @import './components/_flashcards.css';
