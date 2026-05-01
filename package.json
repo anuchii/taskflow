@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "esbuild src/app.ts --bundle --outfile=dist/bundle.js --format=esm --platform=browser",
-    "watch": "esbuild src/app.ts --bundle --outfile=dist/bundle.js --format=esm --platform=browser --watch"
+    "build": "esbuild src/app.ts --bundle --outfile=dist/bundle.js --format=esm --platform=browser && esbuild styles/main.css --bundle --outfile=dist/bundle.css",
+    "watch": "esbuild src/app.ts --bundle --outfile=dist/bundle.js --format=esm --platform=browser --watch & esbuild styles/main.css --bundle --outfile=dist/bundle.css --watch"
   },
   "keywords": [],
   "author": "",

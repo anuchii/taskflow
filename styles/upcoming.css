@@ -1,0 +1,11 @@
+/* ── Upcoming View ── */
+.upcoming-group { margin-bottom: 28px; }
+.upcoming-date-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px; padding: 0 2px;
+}
+.upcoming-weekday {
+  font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+  color: var(--accent); text-transform: capitalize;
+}
+.upcoming-count { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }

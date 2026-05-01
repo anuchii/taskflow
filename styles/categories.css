@@ -1,0 +1,57 @@
+/* ── Kategorien-Verwaltung ── */
+.cat-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+
+.cat-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color var(--transition);
+}
+.cat-item:hover { border-color: var(--accent-dim); }
+
+.cat-item-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
+
+.cat-swatch { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+
+.cat-item-label { flex: 1; font-weight: 500; font-size: 14px; }
+.cat-item-count { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
+
+.cat-edit-form {
+  border-top: 1px solid var(--border);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--surface2);
+}
+.cat-edit-form.no-top-border { border-top: none; }
+
+.cat-edit-row { display: flex; align-items: center; gap: 8px; }
+
+.cat-edit-form input[type="text"] {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color var(--transition);
+}
+.cat-edit-form input[type="text"]:focus { border-color: var(--accent); }
+
+.cat-edit-form input[type="color"] {
+  width: 36px; height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  cursor: pointer;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.cat-edit-actions { display: flex; gap: 6px; justify-content: flex-end; }
+.cat-delete-btn:hover { color: var(--red) !important; }

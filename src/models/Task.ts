@@ -56,6 +56,14 @@ export interface Flashcard {
   answeredAt?: string;
   lastReviewed?: string;
 }
+  
+export interface DailyReflection {
+  date: string;
+  dayRating: number;
+  motivationRating: number;
+  funTaskIds: string[];
+  funCategoryIds: string[];
+}
 
 export interface AppData {
   version: number;
@@ -63,4 +71,5 @@ export interface AppData {
   completions: CompletionLog[];
   categories: Category[];
   flashcards: Flashcard[];
+  reflections?: DailyReflection[];
 }
