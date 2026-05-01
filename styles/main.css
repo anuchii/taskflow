@@ -25,6 +25,7 @@
 /* Components */
 @import './components/_category-time-stats.css';
 @import './components/_task-card.css';
+@import './components/_flashcards.css';
 @import './components/_modal.css';
 @import './components/_category-picker.css';
 @import './components/_priority-picker.css';
@@ -32,6 +33,7 @@
 @import './components/_time-log.css';
 
 /* Views */
+@import './views/_learning-view.css';
 @import './views/_todo-view.css';
 @import './views/_upcoming-view.css';
 @import './views/_stats-view.css';

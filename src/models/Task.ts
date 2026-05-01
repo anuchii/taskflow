@@ -47,9 +47,20 @@ export interface CompletionLog {
   actualMinutes?: number;
 }
 
+export interface Flashcard {
+  id: string;
+  question: string;
+  answer?: string;
+  tags: string[];
+  createdAt: string;
+  answeredAt?: string;
+  lastReviewed?: string;
+}
+
 export interface AppData {
   version: number;
   tasks: Task[];
   completions: CompletionLog[];
   categories: Category[];
+  flashcards: Flashcard[];
 }

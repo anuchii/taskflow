@@ -1,0 +1,21 @@
+/* ============================================================
+   views/_learning-view.css  —  Learning / Lernkarten view
+   ============================================================ */
+
+/* The view itself uses the shared .view-header / .view-title /
+   .view-subtitle patterns, plus the fc-* components above.
+   Add any view-specific overrides here. */
+
+@media (max-width: 600px) {
+  .fc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fc-wrapper {
+    height: 220px;
+  }
+
+  .filter-tabs {
+    flex-wrap: wrap;
+  }
+}
