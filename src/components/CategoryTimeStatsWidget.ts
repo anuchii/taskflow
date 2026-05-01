@@ -17,19 +17,13 @@ function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-/**
- * Returns the CSS class for the actual-time bar based on the ratio of
- * actual to estimated hours.
- *   ≤ 90%  → green  (Unter Schätzung)
- *   ≤ 110% → yellow (Nahe Schätzung)
- *   > 110% → red    (Über Schätzung)
- */
-function actualBarClass(stat: CategoryTimeStat): string {
-  if (stat.estimatedHours === 0) return "cat-time-bar-fill--yellow";
+/** Returns the status hex color for the Tatsächlich bar. */
+function actualBarColor(stat: CategoryTimeStat): string {
+  if (stat.estimatedHours === 0) return "#facc15";
   const ratio = stat.actualHours / stat.estimatedHours;
-  if (ratio <= 0.9) return "cat-time-bar-fill--green";
-  if (ratio <= 1.1) return "cat-time-bar-fill--yellow";
-  return "cat-time-bar-fill--red";
+  if (ratio <= 0.9) return "#4ade80";
+  if (ratio <= 1.1) return "#facc15";
+  return "#f87171";
 }
 
 export class CategoryTimeStatsWidget {
@@ -42,10 +36,7 @@ export class CategoryTimeStatsWidget {
    * @param stats Aggregated category time data for the current week
    */
   render(stats: CategoryTimeStat[]): string {
-    const bodyHtml =
-      stats.length === 0
-        ? `<p class="cat-time-widget__empty">Keine Zeitdaten für diese Woche.<br>Trage bei erledigten Aufgaben die tatsächliche Zeit ein.</p>`
-        : this.buildRows(stats) + this.buildLegend();
+    const isEmpty = stats.length === 0;
 
     return `
       <details class="cat-time-widget" open>
@@ -54,7 +45,10 @@ export class CategoryTimeStatsWidget {
           <span class="cat-time-widget__toggle" aria-hidden="true">▾</span>
         </summary>
         <div class="cat-time-widget__body">
-          ${bodyHtml}
+          ${isEmpty
+            ? `<p class="cat-time-widget__empty">Keine Zeitdaten für diese Woche.<br>Trage bei erledigten Aufgaben die tatsächliche Zeit ein.</p>`
+            : `<div class="cat-time-rows">${this.buildRows(stats)}</div>${this.buildLegend()}`
+          }
         </div>
       </details>`;
   }
@@ -69,14 +63,21 @@ export class CategoryTimeStatsWidget {
       .map((s) => {
         const estPct = Math.round((s.estimatedHours / maxH) * 100);
         const actPct = Math.round((s.actualHours / maxH) * 100);
-        const actCls = actualBarClass(s);
+        const actColor = actualBarColor(s);
+        // Geplant bar: category color at 60% opacity
+        const estBg = `color-mix(in srgb, ${esc(s.color)} 60%, transparent)`;
+
+        const valStr =
+          s.estimatedHours > 0
+            ? `${s.actualHours.toFixed(1)}h / ${s.estimatedHours.toFixed(1)}h`
+            : `${s.actualHours.toFixed(1)}h`;
 
         const estBar =
           s.estimatedHours > 0
             ? `<div class="cat-time-bar-line">
                 <span class="cat-time-bar-label">Geplant</span>
                 <div class="cat-time-bar-track">
-                  <div class="cat-time-bar-fill cat-time-bar-fill--est" style="width:${estPct}%"></div>
+                  <div class="cat-time-bar-fill" style="width:${estPct}%; background:${estBg}"></div>
                 </div>
                </div>`
             : "";
@@ -86,15 +87,10 @@ export class CategoryTimeStatsWidget {
             ? `<div class="cat-time-bar-line">
                 <span class="cat-time-bar-label">Tatsächlich</span>
                 <div class="cat-time-bar-track">
-                  <div class="cat-time-bar-fill ${actCls}" style="width:${actPct}%"></div>
+                  <div class="cat-time-bar-fill" style="width:${actPct}%; background:${actColor}"></div>
                 </div>
                </div>`
             : "";
-
-        const valStr =
-          s.estimatedHours > 0
-            ? `${s.actualHours.toFixed(1)}h / ${s.estimatedHours.toFixed(1)}h`
-            : `${s.actualHours.toFixed(1)}h`;
 
         return `
           <div class="cat-time-row">
@@ -114,12 +110,30 @@ export class CategoryTimeStatsWidget {
   private buildLegend(): string {
     return `
       <div class="cat-time-legend">
-        <span class="cat-time-legend__dot cat-time-legend__dot--est"></span><span>Geplant</span>
-        <span class="cat-time-legend__dot cat-time-legend__dot--act"></span><span>Tatsächlich</span>
-        <span class="cat-time-legend__sep"></span>
-        <span class="cat-time-legend__dot cat-time-legend__dot--green"></span><span>Unter Schätzung</span>
-        <span class="cat-time-legend__dot cat-time-legend__dot--yellow"></span><span>Nahe Schätzung</span>
-        <span class="cat-time-legend__dot cat-time-legend__dot--red"></span><span>Über Schätzung</span>
+        <div class="cat-time-legend__row">
+          <span class="cat-time-legend__item">
+            <span class="cat-time-legend__dot" style="background:var(--accent); opacity:0.6"></span>
+            <span>Geplant</span>
+          </span>
+          <span class="cat-time-legend__item">
+            <span class="cat-time-legend__dot" style="background:var(--text-muted)"></span>
+            <span>Tatsächlich</span>
+          </span>
+        </div>
+        <div class="cat-time-legend__row">
+          <span class="cat-time-legend__item">
+            <span class="cat-time-legend__dot" style="background:#4ade80"></span>
+            <span>Unter Schätzung</span>
+          </span>
+          <span class="cat-time-legend__item">
+            <span class="cat-time-legend__dot" style="background:#facc15"></span>
+            <span>Nahe Schätzung</span>
+          </span>
+          <span class="cat-time-legend__item">
+            <span class="cat-time-legend__dot" style="background:#f87171"></span>
+            <span>Über Schätzung</span>
+          </span>
+        </div>
       </div>`;
   }
 }

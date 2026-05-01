@@ -7,12 +7,12 @@
    unnecessary once Angular's shadow DOM scoping is active.
    ============================================================ */
 
-/* ── Widget card ── */
+/* ── Widget card — matches KPI card style ── */
 .cat-time-widget {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 20px;
+  padding: 18px 20px;
 }
 
 /* ── Summary (accordion trigger on small screens) ── */
@@ -46,10 +46,10 @@
 
 /* ── Body ── */
 .cat-time-widget__body {
-  margin-top: 16px;
+  margin-top: 14px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 0;
 }
 
 /* ── Empty state ── */
@@ -57,20 +57,27 @@
   font-size: 13px;
   color: var(--text-muted);
   text-align: center;
-  padding: 16px 0 8px;
+  padding: 12px 0 6px;
   line-height: 1.7;
+}
+
+/* ── Rows container — 2-col grid on medium screens ── */
+.cat-time-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 /* ── Category row ── */
 .cat-time-row {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .cat-time-row__header {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   gap: 8px;
   min-width: 0;
@@ -86,6 +93,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .cat-time-dot {
@@ -107,7 +115,7 @@
 .cat-time-bars {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .cat-time-bar-line {
@@ -120,13 +128,13 @@
   font-size: 10px;
   color: var(--text-muted);
   font-family: var(--font-mono);
-  width: 70px;
+  width: 68px;
   flex-shrink: 0;
 }
 
 .cat-time-bar-track {
   flex: 1;
-  height: 7px;
+  height: 6px;
   background: var(--surface2);
   border-radius: 99px;
   overflow: hidden;
@@ -139,22 +147,30 @@
   min-width: 2px;
 }
 
-.cat-time-bar-fill--est    { background: var(--accent); }
-.cat-time-bar-fill--green  { background: var(--green); }
-.cat-time-bar-fill--yellow { background: #d4890a; }
-.cat-time-bar-fill--red    { background: var(--red); }
-
-/* ── Legend ── */
+/* ── Legend — two stacked rows ── */
 .cat-time-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.cat-time-legend__row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 12px;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
+  gap: 4px 14px;
   font-size: 11px;
   color: var(--text-muted);
+}
+
+.cat-time-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
 }
 
 .cat-time-legend__dot {
@@ -165,17 +181,13 @@
   flex-shrink: 0;
 }
 
-.cat-time-legend__dot--est    { background: var(--accent); }
-.cat-time-legend__dot--act    { background: var(--text-muted); }
-.cat-time-legend__dot--green  { background: var(--green); }
-.cat-time-legend__dot--yellow { background: #d4890a; }
-.cat-time-legend__dot--red    { background: var(--red); }
-
-.cat-time-legend__sep {
-  width: 1px;
-  height: 12px;
-  background: var(--border);
-  flex-shrink: 0;
+/* ── Responsive: medium screens — 2-col category rows ── */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .cat-time-rows {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 24px;
+  }
 }
 
 /* ── Responsive: medium+ screens — disable accordion, hide toggle ── */
@@ -196,7 +208,6 @@
   }
   .cat-time-widget__body {
     margin-top: 12px;
-    gap: 12px;
   }
   .cat-time-widget__summary {
     cursor: pointer;
