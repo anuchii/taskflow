@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,300;400;500;600&display=swap');
+
+:root {
+  --bg:          #0f0f11;
+  --surface:     #18181c;
+  --surface2:    #22222a;
+  --border:      #2e2e38;
+  --text:        #e8e8ec;
+  --text-muted:  #7a7a8c;
+  --accent:      #f5a623;
+  --accent-dim:  #7a5112;
+  --green:       #4caf82;
+  --green-dim:   #1e3d2f;
+  --red:         #e05c5c;
+  --red-dim:     #3d1e1e;
+
+  --chart-total: #f5a623;
+  --chart-done:  #4caf82;
+
+  --radius:      8px;
+  --radius-lg:   14px;
+  --font-ui:     'DM Sans', sans-serif;
+  --font-mono:   'Space Mono', monospace;
+  --sidebar-w:   220px;
+  --transition:  180ms ease;
+}

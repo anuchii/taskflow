@@ -1,0 +1,13 @@
+.progress-bar-wrap {
+  height: 3px;
+  background: var(--border);
+  border-radius: 99px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}

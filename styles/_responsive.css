@@ -1,0 +1,7 @@
+@media (max-width: 680px) {
+  .sidebar { width: 60px; }
+  .nav-link span:not(.nav-icon) { display: none; }
+  .sidebar-logo span, .sidebar-logo { font-size: 0; }
+  .main-content { margin-left: 60px; padding: 20px 16px; }
+  .stats-kpi-row { grid-template-columns: 1fr 1fr; }
+}
