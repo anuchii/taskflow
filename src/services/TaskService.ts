@@ -2,7 +2,7 @@
 // services/TaskService.ts
 // ============================================================
 
-import type { Task, Category, RepeatConfig, DailyReflection } from "../models/Task.js";
+import type { Task, Category, RepeatConfig, DailyReflection, Priority } from "../models/Task.js";
 
 export interface TimeEntry {
   task: Task;
@@ -171,17 +171,6 @@ export class TaskService {
     if (idx === -1) return;
     data.completions[idx] = { ...data.completions[idx], actualMinutes: minutes };
     await this.storage.save(data);
-  }
-
-  async getUpcomingByDate(days = 30): Promise<{ date: string; tasks: Task[] }[]> {
-    const data = await this.storage.load();
-    const result: { date: string; tasks: Task[] }[] = [];
-    for (let i = 1; i <= days; i++) {
-      const dateStr = addDays(today(), i);
-      const tasks = data.tasks.filter((t) => !t.archived && this.isActiveOn(t, dateStr));
-      if (tasks.length > 0) result.push({ date: dateStr, tasks });
-    }
-    return result;
   }
 
   async getTimeComparisonForDates(dates: string[]): Promise<TimeEntry[]> {
