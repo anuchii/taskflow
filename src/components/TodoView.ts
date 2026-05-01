@@ -28,6 +28,16 @@ export class TodoView {
       else pending.push(t);
     }
 
+    const priorityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 };
+    pending.sort((a, b) => {
+      const pa = priorityOrder[a.priority ?? ""] ?? 3;
+      const pb = priorityOrder[b.priority ?? ""] ?? 3;
+      if (pa !== pb) return pa - pb;
+      if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
+      if (a.dueDate) return -1;
+      if (b.dueDate) return 1;
+      return 0;
+    });
     const pendingCards = await Promise.all(pending.map((t) => this.taskCard(t, false)));
     const doneCards = await Promise.all(
       done.map(async (t) => {
@@ -42,7 +52,7 @@ export class TodoView {
     this.container.innerHTML = `
       <div class="view-header">
         <div>
-          <h1 class="view-title">Heute</h1>
+          <h1 class="view-title">Aufgaben</h1>
           <p class="view-subtitle">${formatDisplay(todayStr)} · ${done.length}/${tasks.length} erledigt${timeLabel}</p>
         </div>
         <button class="btn btn-primary" id="btn-new-task">+ Aufgabe</button>
@@ -195,6 +205,10 @@ export class TodoView {
     const repeatLabel = this.repeatLabel(task);
     const overdue = !isDone && task.daysOverdue > 0;
     const overdueLabel = task.daysOverdue === 1 ? "1 Tag überfällig" : `${task.daysOverdue} Tage überfällig`;
+    const dueDateHtml = task.dueDate ? ` · 📅 ${formatDueDate(task.dueDate)}` : "";
+    const priorityMap = { high: { label: "↑ Hoch", cls: "priority-high" }, medium: { label: "→ Mittel", cls: "priority-medium" }, low: { label: "↓ Niedrig", cls: "priority-low" } };
+    const priorityInfo = task.priority ? priorityMap[task.priority] : null;
+    const priorityHtml = priorityInfo ? `<span class="priority-badge ${priorityInfo.cls}">${priorityInfo.label}</span>` : "";
 
     const timeLogHtml = isDone ? `
       <div class="time-log" data-id="${task.id}">
@@ -211,12 +225,13 @@ export class TodoView {
         </button>
         <div class="task-body">
           <div class="task-top">
+            ${priorityHtml}
             <span class="task-title">${escapeHtml(task.title)}</span>
             ${overdue ? `<span class="overdue-badge">${overdueLabel}</span>` : ""}
             ${cat ? `<span class="cat-badge" style="--cat-color:${cat.color}">${escapeHtml(cat.label)}</span>` : ""}
           </div>
           ${task.description ? `<span class="task-desc">${escapeHtml(task.description)}</span>` : ""}
-          <span class="task-meta">${repeatLabel}</span>
+          <span class="task-meta">${repeatLabel}${dueDateHtml}</span>
           ${timeLogHtml}
         </div>
         <div class="task-actions">
@@ -247,6 +262,10 @@ export class TodoView {
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function formatDueDate(dateStr: string): string {
+  return new Date(dateStr + "T00:00:00").toLocaleDateString("de-AT", { day: "2-digit", month: "short", year: "numeric" });
 }
 
 function formatEstimatedTime(minutes: number): string {

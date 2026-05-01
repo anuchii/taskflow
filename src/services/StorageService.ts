@@ -93,4 +93,53 @@ export class StorageService {
     a.click();
     URL.revokeObjectURL(url);
   }
+
+  async importJSON(): Promise<void> {
+    const file = await this.pickFile();
+    const imported = JSON.parse(await file.text()) as AppData;
+
+    const current = await this.load();
+
+    const existingTaskIds = new Set(current.tasks.map((t) => t.id));
+    const existingCompletionKeys = new Set(
+      current.completions.map((c) => `${c.taskId}|${c.completedAt}`)
+    );
+    const existingCategoryIds = new Set(current.categories.map((c) => c.id));
+
+    const merged: AppData = {
+      version: current.version,
+      tasks: [
+        ...current.tasks,
+        ...(imported.tasks ?? []).filter((t) => !existingTaskIds.has(t.id)),
+      ],
+      completions: [
+        ...current.completions,
+        ...(imported.completions ?? []).filter(
+          (c) => !existingCompletionKeys.has(`${c.taskId}|${c.completedAt}`)
+        ),
+      ],
+      categories: [
+        ...current.categories,
+        ...(imported.categories ?? []).filter(
+          (c) => !existingCategoryIds.has(c.id)
+        ),
+      ],
+    };
+
+    await this.save(merged);
+  }
+
+  private pickFile(): Promise<File> {
+    return new Promise((resolve, reject) => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "application/json,.json";
+      input.onchange = () => {
+        const file = input.files?.[0];
+        if (file) resolve(file);
+        else reject(new Error("Keine Datei ausgewählt"));
+      };
+      input.click();
+    });
+  }
 }

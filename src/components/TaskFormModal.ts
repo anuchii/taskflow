@@ -2,7 +2,7 @@
 // components/TaskFormModal.ts
 // ============================================================
 
-import type { Task, RepeatConfig, RepeatUnit } from "../models/Task.js";
+import type { Task, RepeatConfig, RepeatUnit, Priority } from "../models/Task.js";
 import type { TaskService } from "../services/TaskService.js";
 import { today, addDays } from "../utils/DateUtils.js";
 
@@ -56,6 +56,15 @@ export class TaskFormModal {
         </div>
 
         <div class="form-group">
+          <label>Priorität</label>
+          <div class="priority-picker" id="f-priority">
+            <button type="button" class="priority-chip" data-value="high">↑ Hoch</button>
+            <button type="button" class="priority-chip" data-value="medium">→ Mittel</button>
+            <button type="button" class="priority-chip" data-value="low">↓ Niedrig</button>
+          </div>
+        </div>
+
+        <div class="form-group">
           <label for="f-date" id="f-date-label">Datum</label>
           <input id="f-date" type="date" />
         </div>
@@ -80,6 +89,11 @@ export class TaskFormModal {
           <input id="f-end" type="date" />
         </div>
 
+        <div class="form-group">
+          <label for="f-due">Fälligkeitsdatum (optional)</label>
+          <input id="f-due" type="date" />
+        </div>
+
         <div class="form-actions">
           <button class="btn btn-ghost" id="f-cancel">Abbrechen</button>
           <button class="btn btn-primary" id="f-save">Speichern</button>
@@ -94,6 +108,14 @@ export class TaskFormModal {
     this.overlay.querySelector("#f-cancel")!.addEventListener("click", () => this.close());
     this.overlay.addEventListener("click", (e) => {
       if (e.target === this.overlay) this.close();
+    });
+
+    this.overlay.querySelectorAll<HTMLButtonElement>(".priority-chip").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const isSelected = btn.classList.contains("selected");
+        this.overlay.querySelectorAll(".priority-chip").forEach(b => b.classList.remove("selected"));
+        if (!isSelected) btn.classList.add("selected");
+      });
     });
 
     const repeatSel = this.overlay.querySelector<HTMLSelectElement>("#f-repeat")!;
@@ -118,6 +140,8 @@ export class TaskFormModal {
     const endGroup = this.overlay.querySelector<HTMLElement>("#f-end-group")!;
     const modalTitle = this.overlay.querySelector<HTMLElement>(".modal-title")!;
     const est = this.overlay.querySelector<HTMLInputElement>("#f-est")!;
+    const dueDate = this.overlay.querySelector<HTMLInputElement>("#f-due")!;
+    const priorityPicker = this.overlay.querySelector<HTMLElement>("#f-priority")!;
 
     // Rebuild category chips dynamically
     const catPicker = this.overlay.querySelector<HTMLElement>("#f-category")!;
@@ -141,6 +165,8 @@ export class TaskFormModal {
       });
     });
 
+    priorityPicker.querySelectorAll(".priority-chip").forEach(b => b.classList.remove("selected"));
+
     if (task) {
       title.value = task.title;
       desc.value = task.description;
@@ -148,6 +174,10 @@ export class TaskFormModal {
       startDate.value = task.startDate ?? task.createdAt.slice(0, 10);
       endDate.value = task.repeat.endDate ?? "";
       est.value = task.estimatedMinutes != null ? String(task.estimatedMinutes) : "";
+      dueDate.value = task.dueDate ?? "";
+      if (task.priority) {
+        priorityPicker.querySelector<HTMLButtonElement>(`[data-value="${task.priority}"]`)?.classList.add("selected");
+      }
       const isOnce = task.repeat.unit === "none";
       endGroup.classList.toggle("hidden", isOnce);
       dateLabel.textContent = isOnce ? "Datum" : "Startdatum";
@@ -159,6 +189,7 @@ export class TaskFormModal {
       startDate.value = today();
       endDate.value = addDays(today(), 30);
       est.value = "";
+      dueDate.value = "";
       endGroup.classList.add("hidden");
       dateLabel.textContent = "Datum";
       modalTitle.textContent = "Neue Aufgabe";
@@ -178,6 +209,8 @@ export class TaskFormModal {
     const selectedCat = catPicker.querySelector<HTMLButtonElement>(".cat-chip.selected")?.dataset.id ?? "sonstiges";
     const estRaw = this.overlay.querySelector<HTMLInputElement>("#f-est")!.value;
     const estimatedMinutes = estRaw ? Math.max(1, parseInt(estRaw, 10)) : undefined;
+    const dueDateVal = this.overlay.querySelector<HTMLInputElement>("#f-due")!.value || undefined;
+    const priority = (this.overlay.querySelector<HTMLButtonElement>("#f-priority .priority-chip.selected")?.dataset.value ?? undefined) as Priority | undefined;
 
     const repeat: RepeatConfig = {
       unit: repeatUnit,
@@ -190,9 +223,9 @@ export class TaskFormModal {
     saveBtn.disabled = true;
 
     if (this.editingId) {
-      await this.taskService.updateTask(this.editingId, { title, description: desc, category: selectedCat, repeat, startDate: startDateVal, estimatedMinutes });
+      await this.taskService.updateTask(this.editingId, { title, description: desc, category: selectedCat, repeat, startDate: startDateVal, estimatedMinutes, dueDate: dueDateVal, priority });
     } else {
-      await this.taskService.createTask(title, desc, selectedCat, repeat, startDateVal, estimatedMinutes);
+      await this.taskService.createTask(title, desc, selectedCat, repeat, startDateVal, estimatedMinutes, dueDateVal, priority);
     }
 
     saveBtn.textContent = "Speichern";
