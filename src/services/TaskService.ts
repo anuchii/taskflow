@@ -249,10 +249,32 @@ export class TaskService {
     });
 
     const seen = new Set(scheduledTasks.map(t => t.id));
+
+    // Fix: update seen after overdueOnceTasks to prevent double-listing when a task
+    // matches both overdueOnceTasks and overdueDueDateTasks
+    const overdueOnceFiltered = overdueOnceTasks.filter(t => !seen.has(t.id));
+    overdueOnceFiltered.forEach(t => seen.add(t.id));
+
+    const overdueDueDateFiltered = overdueDueDateTasks.filter(t => {
+      const isNew = !seen.has(t.id);
+      if (isNew) seen.add(t.id);
+      return isNew;
+    });
+
+    // Fix: include overdue tasks completed today so they appear in the Erledigt section.
+    // Without this, one-time tasks with a past startDate disappear from the view entirely
+    // after being marked done (they're not in scheduledTasks and the overdue lists exclude
+    // completed tasks).
+    const completedTodayOverdue = data.tasks.filter((t) => {
+      if (t.archived || seen.has(t.id)) return false;
+      return data.completions.some(c => c.taskId === t.id && c.completedAt.startsWith(dateStr));
+    });
+
     const combined = [
       ...scheduledTasks,
-      ...overdueOnceTasks.filter(t => !seen.has(t.id)),
-      ...overdueDueDateTasks.filter(t => { const isNew = !seen.has(t.id); seen.add(t.id); return isNew; }),
+      ...overdueOnceFiltered,
+      ...overdueDueDateFiltered,
+      ...completedTodayOverdue,
     ];
 
     return combined.map((t) => ({
