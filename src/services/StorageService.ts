@@ -36,16 +36,19 @@ const EMPTY_DATA: AppData = {
 };
 
 export const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp);
 
 export class StorageService {
   private cache: AppData | null = null;
 
- 
   private dataRef() {
     const auth = getAuth(firebaseApp);
     const user = auth.currentUser;
     if (!user) throw new Error("Kein User eingeloggt!");
+
+    // Firestore wird erst hier geholt, weil getFirestore() beim Modulstart
+    // sofort eine Verbindung öffnet — ohne Auth-Token → Zugriff verweigert.
+    // Durch lazy init läuft die Verbindung immer mit gültigem Token.
+    const db = getFirestore(firebaseApp);
     return doc(db, "users", user.uid, "appdata", "main");
   }
 

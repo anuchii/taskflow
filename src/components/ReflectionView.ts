@@ -52,9 +52,9 @@ export class ReflectionView {
           </div>
         </div>
 
-        ${completedTasks.length > 0 ? `
-          <div class="reflection-section">
-            <h2 class="reflection-question">Welche Aufgaben haben mir heute Spaß gemacht?</h2>
+        <div class="reflection-section">
+          <h2 class="reflection-question">Welche Aufgaben haben mir heute Spaß gemacht?</h2>
+          ${completedTasks.length > 0 ? `
             <p class="reflection-hint">Mehrfachauswahl möglich</p>
             <div class="fun-tasks-picker" id="fun-tasks">
               ${completedTasks.map((t) => `
@@ -62,8 +62,9 @@ export class ReflectionView {
                   data-id="${t.id}" type="button">
                   ${escapeHtml(t.title)}
                 </button>`).join("")}
-            </div>
-          </div>` : ""}
+            </div>` : `
+            <p class="reflection-hint">Heute noch keine erledigten Aufgaben.</p>`}
+        </div>
 
         <div class="reflection-actions">
           <button class="btn btn-primary" id="btn-save-reflection">

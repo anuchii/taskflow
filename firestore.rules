@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/appdata/{document} {
+      // nur der eingeloggte User darf seine eigenen Daten lesen und schreiben
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
