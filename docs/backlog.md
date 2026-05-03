@@ -49,7 +49,7 @@
 
 ---
 
-**#8 Als** Student  
+**✅#8 Als** Student  
 **möchte ich** dass TaskFlow die Priorität von Aufgaben automatisch erhöht je näher das Fälligkeitsdatum rückt,  
 **damit** wichtige Aufgaben immer rechtzeitig sichtbar werden ohne dass ich manuell eingreifen muss.
 

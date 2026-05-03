@@ -26,3 +26,5 @@ npm-debug.log*
 *.tsbuildinfo
 .claude
 /docs/changesLog/
+/docs/firebase/
+CLAUDE.md
