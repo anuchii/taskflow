@@ -39,6 +39,7 @@ export interface Task {
   estimatedMinutes?: number;
   dueDate?: string;
   priority?: Priority;
+  isAutoPrioritized?: boolean;
 }
 
 export interface CompletionLog {
