@@ -223,7 +223,9 @@ export class TaskFormModal {
     saveBtn.disabled = true;
 
     if (this.editingId) {
-      await this.taskService.updateTask(this.editingId, { title, description: desc, category: selectedCat, repeat, startDate: startDateVal, estimatedMinutes, dueDate: dueDateVal, priority });
+      // isAutoPrioritized explizit zurücksetzen: nach User-Speicherung ist das Flag ungültig.
+      // runAutoPrioritization() setzt es beim nächsten Render ggf. neu, falls Bedingungen weiter gelten.
+      await this.taskService.updateTask(this.editingId, { title, description: desc, category: selectedCat, repeat, startDate: startDateVal, estimatedMinutes, dueDate: dueDateVal, priority, isAutoPrioritized: false });
     } else {
       await this.taskService.createTask(title, desc, selectedCat, repeat, startDateVal, estimatedMinutes, dueDateVal, priority);
     }

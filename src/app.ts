@@ -65,7 +65,7 @@ class App {
 
   // ─── App initialisieren ───────────────────────────────────
 
-  private initApp(displayName: string): void {
+  private async initApp(displayName: string): Promise<void> {
     this.sidebarEl.classList.remove("hidden");
 
     const footer = document.querySelector(".sidebar-footer")!;
@@ -100,6 +100,7 @@ class App {
       else await this.statsView.render();
     });
 
+    await this.taskService.runAutoPrioritization();
     this.setupNav();
     this.setupButtons();
     this.navigate(this.currentRoute());

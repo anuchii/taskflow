@@ -3,6 +3,7 @@
 // ============================================================
 
 import type { Task, Category, RepeatConfig, DailyReflection, Priority } from "../models/Task.js";
+import { AutoPriorityService } from "./AutoPriorityService.js";
 
 export interface TimeEntry {
   task: Task;
@@ -25,6 +26,8 @@ export interface DayStat {
 }
 
 export class TaskService {
+  private readonly autoPriorityService = new AutoPriorityService();
+
   constructor(private readonly storage: StorageService) {}
 
   // ─── Task CRUD ────────────────────────────────────────────
@@ -285,6 +288,21 @@ export class TaskService {
       ...t,
       daysOverdue: this.isOverdue(t, data),
     }));
+  }
+
+  // ─── Auto-Priorisierung ───────────────────────────────────
+
+  async runAutoPrioritization(): Promise<void> {
+    const data = await this.storage.load();
+    const changes = this.autoPriorityService.computeChanges(data.tasks, data.completions);
+    if (changes.length === 0) return;
+
+    for (const { id, patch } of changes) {
+      const idx = data.tasks.findIndex(t => t.id === id);
+      if (idx !== -1) data.tasks[idx] = { ...data.tasks[idx], ...patch };
+    }
+
+    await this.storage.save(data);
   }
 
   // ─── Upcoming ─────────────────────────────────────────────

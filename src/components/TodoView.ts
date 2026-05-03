@@ -18,6 +18,7 @@ export class TodoView {
 
   async render(): Promise<void> {
     this.container.innerHTML = `<div class="loading">Lädt…</div>`;
+    await this.taskService.runAutoPrioritization();
     const todayStr = today();
     const tasks = await this.taskService.getTasksForDateWithOverdue(todayStr);
 
@@ -208,7 +209,8 @@ export class TodoView {
     const dueDateHtml = task.dueDate ? ` · 📅 ${formatDueDate(task.dueDate)}` : "";
     const priorityMap = { high: { label: "↑ Hoch", cls: "priority-high" }, medium: { label: "→ Mittel", cls: "priority-medium" }, low: { label: "↓ Niedrig", cls: "priority-low" } };
     const priorityInfo = task.priority ? priorityMap[task.priority] : null;
-    const priorityHtml = priorityInfo ? `<span class="priority-badge ${priorityInfo.cls}">${priorityInfo.label}</span>` : "";
+    const autoIcon = task.isAutoPrioritized ? ' ⚡' : '';
+    const priorityHtml = priorityInfo ? `<span class="priority-badge ${priorityInfo.cls}">${priorityInfo.label}${autoIcon}</span>` : "";
 
     const timeLogHtml = isDone ? `
       <div class="time-log" data-id="${task.id}">
