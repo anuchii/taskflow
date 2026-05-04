@@ -27,5 +27,7 @@ npm-debug.log*
 .claude
 /docs/changesLog/
 /docs/erklaerungen/
+/docs/thoughts/
+/docs/feedback/
 /docs/planing/
 CLAUDE.md
