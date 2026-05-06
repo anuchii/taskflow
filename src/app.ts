@@ -127,7 +127,7 @@ class App {
     else if (route === "kategorien") this.categoryView.render();
     else if (route === "reflexion") this.reflectionView.render();
     else if (route === "upcoming") this.upcomingView.render();
-    else if (route === "lernen") this.learningView.render();
+    else if (route === "lernen") this.learningView.startLearning();
     else this.todoView.render();
   }
   private navInitialized = false;

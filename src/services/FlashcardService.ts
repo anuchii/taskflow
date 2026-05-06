@@ -2,7 +2,7 @@
 // services/FlashcardService.ts
 // ============================================================
 
-import type { Flashcard } from "../models/Task.js";
+import type { Deck, Flashcard } from "../models/Task.js";
 import type { StorageService } from "./StorageService.js";
 
 export class FlashcardService {
@@ -15,7 +15,7 @@ export class FlashcardService {
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
 
-  async create(question: string, tags: string[] = []): Promise<Flashcard> {
+  async create(question: string, tags: string[] = [], deckId?: string): Promise<Flashcard> {
     const trimmed = question.trim();
     if (!trimmed) throw new Error("Frage darf nicht leer sein.");
 
@@ -25,6 +25,7 @@ export class FlashcardService {
       question: trimmed,
       tags,
       createdAt: new Date().toISOString(),
+      ...(deckId ? { deckId } : {}),
     };
 
     data.flashcards.push(card);
@@ -73,5 +74,58 @@ export class FlashcardService {
       lastReviewed: new Date().toISOString(),
     };
     await this.storage.save(data);
+  }
+
+  async saveReview(card: Flashcard): Promise<void> {
+    const data = await this.storage.load();
+    const idx = data.flashcards.findIndex((c) => c.id === card.id);
+    if (idx === -1) return;
+    // Persist the full SM2-updated card; lastReviewed is set here so the
+    // scheduler stays focused on SM2 fields and doesn't need to know about it.
+    data.flashcards[idx] = { ...card, lastReviewed: new Date().toISOString() };
+    await this.storage.save(data);
+  }
+
+  // ─── Deck CRUD ─────────────────────────────────────────────
+
+  async getDecks(): Promise<Deck[]> {
+    const data = await this.storage.load();
+    return (data.decks ?? []).slice().sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  async createDeck(name: string, parentId: string | null, color?: string): Promise<Deck> {
+    const trimmed = name.trim();
+    if (!trimmed) throw new Error("Deck-Name darf nicht leer sein.");
+    const data = await this.storage.load();
+    const deck: Deck = {
+      id: crypto.randomUUID(),
+      name: trimmed,
+      parentId,
+      createdAt: new Date().toISOString(),
+      ...(color ? { color } : {}),
+    };
+    data.decks = [...(data.decks ?? []), deck];
+    await this.storage.save(data);
+    return deck;
+  }
+
+  async deleteDeck(id: string): Promise<void> {
+    const data = await this.storage.load();
+    // Kinder-Decks und alle zugehörigen Karten werden mitgelöscht,
+    // damit keine verwaisten deckId-Referenzen im Storage bleiben.
+    const childIds = (data.decks ?? [])
+      .filter((d) => d.parentId === id)
+      .map((d) => d.id);
+    const allRemovedIds = new Set([id, ...childIds]);
+    data.decks      = (data.decks ?? []).filter((d) => !allRemovedIds.has(d.id));
+    data.flashcards = data.flashcards.filter((c) => !c.deckId || !allRemovedIds.has(c.deckId));
+    await this.storage.save(data);
+  }
+
+  async getCardsByDeck(deckId: string): Promise<Flashcard[]> {
+    const data = await this.storage.load();
+    return data.flashcards
+      .filter((c) => c.deckId === deckId)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
 }
