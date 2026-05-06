@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "esbuild src/app.ts --bundle --outfile=dist/bundle.js --format=esm --platform=browser && esbuild styles/main.css --bundle --outfile=dist/bundle.css",
-    "watch": "esbuild src/app.ts --bundle --outfile=dist/bundle.js --format=esm --platform=browser --watch & esbuild styles/main.css --bundle --outfile=dist/bundle.css --watch"
+    "watch": "esbuild src/app.ts --bundle --outfile=dist/bundle.js --format=esm --platform=browser --watch & esbuild styles/main.css --bundle --outfile=dist/bundle.css --watch",
+    "test": "tsc && node --test dist/core/sm2/sm2.scheduler.test.js"
   },
   "keywords": [],
   "author": "",

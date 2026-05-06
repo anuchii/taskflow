@@ -6,16 +6,490 @@
    .view-subtitle patterns, plus the fc-* components above.
    Add any view-specific overrides here. */
 
+/* ─── Header button group ────────────────────────────────── */
+
+.fc-header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ─── Session wrapper ────────────────────────────────────── */
+
+.fc-session {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* ─── Progress header ────────────────────────────────────── */
+
+.fc-session-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.fc-session-progress-track {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.fc-session-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.35s ease;
+}
+
+.fc-session-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ─── Single-card container (3D-Flip) ────────────────────── */
+
+/* Warum perspective auf dem Eltern-Element: Nur eine perspective-Deklaration
+   pro Szene — das Elternelement definiert den Blickwinkel, das Kind dreht sich.
+   Würde man perspective auf .fc-session-face setzen, hätte jede Seite ihren
+   eigenen Fluchtpunkt und die Animation würde nicht korrekt aussehen. */
+.fc-session-card {
+  perspective: 1000px;
+  min-height: 280px;
+}
+
+.fc-session-faces {
+  position: relative;
+  width: 100%;
+  min-height: 280px;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fc-session-card.is-revealed .fc-session-faces {
+  transform: rotateY(180deg);
+}
+
+.fc-session-face {
+  position: absolute;
+  inset: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.fc-session-back {
+  transform: rotateY(180deg);
+}
+
+.fc-session-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+.fc-session-question {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 0 0 16px;
+  min-height: 60px;
+  flex: 1;
+}
+
+.fc-session-tags { margin-bottom: 20px; flex-shrink: 0; }
+
+.fc-session-btn-reveal {
+  width: 100%;
+  padding: 12px;
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+.fc-session-answer {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text);
+  margin: 0 0 24px;
+  white-space: pre-wrap;
+  flex: 1;
+}
+
+.fc-session-no-answer {
+  display: block;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+/* ─── Slide-In Animation für die nächste Karte ───────────── */
+
+@keyframes fc-slide-in {
+  from { transform: translateX(48px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+.fc-session-card--entering {
+  animation: fc-slide-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ─── Keyboard shortcut hint badges ─────────────────────── */
+
+.fc-key-hint {
+  display: inline-block;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-style: normal;
+  padding: 1px 5px;
+  color: var(--text-muted);
+  vertical-align: middle;
+  margin-right: 3px;
+  line-height: 1.5;
+  user-select: none;
+}
+
+/* ─── Rating buttons ─────────────────────────────────────── */
+
+.fc-rating-bar {
+  display: flex;
+  gap: 8px;
+}
+
+.fc-rating-btn {
+  flex: 1;
+  padding: 10px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-ui);
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.fc-rating-again          { color: var(--red); }
+.fc-rating-again:hover    { background: var(--red-dim);   border-color: var(--red);   }
+
+.fc-rating-hard           { color: var(--text-muted); }
+.fc-rating-hard:hover     { background: var(--surface2);  border-color: var(--border); }
+
+.fc-rating-good           { color: var(--text); }
+.fc-rating-good:hover     { background: var(--surface2);  border-color: var(--accent-dim); }
+
+.fc-rating-easy           { color: var(--green); }
+.fc-rating-easy:hover     { background: var(--green-dim); border-color: var(--green); }
+
+/* ─── Done screen ────────────────────────────────────────── */
+
+.fc-session-done {
+  text-align: center;
+  padding: 64px 24px;
+}
+
+.fc-session-done-icon {
+  font-size: 44px;
+  color: var(--green);
+  margin-bottom: 16px;
+}
+
+.fc-session-done-title {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 8px;
+}
+
+.fc-session-done-sub {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0 0 28px;
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+
 @media (max-width: 600px) {
-  .fc-grid {
-    grid-template-columns: 1fr;
-  }
+  .fc-grid        { grid-template-columns: 1fr; }
+  .fc-wrapper     { height: 220px; }
+  .filter-tabs    { flex-wrap: wrap; }
+  .fc-session     { max-width: 100%; }
+  .fc-rating-bar  { flex-wrap: wrap; }
+  .fc-rating-btn  { padding: 10px 4px; font-size: 11px; flex: 1 1 calc(50% - 4px); }
+  .fc-topic-grid  { grid-template-columns: 1fr; }
+}
 
-  .fc-wrapper {
-    height: 220px;
-  }
+/* ─── Dashboard & Navigation ─────────────────────────────── */
 
-  .filter-tabs {
-    flex-wrap: wrap;
-  }
+.fc-dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.fc-section-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.fc-back-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+  margin-bottom: 4px;
+}
+
+/* ─── Thema-Karten (Dashboard-Grid) ─────────────────────── */
+
+.fc-topic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.fc-topic-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  gap: 0;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color var(--transition), transform var(--transition);
+}
+
+.fc-topic-card:hover {
+  border-color: var(--accent-dim);
+  transform: translateY(-2px);
+}
+
+.fc-topic-card__color-bar {
+  width: 4px;
+  background: var(--topic-color, var(--accent));
+  flex-shrink: 0;
+}
+
+.fc-topic-card__body {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fc-topic-card__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.fc-topic-card__meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.fc-topic-card__delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 6px;
+  font-size: 11px;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.fc-topic-card:hover .fc-topic-card__delete { opacity: 1; }
+
+/* ─── Fällig-Badge ───────────────────────────────────────── */
+
+.fc-due-badge {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+  width: fit-content;
+}
+
+.fc-due-badge--none {
+  background: color-mix(in srgb, var(--green) 10%, transparent);
+  color: var(--green);
+}
+
+/* ─── Sammlung-Karten (Collection View) ──────────────────── */
+
+.fc-deck-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color var(--transition);
+  position: relative;
+}
+
+.fc-deck-card:hover { border-color: var(--accent-dim); }
+
+.fc-deck-card__color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.fc-deck-card__body { flex: 1; }
+
+.fc-deck-card__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.fc-deck-card__meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.fc-deck-card__delete {
+  padding: 2px 6px;
+  font-size: 11px;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.fc-deck-card:hover .fc-deck-card__delete { opacity: 1; }
+
+/* ─── Stats-Row (Deck-Detail) ────────────────────────────── */
+
+.fc-stats-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.fc-stat-chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+
+.fc-stat-num {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.fc-stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fc-stat-chip--due .fc-stat-num { color: var(--accent); }
+
+/* ─── Inline-Formular (Thema/Sammlung erstellen) ─────────── */
+
+.fc-inline-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fc-inline-form.hidden { display: none; }
+
+.fc-inline-input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  padding: 8px 12px;
+  transition: border-color var(--transition);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.fc-inline-input:focus { outline: none; border-color: var(--accent); }
+
+.fc-inline-form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ─── Farb-Picker ────────────────────────────────────────── */
+
+.fc-inline-form-colors {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fc-color-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform var(--transition), border-color var(--transition);
+  padding: 0;
+}
+
+.fc-color-dot:hover   { transform: scale(1.15); }
+.fc-color-dot.selected { border-color: var(--text); transform: scale(1.1); }
+
+/* ─── Deck-Detail Stats ───────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .fc-stats-row { flex-wrap: wrap; }
+  .fc-stat-chip { flex: 1 1 calc(50% - 6px); }
 }
