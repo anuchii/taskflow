@@ -11,8 +11,9 @@
 
 .modal-card {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06);
   padding: 28px;
   width: min(480px, calc(100vw - 40px));
   position: relative;
@@ -32,7 +33,7 @@
 .modal-close:hover { background: var(--surface2); color: var(--text); }
 
 .modal-title {
-  font-family: var(--font-mono);
+  font-family: var(--font-ui);
   font-size: 18px; font-weight: 700;
   margin-bottom: 20px;
 }
