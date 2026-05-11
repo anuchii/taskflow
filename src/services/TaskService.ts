@@ -206,8 +206,37 @@ export class TaskService {
 
   async getStatsForDates(dates: string[]): Promise<DayStat[]> {
     const data = await this.storage.load();
+    const todayStr = today();
+
     return dates.map((date) => {
-      const tasks = data.tasks.filter((t) => !t.archived && this.isActiveOn(t, date));
+      const scheduled = data.tasks.filter((t) => !t.archived && this.isActiveOn(t, date));
+
+      let tasks = scheduled;
+      if (date === todayStr) {
+        const seen = new Set(scheduled.map((t) => t.id));
+
+        const overdueOnce = data.tasks.filter((t) => {
+          if (t.archived || t.repeat.unit !== "none" || seen.has(t.id)) return false;
+          const sd = t.startDate ?? t.createdAt.slice(0, 10);
+          if (sd >= date) return false;
+          return !data.completions.some((c) => c.taskId === t.id);
+        });
+        overdueOnce.forEach((t) => seen.add(t.id));
+
+        const overdueDueDate = data.tasks.filter((t) => {
+          if (t.archived || !t.dueDate || t.dueDate >= date || seen.has(t.id)) return false;
+          return !data.completions.some((c) => c.taskId === t.id);
+        });
+        overdueDueDate.forEach((t) => seen.add(t.id));
+
+        const completedTodayOverdue = data.tasks.filter((t) => {
+          if (t.archived || seen.has(t.id)) return false;
+          return data.completions.some((c) => c.taskId === t.id && c.completedAt.startsWith(date));
+        });
+
+        tasks = [...scheduled, ...overdueOnce, ...overdueDueDate, ...completedTodayOverdue];
+      }
+
       const completed = tasks.filter((t) =>
         data.completions.some((c) => c.taskId === t.id && c.completedAt.startsWith(date))
       ).length;
