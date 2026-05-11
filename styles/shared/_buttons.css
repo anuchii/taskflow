@@ -14,10 +14,11 @@
 }
 .btn-primary {
   background: var(--accent);
-  color: #000;
+  color: #fff;
   border-color: var(--accent);
+  border-radius: 99px;
 }
-.btn-primary:hover { background: #ffd580; }
+.btn-primary:hover { background: #e8940f; }
 .btn-ghost {
   background: transparent;
   color: var(--text-muted);

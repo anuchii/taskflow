@@ -1,39 +1,92 @@
-# TaskFlow — User Stories
+# TaskFlow — Backlog
 
 ## Inhaltsverzeichnis
 
-1. [User Stories — alle Issues](#1-user-stories--alle-issues)
+1. [Fertige User Stories](#1-fertige-user-stories)
+2. [Funktionale Anforderungen](#2-funktionale-anforderungen)
+3. [Nicht-funktionale Anforderungen](#3-nicht-funktionale-anforderungen)
 
+---
 
-## User Stories
+## 1. Fertige User Stories 
 
-**#1 ✅ Als** Benutzer 
+---
+
+**#1 Als** Benutzer  
 **möchte ich** mich mit meinem Google Account anmelden können,  
 **damit** meine Daten sicher gespeichert sind und nur ich sie sehen kann.
 
 ---
 
-**#2 ✅ Als** Student 
+**#2 Als** Student  
 **möchte ich** dass überfällige Aufgaben automatisch erkannt werden und ein "Überfällig"-Label auf der Task-Card angezeigt wird,  
 **damit** ich sofort sehe welche Aufgaben dringend nachgeholt werden müssen.
 
 ---
 
-**#3 ✅ Als** Student  
+**#3 Als** Student  
 **möchte ich** bei jeder Aufgabe eine Zeitschätzung hinterlegen können,  
 **damit** TaskFlow meinen Tagesplan realistisch berechnen kann und ich weiß wie viel Zeit ich einplanen muss.
 
 ---
 
-**#4 ✅ Als** Student  
+**#4 Als** Student  
 **möchte ich** sehen wie genau meine Zeitschätzungen im Vergleich zur tatsächlich benötigten Zeit waren,  
 **damit** ich lerne realistischer zu schätzen und meine Planung mit der Zeit immer präziser wird.
 
 ---
 
-**#5 ✅ Als** User 
+**#5 Als** User  
 **möchte ich** beim Erstellen einer Aufgabe ein Startdatum setzen können,  
 **damit** ich Aufgaben auch für vergangene oder zukünftige Tage erfassen kann.
+
+---
+
+**#8 Als** Student  
+**möchte ich** dass TaskFlow die Priorität von Aufgaben automatisch erhöht je näher das Fälligkeitsdatum rückt,  
+**damit** wichtige Aufgaben immer rechtzeitig sichtbar werden ohne dass ich manuell eingreifen muss.
+
+---
+
+**#9 Als** User  
+**möchte ich** eine Tages-Reflexion schreiben können,  
+**damit** ich zurückschauen kann und auf meinen Erfahrungen lernen kann.
+
+---
+
+**#12 Als** Student  
+**möchte ich** jeder Aufgabe ein Fälligkeitsdatum hinzufügen können,  
+**damit** ich weiß bis wann ich eine Aufgabe erledigen muss und TaskFlow mich rechtzeitig daran erinnern kann.
+
+---
+
+**#13 Als** User  
+**möchte ich** Themen mit Spaced Repetition wiederholen,  
+**damit** ich Stoff langfristig und tief lerne, nicht nur oberflächlich.
+
+---
+
+**#15 Als** User  
+**möchte ich** das Wiederholungs-Label (z.B. "Täglich", "Wöchentlich") nicht mehr auf der Task-Karte sehen,  
+**damit** die Karte übersichtlicher wirkt während die Wiederholungslogik im Hintergrund weiterläuft.
+
+---
+
+**#18 Als** User  
+**möchte ich** eine eigene Ansicht für zukünftige Aufgaben getrennt vom heutigen Tag,  
+**damit** ich geplante Aufgaben im Überblick behalte ohne von ihnen abgelenkt zu werden bevor sie fällig sind.
+
+---
+
+**#48 Als** User  
+**möchte ich** einer Aufgabe manuell eine Priorität (z.B. hoch, mittel, niedrig) setzen können,  
+**damit** ich selbst steuern kann welche Aufgaben an einem Tag zuerst erledigt werden sollen und TaskFlow meinen Tagesplan entsprechend sortiert.
+
+---
+
+## 2. Funktionale Anforderungen
+
+*Was das System tun soll — sichtbare Features und Verhaltensweisen.*
 
 ---
 
@@ -49,19 +102,6 @@
 
 ---
 
-**✅#8 Als** Student  
-**möchte ich** dass TaskFlow die Priorität von Aufgaben automatisch erhöht je näher das Fälligkeitsdatum rückt,  
-**damit** wichtige Aufgaben immer rechtzeitig sichtbar werden ohne dass ich manuell eingreifen muss.
-
----
-
-**#9 ✅ Als** User  
-**möchte ich** eine Tages-Reflexion schreiben können,  
-**damit** ich zurückschauen kann und auf meinen Erfahrungen lernen kann.
-
-
----
-
 **#10 Als** Student  
 **möchte ich** meine Tages-Reflexionen ausgewertet sehen nach Stimmung und Kategorie,  
 **damit** ich Muster in meinen guten und schlechten Tagen erkenne und gezielt daran arbeiten kann.
@@ -74,27 +114,9 @@
 
 ---
 
-**#12 ✅ Als** Student  
-**möchte ich** jeder Aufgabe ein Fälligkeitsdatum hinzufügen können,  
-**damit** ich weiß bis wann ich eine Aufgabe erledigen muss und TaskFlow mich rechtzeitig daran erinnern kann.
-
----
-
-**#13 Als** User  
-**möchte ich** Themen mit Spaced Repetition wiederholen,  
-**damit** ich Stoff langfristig und tief lerne, nicht nur oberflächlich.
-
----
-
 **#14 🧡 Als** User  
 **möchte ich** Benachrichtigungen erhalten,  
 **damit** ich an fällige Wiederholungen erinnert werde auch wenn die App nicht offen ist.
-
----
-
-**#15 Als** User  
-**möchte ich** das Wiederholungs-Label (z.B. "Täglich", "Wöchentlich") nicht mehr auf der Task-Karte sehen,  
-**damit** die Karte übersichtlicher wirkt während die Wiederholungslogik im Hintergrund weiterläuft.
 
 ---
 
@@ -107,12 +129,6 @@
 **#17 Als** User  
 **möchte ich** dass vor jeder Vorlesung automatisch eine Vorbereitungsaufgabe erstellt wird und vor Abgaben eine Vorbereitungs-Kette geplant wird,  
 **damit** ich nie vergesse mich auf eine Stunde vorzubereiten oder eine Abgabe rechtzeitig anzugehen.
-
----
-
-**#18 Als** User  
-**möchte ich** eine eigene Ansicht für zukünftige Aufgaben getrennt vom heutigen Tag,  
-**damit** ich geplante Aufgaben im Überblick behalte ohne von ihnen abgelenkt zu werden bevor sie fällig sind.
 
 ---
 
@@ -149,8 +165,6 @@
 **#24 Als** User  
 **möchte ich** dass TaskFlow bei bevorstehenden Abgaben automatisch eine mehrstufige Aufgaben-Kette erstellt,  
 **damit** ich Schritt für Schritt auf die Abgabe vorbereitet werde und nicht in letzter Minute anfange.
-
----
 
 ---
 
@@ -208,6 +222,18 @@
 
 ---
 
+**#44 Als** User  
+**möchte ich** TaskFlow auch ohne Internetverbindung vollständig nutzen können,  
+**damit** ich im Zug, in der Bibliothek oder ohne Empfang keine Funktionen verliere.
+
+---
+
+## 3. Nicht-funktionale Anforderungen
+
+*Wie das System arbeiten soll — Sicherheit, Datenschutz, Qualität, Zuverlässigkeit.*
+
+---
+
 **#34 Als** User  
 **möchte ich** dass alle meine Daten verschlüsselt gespeichert werden sodass selbst der Server-Betreiber keinen Zugriff auf meine Inhalte hat,  
 **damit** nur ich meine Aufgaben, Kalender-Daten und Reflexionen lesen kann.
@@ -250,47 +276,33 @@
 
 ---
 
-**#41 Als** User 
+**#41 Als** User  
 **möchte ich** bei einem Gerätewechsel oder nach Geräteverlust wieder Zugriff auf meine verschlüsselten Daten bekommen, ohne dass meine Daten für immer verloren sind.
 
 ---
 
-**#42 Als** User
+**#42 Als** User  
 **möchte ich** sicher sein, dass meine TaskFlow-Daten auch in iCloud Backups geschützt sind und nicht unverschlüsselt in der Cloud landen.
 
 ---
 
-**#43 Als** User 
-**möchte ich** bei Geräteverlust alle aktiven Sessions remote abmelden können, 
+**#43 Als** User  
+**möchte ich** bei Geräteverlust alle aktiven Sessions remote abmelden können,  
 **damit** niemand anderes auf meine Aufgaben, Kalender-Daten und Reflexionen zugreifen kann.
 
 ---
 
-**#44 Als** User 
-**möchte ich** TaskFlow auch ohne Internetverbindung vollständig nutzen können,
-**damit** ich im Zug, in der Bibliothek oder ohne Empfang keine Funktionen verliere.
-
----
-
-**#45 Als** Entwickler 
-**möchte ich** sicherstellen dass alle Texteingaben (Aufgabentitel, Reflexionen, Regel-Namen) validiert und sicher gerendert werden,
+**#45 Als** Entwickler  
+**möchte ich** sicherstellen dass alle Texteingaben (Aufgabentitel, Reflexionen, Regel-Namen) validiert und sicher gerendert werden,  
 **damit** kein schädlicher Code in der App ausgeführt werden kann.
 
 ---
 
-**#46 Als** User 
-**möchte ich** dass sensible Inhalte wie Reflexionen, Kalender-Details und persönliche Notizen nicht unbeabsichtigt in die Zwischenablage kopiert werden können, 
+**#46 Als** User  
+**möchte ich** dass sensible Inhalte wie Reflexionen, Kalender-Details und persönliche Notizen nicht unbeabsichtigt in die Zwischenablage kopiert werden können,  
 **damit** andere Apps oder Personen keinen Zugriff auf meine privaten Daten bekommen.
 
 ---
 
-**#47 Als** Entwickler 
+**#47 Als** Entwickler  
 **möchte ich** Crash-Reports und Logs nutzen können um Fehler zu beheben, ohne dass dabei sensible Nutzerdaten wie Aufgabentitel, Reflexionen oder Kalender-Inhalte übertragen werden.
-
----
-
-**#48 ✅ Als** User  
-**möchte ich** einer Aufgabe manuell eine Priorität (z.B. hoch, mittel, niedrig) setzen können,  
-**damit** ich selbst steuern kann welche Aufgaben an einem Tag zuerst erledigt werden sollen und TaskFlow meinen Tagesplan entsprechend sortiert.
-
----
