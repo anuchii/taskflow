@@ -6,7 +6,7 @@
   gap: 16px;
 }
 .view-title {
-  font-family: var(--font-mono);
+  font-family: var(--font-ui);
   font-size: 26px;
   font-weight: 700;
   letter-spacing: -0.02em;

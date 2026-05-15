@@ -1,7 +1,8 @@
 .sidebar {
   width: var(--sidebar-w);
   background: var(--surface);
-  border-right: 1px solid var(--border);
+  border-right: none;
+  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
   padding: 28px 0 20px;

@@ -20,13 +20,14 @@
 }
 .kpi-card {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 18px 20px;
   display: flex; flex-direction: column; gap: 4px;
-  transition: border-color var(--transition);
+  transition: box-shadow var(--transition);
 }
-.kpi-card:hover { border-color: var(--accent-dim); }
+.kpi-card:hover { box-shadow: var(--shadow-md); }
 .kpi-value {
   font-family: var(--font-mono);
   font-size: 28px; font-weight: 700;
@@ -40,8 +41,9 @@
 /* Line chart */
 .chart-section {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 20px;
   margin-bottom: 24px;
 }
@@ -67,7 +69,7 @@
   transition: all var(--transition);
 }
 .period-tab:hover { border-color: var(--accent-dim); color: var(--text); }
-.period-tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+.period-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
 .chart-wrap { overflow-x: auto; }
 .line-chart { width: 100%; min-width: 400px; display: block; }
@@ -144,8 +146,9 @@
 /* Time comparison chart */
 .time-chart-section {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 20px;
   margin-top: 24px;
 }
