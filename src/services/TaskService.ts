@@ -13,7 +13,7 @@ export interface TimeEntry {
 }
 import { DEFAULT_CATEGORIES } from "../models/Task.js";
 import { StorageService } from "./StorageService.js";
-import { today, parseDate, addDays } from "../utils/DateUtils.js";
+import { today, toDateString, parseDate, addDays } from "../utils/DateUtils.js";
 import { aggregateCategoryStats } from "../utils/categoryStatsUtils.js";
 import type { CategoryTimeStat } from "../utils/categoryStatsUtils.js";
 import { computeCategoryAnalytics } from "../utils/categoryAnalyticsUtils.js";
@@ -143,7 +143,9 @@ export class TaskService {
     const data = await this.storage.load();
     const dateKey = today();
     if (data.completions.some((c) => c.taskId === taskId && c.completedAt.startsWith(dateKey))) return;
-    data.completions.push({ taskId, completedAt: new Date().toISOString() });
+    const now = new Date();
+    const localTs = `${toDateString(now)}T${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+    data.completions.push({ taskId, completedAt: localTs });
     await this.storage.save(data);
   }
 
