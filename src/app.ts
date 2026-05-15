@@ -4,6 +4,7 @@
 // ============================================================
 
 import { AuthService } from "./services/AuthService.js";
+import { ThemeService } from "./services/ThemeService.js";
 import { TaskService } from "./services/TaskService.js";
 import { FlashcardService } from "./services/FlashcardService.js";
 import { TaskFormModal } from "./components/TaskFormModal.js";
@@ -21,6 +22,7 @@ type Route = "todo" | "upcoming" | "stats" | "kategorien" | "reflexion" | "lerne
 
 class App {
   private readonly authService = new AuthService();
+  private readonly themeService = new ThemeService();
   private readonly storage = new StorageService();
   private readonly taskService = new TaskService(this.storage);
   private readonly flashcardService = new FlashcardService(this.storage);
@@ -78,6 +80,9 @@ class App {
       </button>
       <button class="btn btn-ghost" id="btn-import" style="width:100%;justify-content:center;margin-top:6px;">
         ↑ Import JSON
+      </button>
+      <button class="btn btn-ghost" id="btn-theme-toggle" style="width:100%;justify-content:center;margin-top:6px;">
+        ${this.themeService.getToggleLabel()}
       </button>
       <button class="btn btn-ghost" id="btn-logout" style="width:100%;justify-content:center;margin-top:6px;">
         Abmelden
@@ -155,6 +160,11 @@ class App {
       } catch (e) {
         console.error("[App] Import fehlgeschlagen:", e);
       }
+    });
+
+    document.getElementById("btn-theme-toggle")?.addEventListener("click", () => {
+      this.themeService.toggle();
+      this.themeService.syncButtonLabel();
     });
 
     document.getElementById("btn-logout")?.addEventListener("click", async () => {

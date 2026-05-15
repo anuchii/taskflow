@@ -81,3 +81,11 @@
   border-color: var(--red);
   background: color-mix(in srgb, var(--red) 5%, var(--surface));
 }
+
+/* Weinschenk – Pre-attentive Attributes:
+   Der linke Rand kommuniziert Priorität über Farbe + Position, bevor der Nutzer
+   einen einzigen Buchstaben liest. :has() hält die Logik im CSS — kein JS-State
+   nötig, was in Angular dem Host-Binding auf dem Container-Element entspricht. */
+.task-card:has(.priority-high)   { border-left: 3px solid var(--red); }
+.task-card:has(.priority-medium) { border-left: 3px solid var(--accent); }
+.task-card:has(.priority-low)    { border-left: 2px solid var(--text-muted); }

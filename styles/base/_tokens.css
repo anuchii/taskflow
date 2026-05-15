@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,300;400;500;600&display=swap');
 
+/* Dark Mode (Standard) */
 :root {
   --bg:          #0f0f11;
   --surface:     #18181c;
@@ -23,4 +24,23 @@
   --font-mono:   'Space Mono', monospace;
   --sidebar-w:   220px;
   --transition:  180ms ease;
+}
+
+/* Light Mode — überschreibt nur die Farbvariablen; Layout-Tokens bleiben unverändert */
+html[data-theme="light"] {
+  --bg:          #f5f5f7;
+  --surface:     #ffffff;
+  --surface2:    #ebebf0;
+  --border:      #d1d1da;
+  --text:        #1a1a2e;
+  --text-muted:  #5a5a6e;
+  --accent:      #d4890a;
+  --accent-dim:  #fdebd0;
+  --green:       #2e8f5e;
+  --green-dim:   #e8f5ee;
+  --red:         #c0392b;
+  --red-dim:     #fce8e8;
+
+  --chart-total: #d4890a;
+  --chart-done:  #2e8f5e;
 }
