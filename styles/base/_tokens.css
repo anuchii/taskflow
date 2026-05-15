@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,300;400;500;600&display=swap');
 
+/* Dark Mode (Standard) */
 :root {
   --bg:          #0f0f11;
   --surface:     #18181c;
@@ -9,6 +10,10 @@
   --text-muted:  #7a7a8c;
   --accent:      #f5a623;
   --accent-dim:  #7a5112;
+  /* Getrennte Variable für Akzentfarbe als Textfarbe — im Dark Mode identisch mit accent-dim,
+     im Light Mode aber deutlich dunkler, da accent-dim dort als Hintergrund dient (#fdebd0
+     hätte auf hellem Hintergrund kein ausreichendes Kontrastverhältnis). */
+  --accent-text: #7a5112;
   --green:       #4caf82;
   --green-dim:   #1e3d2f;
   --red:         #e05c5c;
@@ -23,4 +28,24 @@
   --font-mono:   'Space Mono', monospace;
   --sidebar-w:   220px;
   --transition:  180ms ease;
+}
+
+/* Light Mode — überschreibt nur die Farbvariablen; Layout-Tokens bleiben unverändert */
+html[data-theme="light"] {
+  --bg:          #f5f5f7;
+  --surface:     #ffffff;
+  --surface2:    #ebebf0;
+  --border:      #d1d1da;
+  --text:        #1a1a2e;
+  --text-muted:  #5a5a6e;
+  --accent:      #f5a623;
+  --accent-dim:  #fdebd0;
+  --accent-text: #8a5f00;
+  --green:       #2e8f5e;
+  --green-dim:   #e8f5ee;
+  --red:         #c0392b;
+  --red-dim:     #fce8e8;
+
+  --chart-total: #d4890a;
+  --chart-done:  #2e8f5e;
 }
