@@ -34,6 +34,7 @@
 @import './components/_priority-picker.css';
 @import './components/_time-dialog.css';
 @import './components/_time-log.css';
+@import './components/_priority-info-popup.css';
 
 /* Views */
 @import './views/_learning-view.css';

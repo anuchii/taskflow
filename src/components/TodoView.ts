@@ -6,10 +6,13 @@ import type { Task } from "../models/Task.js";
 import type { TaskService } from "../services/TaskService.js";
 import type { TaskFormModal } from "./TaskFormModal.js";
 import { today, formatDisplay } from "../utils/DateUtils.js";
+import { PriorityInfoPopup } from "./PriorityInfoPopup.js";
 
 type TaskWithOverdue = Task & { daysOverdue: number };
 
 export class TodoView {
+  private readonly priorityInfoPopup = new PriorityInfoPopup();
+
   constructor(
     private readonly taskService: TaskService,
     private readonly modal: TaskFormModal,
@@ -53,7 +56,7 @@ export class TodoView {
     this.container.innerHTML = `
       <div class="view-header">
         <div>
-          <h1 class="view-title">Aufgaben</h1>
+          <h1 class="view-title">Aufgaben ${this.priorityInfoPopup.getIconHtml()}</h1>
           <p class="view-subtitle">${formatDisplay(todayStr)} · ${done.length}/${tasks.length} erledigt${timeLabel}</p>
         </div>
         <button class="btn btn-primary" id="btn-new-task">+ Aufgabe</button>
@@ -81,6 +84,8 @@ export class TodoView {
           </div>
         </details>` : ""}
     `;
+
+    this.priorityInfoPopup.mount(this.container);
 
     this.container.querySelector("#btn-new-task")?.addEventListener("click", () => {
       this.modal.open();

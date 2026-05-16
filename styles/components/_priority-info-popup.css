@@ -1,0 +1,193 @@
+/* ============================================================
+   components/_priority-info-popup.css
+   ============================================================ */
+
+/* ── Trigger-Icon ─────────────────────────────────────────── */
+
+.info-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-left: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text-muted);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  vertical-align: middle;
+  /* Weicher Übergang statt harter Zustandsänderung */
+  transition: border-color var(--transition), color var(--transition), background var(--transition);
+
+  /* Tooltip via CSS — kein JS nötig für den Hover-Text */
+  position: relative;
+}
+
+.info-trigger::after {
+  content: "Warum ist Priorisierung wichtig?";
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 8px);
+  transform: translateX(-50%);
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  /* Verzögerung vor dem Einblenden — Nutzer muss kurz verweilen */
+  transition: opacity 150ms ease var(--transition);
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.info-trigger:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.info-trigger:hover::after {
+  opacity: 1;
+}
+
+/* ── Popup-Overlay ────────────────────────────────────────── */
+
+.info-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  /* Fade-in beim Öffnen */
+  animation: fadeIn 180ms ease forwards;
+}
+
+.info-popup-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px 28px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 220ms ease forwards;
+}
+
+.info-popup-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+  transition: color var(--transition);
+}
+
+.info-popup-close:hover {
+  color: var(--text);
+}
+
+.info-popup-icon-wrap {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.info-popup-icon {
+  font-size: 32px;
+}
+
+.info-popup-title {
+  font-family: var(--font-ui);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.info-popup-intro {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.info-popup-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  counter-reset: popup-counter;
+}
+
+.info-popup-list li {
+  counter-increment: popup-counter;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.55;
+}
+
+.info-popup-list li::before {
+  content: counter(popup-counter);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  color: var(--accent-text);
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.info-popup-list li > div {
+  min-width: 0;
+}
+
+.info-popup-list li strong {
+  display: block;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.info-popup-list li p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.info-popup-summary {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+  font-style: italic;
+}
