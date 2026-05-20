@@ -6,13 +6,15 @@
   "scripts": {
     "build": "esbuild src/app.ts --bundle --outfile=dist/bundle.js --format=esm --platform=browser && esbuild styles/main.css --bundle --outfile=dist/bundle.css",
     "watch": "esbuild src/app.ts --bundle --outfile=dist/bundle.js --format=esm --platform=browser --watch & esbuild styles/main.css --bundle --outfile=dist/bundle.css --watch",
-    "test": "tsc && node --test dist/utils/DateUtils.test.js dist/core/sm2/sm2.scheduler.test.js dist/services/TaskService.isActiveOn.test.js dist/services/AutoPriorityService.test.js dist/services/TaskService.crud.test.js"
+    "test": "tsc && node --test dist/utils/DateUtils.test.js dist/core/sm2/sm2.scheduler.test.js dist/services/TaskService.isActiveOn.test.js dist/services/AutoPriorityService.test.js dist/services/TaskService.crud.test.js dist/components/CategoryView.test.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/jsdom": "^28.0.3",
     "esbuild": "^0.28.0",
+    "jsdom": "^29.1.1",
     "typescript": "^5.0.0"
   },
   "dependencies": {
