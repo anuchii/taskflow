@@ -93,7 +93,7 @@ class App {
     this.todoView = new TodoView(this.taskService, this.modal, this.mainEl);
     this.upcomingView = new UpcomingView(this.taskService, this.modal, this.mainEl);
     this.statsView = new StatsView(this.taskService, this.mainEl);
-    this.categoryView = new CategoryView(this.taskService, this.mainEl);
+    this.categoryView = new CategoryView(this.taskService, this.mainEl, this.modal);
     this.learningView = new LearningView(this.flashcardService, this.mainEl);
     this.reflectionView = new ReflectionView(this.taskService, this.mainEl);
 

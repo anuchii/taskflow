@@ -4,11 +4,13 @@
 
 import type { Category } from "../models/Task.js";
 import type { TaskService } from "../services/TaskService.js";
+import type { TaskFormModal } from "./TaskFormModal.js";
 
 export class CategoryView {
   constructor(
     private readonly taskService: TaskService,
-    private readonly container: HTMLElement
+    private readonly container: HTMLElement,
+    private readonly modal: TaskFormModal
   ) {}
 
   async render(): Promise<void> {
@@ -35,12 +37,13 @@ export class CategoryView {
   private catItem(cat: Category, taskCount: number): string {
     return `
       <div class="cat-item" data-cat-id="${cat.id}">
-        <div class="cat-item-row">
+        <div class="cat-item-row cat-item-row--clickable" data-cat-id="${cat.id}">
           <span class="cat-swatch" style="background:${cat.color}"></span>
           <span class="cat-item-label">${escapeHtml(cat.label)}</span>
           <span class="cat-item-count">${taskCount} Aufgabe${taskCount !== 1 ? "n" : ""}</span>
           <button class="icon-btn cat-edit-btn" data-id="${cat.id}" title="Bearbeiten">✎</button>
           <button class="icon-btn cat-delete-btn" data-id="${cat.id}" title="Löschen">✕</button>
+          <span class="cat-chevron" aria-hidden="true">▸</span>
         </div>
       </div>
     `;
@@ -51,8 +54,13 @@ export class CategoryView {
       this.showNewForm();
     });
 
+    this.container.querySelectorAll<HTMLElement>(".cat-item-row--clickable").forEach(row => {
+      row.addEventListener("click", () => this.toggleTaskList(row.dataset.catId!));
+    });
+
     this.container.querySelectorAll<HTMLButtonElement>(".cat-edit-btn").forEach(btn => {
-      btn.addEventListener("click", async () => {
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
         const id = btn.dataset.id!;
         const cats = await this.taskService.getCategories();
         const cat = cats.find(c => c.id === id);
@@ -61,7 +69,8 @@ export class CategoryView {
     });
 
     this.container.querySelectorAll<HTMLButtonElement>(".cat-delete-btn").forEach(btn => {
-      btn.addEventListener("click", async () => {
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
         const id = btn.dataset.id!;
         const count = await this.taskService.deleteCategory(id);
         if (count > 0) {
@@ -71,6 +80,77 @@ export class CategoryView {
         }
       });
     });
+  }
+
+  private async toggleTaskList(catId: string): Promise<void> {
+    const item = this.container.querySelector<HTMLElement>(`.cat-item[data-cat-id="${catId}"]`);
+    if (!item) return;
+
+    const existing = item.querySelector(".cat-task-list");
+    const chevron = item.querySelector<HTMLElement>(".cat-chevron")!;
+
+    if (existing) {
+      existing.remove();
+      chevron.textContent = "▸";
+      return;
+    }
+
+    chevron.textContent = "▾";
+
+    const tasks = (await this.taskService.getAllTasks()).filter(t => !t.archived && t.category === catId);
+    const panel = document.createElement("div");
+    panel.className = "cat-task-list";
+
+    if (tasks.length === 0) {
+      panel.innerHTML = `<p class="cat-task-empty">Keine Aufgaben in dieser Kategorie.</p>`;
+    } else {
+      panel.innerHTML = tasks.map(t => `
+        <div class="cat-task-item" data-task-id="${t.id}">
+          <span class="cat-task-title">${escapeHtml(t.title)}</span>
+          <div class="cat-task-actions">
+            <span class="cat-task-edit-hint" aria-hidden="true">✎</span>
+            <button class="icon-btn cat-task-delete-btn" data-task-id="${t.id}" title="Archivieren">✕</button>
+          </div>
+        </div>
+      `).join("");
+
+      panel.querySelectorAll<HTMLElement>(".cat-task-item").forEach(el => {
+        const taskId = el.dataset.taskId!;
+        const task = tasks.find(t => t.id === taskId)!;
+        el.addEventListener("click", () => this.modal.open(task));
+      });
+
+      panel.querySelectorAll<HTMLButtonElement>(".cat-task-delete-btn").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          await this.taskService.archiveTask(btn.dataset.taskId!);
+          this.removeTaskRow(btn.dataset.taskId!, catId, panel);
+        });
+      });
+    }
+
+    // Edit-Formular bleibt immer unten — Task-Panel davor einfügen falls es schon offen ist
+    const editForm = item.querySelector(".cat-edit-form");
+    if (editForm) {
+      item.insertBefore(panel, editForm);
+    } else {
+      item.appendChild(panel);
+    }
+  }
+
+  private removeTaskRow(taskId: string, catId: string, panel: HTMLElement): void {
+    panel.querySelector<HTMLElement>(`.cat-task-item[data-task-id="${taskId}"]`)?.remove();
+
+    const remaining = panel.querySelectorAll(".cat-task-item").length;
+    if (remaining === 0) {
+      panel.innerHTML = `<p class="cat-task-empty">Keine Aufgaben in dieser Kategorie.</p>`;
+    }
+
+    const countEl = this.container.querySelector<HTMLElement>(`.cat-item[data-cat-id="${catId}"] .cat-item-count`);
+    if (countEl) {
+      const n = remaining;
+      countEl.textContent = `${n} Aufgabe${n !== 1 ? "n" : ""}`;
+    }
   }
 
   private showEditForm(cat: Category): void {

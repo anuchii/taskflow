@@ -65,3 +65,65 @@
 
 .cat-edit-actions { display: flex; gap: 6px; justify-content: flex-end; }
 .cat-delete-btn:hover { color: var(--red) !important; }
+
+/* ── Klickbare Kategorie-Zeile ── */
+.cat-item-row--clickable {
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.cat-item-row--clickable:hover { background: var(--surface2); }
+
+.cat-chevron {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-left: 2px;
+  flex-shrink: 0;
+  transition: color var(--transition);
+}
+
+/* ── Aufgabenliste innerhalb einer Kategorie ── */
+.cat-task-list {
+  border-top: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+.cat-task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: background var(--transition);
+  border-bottom: 1px solid var(--border);
+}
+.cat-task-item:last-child { border-bottom: none; }
+.cat-task-item:hover { background: var(--bg); }
+
+.cat-task-title {
+  font-size: 13px;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cat-task-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.cat-task-item:hover .cat-task-actions { opacity: 1; }
+
+.cat-task-edit-hint { font-size: 13px; color: var(--text-muted); }
+.cat-task-delete-btn:hover { color: var(--red) !important; }
+
+.cat-task-empty {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
