@@ -2,7 +2,7 @@
 // components/CategoryView.ts
 // ============================================================
 
-import type { Category } from "../models/Task.js";
+import type { Category, Task } from "../models/Task.js";
 import type { TaskService } from "../services/TaskService.js";
 import type { TaskFormModal } from "./TaskFormModal.js";
 
@@ -18,6 +18,9 @@ export class CategoryView {
     const cats = await this.taskService.getCategories();
     const allTasks = (await this.taskService.getAllTasks()).filter(t => !t.archived);
 
+    const subMap = this.buildSubMap(cats);
+    const topLevel = cats.filter(c => !c.parentId);
+
     this.container.innerHTML = `
       <div class="view-header">
         <div>
@@ -27,20 +30,62 @@ export class CategoryView {
         <button class="btn btn-primary" id="btn-new-cat">+ Kategorie</button>
       </div>
       <div class="cat-list" id="cat-list">
-        ${cats.map(c => this.catItem(c, allTasks.filter(t => t.category === c.id).length)).join("")}
+        ${topLevel.map(c => this.catItem(c, allTasks, subMap)).join("")}
       </div>
     `;
 
     this.attachEvents();
+    this.attachDragDrop();
   }
 
-  private catItem(cat: Category, taskCount: number): string {
+  // Baut eine Map parentId → Kinder-Array.
+  // Verwaiste Einträge (parentId zeigt auf gelöschte Kategorie) werden als Top-Level behandelt,
+  // indem wir sie hier einfach nicht aufnehmen — render() filtert nur c.parentId weg.
+  private buildSubMap(cats: Category[]): Map<string, Category[]> {
+    const allIds = new Set(cats.map(c => c.id));
+    const map = new Map<string, Category[]>();
+    for (const c of cats) {
+      if (!c.parentId || !allIds.has(c.parentId)) continue;
+      const list = map.get(c.parentId) ?? [];
+      list.push(c);
+      map.set(c.parentId, list);
+    }
+    return map;
+  }
+
+  private catItem(cat: Category, allTasks: Task[], subMap: Map<string, Category[]>): string {
+    const taskCount = allTasks.filter(t => t.category === cat.id).length;
+    const children = subMap.get(cat.id) ?? [];
+
     return `
-      <div class="cat-item" data-cat-id="${cat.id}">
+      <div class="cat-item" data-cat-id="${cat.id}" draggable="true">
         <div class="cat-item-row cat-item-row--clickable" data-cat-id="${cat.id}">
           <span class="cat-swatch" style="background:${cat.color}"></span>
           <span class="cat-item-label">${escapeHtml(cat.label)}</span>
           <span class="cat-item-count">${taskCount} Aufgabe${taskCount !== 1 ? "n" : ""}</span>
+          <button class="icon-btn cat-edit-btn" data-id="${cat.id}" title="Bearbeiten">✎</button>
+          <button class="icon-btn cat-delete-btn" data-id="${cat.id}" title="Löschen">✕</button>
+          <span class="cat-chevron" aria-hidden="true">▸</span>
+        </div>
+        ${children.length > 0 ? `
+          <div class="cat-subcategory-list" style="--parent-color: ${cat.color}">
+            ${children.map(child => this.catSubItem(child, allTasks)).join("")}
+          </div>
+        ` : ""}
+      </div>
+    `;
+  }
+
+  private catSubItem(cat: Category, allTasks: Task[]): string {
+    const taskCount = allTasks.filter(t => t.category === cat.id).length;
+    return `
+      <div class="cat-item cat-item--sub" data-cat-id="${cat.id}" draggable="true">
+        <div class="cat-item-row cat-item-row--clickable" data-cat-id="${cat.id}">
+          <span class="cat-sub-indent" aria-hidden="true">↳</span>
+          <span class="cat-swatch" style="background:${cat.color}"></span>
+          <span class="cat-item-label">${escapeHtml(cat.label)}</span>
+          <span class="cat-item-count">${taskCount} Aufgabe${taskCount !== 1 ? "n" : ""}</span>
+          <button class="icon-btn cat-detach-btn" data-id="${cat.id}" title="Aus Überordnung entfernen">↑</button>
           <button class="icon-btn cat-edit-btn" data-id="${cat.id}" title="Bearbeiten">✎</button>
           <button class="icon-btn cat-delete-btn" data-id="${cat.id}" title="Löschen">✕</button>
           <span class="cat-chevron" aria-hidden="true">▸</span>
@@ -78,6 +123,79 @@ export class CategoryView {
         } else {
           await this.render();
         }
+      });
+    });
+
+    this.container.querySelectorAll<HTMLButtonElement>(".cat-detach-btn").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        await this.taskService.setCategoryParent(btn.dataset.id!, null);
+        await this.render();
+      });
+    });
+  }
+
+  // Drag & Drop: jedes cat-item ist Drag-Quelle; nur Top-Level-Items sind Drop-Ziele.
+  // Zwei-Ebenen-Grenze wird durch den Guard enforced: wer selbst Kinder hat, darf kein Kind werden.
+  private attachDragDrop(): void {
+    let draggedId: string | null = null;
+
+    this.container.querySelectorAll<HTMLElement>(".cat-item[draggable]").forEach(item => {
+      item.addEventListener("dragstart", e => {
+        // dragstart bubblt — e.target ist das Original-Element, nicht das Element des Listeners.
+        // Ohne diesen Guard würde ein Sub-Item-Drag den Handler des Eltern-Items triggern
+        // und draggedId mit der falschen (Eltern-)ID überschreiben.
+        if (e.target !== item) return;
+        draggedId = item.dataset.catId!;
+        e.dataTransfer!.effectAllowed = "move";
+        requestAnimationFrame(() => item.classList.add("cat-item--dragging"));
+      });
+
+      item.addEventListener("dragend", e => {
+        if (e.target !== item) return;
+        draggedId = null;
+        item.classList.remove("cat-item--dragging");
+        this.container.querySelectorAll(".cat-item--drag-over")
+          .forEach(el => el.classList.remove("cat-item--drag-over"));
+      });
+    });
+
+    this.container.querySelectorAll<HTMLElement>(".cat-item:not(.cat-item--sub)").forEach(target => {
+      const targetId = target.dataset.catId!;
+
+      target.addEventListener("dragover", e => {
+        if (!draggedId || draggedId === targetId) return;
+        // Unterdrücken wenn das gezogene Element bereits ein Kind dieses Targets ist
+        const draggedEl = this.container.querySelector<HTMLElement>(`.cat-item[data-cat-id="${draggedId}"]`);
+        if (draggedEl && target.contains(draggedEl)) return;
+        e.preventDefault();
+        e.dataTransfer!.dropEffect = "move";
+        target.classList.add("cat-item--drag-over");
+      });
+
+      target.addEventListener("dragleave", e => {
+        // relatedTarget prüfen: Klasse nur entfernen wenn wir den Container wirklich verlassen
+        if (!target.contains(e.relatedTarget as Node)) {
+          target.classList.remove("cat-item--drag-over");
+        }
+      });
+
+      target.addEventListener("drop", async e => {
+        e.preventDefault();
+        target.classList.remove("cat-item--drag-over");
+        if (!draggedId || draggedId === targetId) return;
+
+        const draggedEl = this.container.querySelector<HTMLElement>(`.cat-item[data-cat-id="${draggedId}"]`);
+        if (draggedEl && target.contains(draggedEl)) return;
+
+        // Verhindert 3-stufige Hierarchie: eine Kategorie mit Kindern darf selbst kein Kind werden
+        if (draggedEl?.querySelector(".cat-subcategory-list")) {
+          showToast("Kategorien mit Unterkategorien können nicht verschoben werden.", "info");
+          return;
+        }
+
+        await this.taskService.setCategoryParent(draggedId, targetId);
+        await this.render();
       });
     });
   }

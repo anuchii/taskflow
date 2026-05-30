@@ -127,3 +127,32 @@
   color: var(--text-muted);
   margin: 0;
 }
+
+/* ── Unterkategorien ── */
+.cat-subcategory-list {
+  border-top: 1px solid var(--border);
+  border-left: 3px solid var(--parent-color);
+}
+
+.cat-item--sub {
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.cat-item--sub:last-child { border-bottom: none; }
+
+.cat-sub-indent {
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  margin-right: -4px;
+}
+
+/* ── Drag & Drop ── */
+.cat-item--drag-over {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+}
+
+.cat-item--dragging { opacity: 0.45; }
