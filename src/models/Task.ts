@@ -16,6 +16,8 @@ export interface Category {
   id: string;
   label: string;
   color: string;
+  // Spiegelt das Deck-Muster (parentId: string | null) — null/undefined = Top-Level-Kategorie
+  parentId?: string | null;
 }
 
 export const DEFAULT_CATEGORIES: Category[] = [

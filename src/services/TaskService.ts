@@ -101,6 +101,17 @@ export class TaskService {
     await this.storage.save(data);
   }
 
+  async setCategoryParent(id: string, parentId: string | null): Promise<void> {
+    const data = await this.storage.load();
+    if (!data.categories) data.categories = DEFAULT_CATEGORIES.map(c => ({ ...c }));
+    const idx = data.categories.findIndex(c => c.id === id);
+    if (idx === -1) return;
+    const { parentId: _removed, ...rest } = data.categories[idx];
+    // parentId wird nur gesetzt wenn != null, damit das Feld nicht als null in Firestore landet
+    data.categories[idx] = parentId ? { ...rest, parentId } : rest;
+    await this.storage.save(data);
+  }
+
   async deleteCategory(id: string): Promise<number> {
     const data = await this.storage.load();
     if (!data.categories) data.categories = DEFAULT_CATEGORIES.map(c => ({ ...c }));
