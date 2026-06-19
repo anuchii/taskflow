@@ -5,6 +5,7 @@
 import type { Task, RepeatConfig, RepeatUnit, Priority } from "../models/Task.js";
 import type { TaskService } from "../services/TaskService.js";
 import { today, addDays } from "../utils/DateUtils.js";
+import { MiniCalendarPicker } from "./MiniCalendarPicker.js";
 
 export class TaskFormModal {
   private overlay: HTMLElement;
@@ -66,7 +67,16 @@ export class TaskFormModal {
 
         <div class="form-group">
           <label for="f-date" id="f-date-label">Datum</label>
-          <input id="f-date" type="date" />
+          <div class="date-picker-wrapper">
+            <input id="f-date" type="date" />
+            <button type="button" class="date-picker-icon" aria-label="Kalender öffnen">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="1" y="3" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M1 7h14" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div class="form-group">
@@ -86,12 +96,30 @@ export class TaskFormModal {
 
         <div class="form-group hidden" id="f-end-group">
           <label for="f-end">Wiederholung bis</label>
-          <input id="f-end" type="date" />
+          <div class="date-picker-wrapper">
+            <input id="f-end" type="date" />
+            <button type="button" class="date-picker-icon" aria-label="Kalender öffnen">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="1" y="3" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M1 7h14" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="f-due">Fälligkeitsdatum (optional)</label>
-          <input id="f-due" type="date" />
+          <div class="date-picker-wrapper">
+            <input id="f-due" type="date" />
+            <button type="button" class="date-picker-icon" aria-label="Kalender öffnen">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="1" y="3" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M1 7h14" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div class="form-actions">
@@ -104,6 +132,10 @@ export class TaskFormModal {
   }
 
   private attachEvents(): void {
+    new MiniCalendarPicker(this.overlay.querySelector<HTMLInputElement>("#f-date")!);
+    new MiniCalendarPicker(this.overlay.querySelector<HTMLInputElement>("#f-end")!);
+    new MiniCalendarPicker(this.overlay.querySelector<HTMLInputElement>("#f-due")!);
+
     this.overlay.querySelector(".modal-close")!.addEventListener("click", () => this.close());
     this.overlay.querySelector("#f-cancel")!.addEventListener("click", () => this.close());
     this.overlay.addEventListener("click", (e) => {
