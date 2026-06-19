@@ -6,26 +6,23 @@
 import { AuthService } from "./services/AuthService.js";
 import { ThemeService } from "./services/ThemeService.js";
 import { TaskService } from "./services/TaskService.js";
-import { FlashcardService } from "./services/FlashcardService.js";
 import { TaskFormModal } from "./components/TaskFormModal.js";
 import { TodoView } from "./components/TodoView.js";
 import { UpcomingView } from "./components/UpcomingView.js";
 import { StatsView } from "./components/StatsView.js";
 import { CategoryView } from "./components/CategoryView.js";
-import { LearningView } from "./components/LearningView.js";
 import { ReflectionView } from "./components/ReflectionView.js";
 import { LoginView } from "./components/LoginView.js";
 import { getAuth, getRedirectResult } from "firebase/auth";
 import { StorageService, firebaseApp } from "./services/StorageService.js";
 
-type Route = "todo" | "upcoming" | "stats" | "kategorien" | "reflexion" | "lernen";
+type Route = "todo" | "upcoming" | "stats" | "kategorien" | "reflexion";
 
 class App {
   private readonly authService = new AuthService();
   private readonly themeService = new ThemeService();
   private readonly storage = new StorageService();
   private readonly taskService = new TaskService(this.storage);
-  private readonly flashcardService = new FlashcardService(this.storage);
   private readonly mainEl: HTMLElement;
   private readonly sidebarEl: HTMLElement;
   private modal!: TaskFormModal;
@@ -33,7 +30,6 @@ class App {
   private upcomingView!: UpcomingView;
   private statsView!: StatsView;
   private categoryView!: CategoryView;
-  private learningView!: LearningView;
   private reflectionView!: ReflectionView;
   private loginView: LoginView;
 
@@ -94,7 +90,6 @@ class App {
     this.upcomingView = new UpcomingView(this.taskService, this.modal, this.mainEl);
     this.statsView = new StatsView(this.taskService, this.mainEl);
     this.categoryView = new CategoryView(this.taskService, this.mainEl, this.modal);
-    this.learningView = new LearningView(this.flashcardService, this.mainEl);
     this.reflectionView = new ReflectionView(this.taskService, this.mainEl);
 
     this.modal.onTaskSaved(async () => {
@@ -119,7 +114,6 @@ class App {
     if (h === "kategorien") return "kategorien";
     if (h === "reflexion") return "reflexion";
     if (h === "upcoming") return "upcoming";
-    if (h === "lernen") return "lernen";
     return "todo";
   }
 
@@ -132,7 +126,6 @@ class App {
     else if (route === "kategorien") this.categoryView.render();
     else if (route === "reflexion") this.reflectionView.render();
     else if (route === "upcoming") this.upcomingView.render();
-    else if (route === "lernen") this.learningView.startLearning();
     else this.todoView.render();
   }
   private navInitialized = false;

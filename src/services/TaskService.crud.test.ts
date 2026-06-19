@@ -23,8 +23,6 @@ class FakeStorageService {
     tasks: [],
     completions: [],
     categories: [],
-    flashcards: [],
-    decks: [],
   };
 
   async load(): Promise<AppData> {

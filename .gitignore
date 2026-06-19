@@ -24,6 +24,12 @@ npm-debug.log*
 
 # TypeScript cache
 *.tsbuildinfo
+
+# Kompilierte Artefakte in src/ — nur .ts-Quelldateien gehören ins Repository
+src/**/*.js
+src/**/*.js.map
+src/**/*.d.ts
+src/**/*.d.ts.map
 .claude
 /docs/changesLog/
 /docs/erklaerungen/

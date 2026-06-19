@@ -6,7 +6,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import type { AppData, Category, Deck, Flashcard } from "../models/Task.js";
+import type { AppData, Category } from "../models/Task.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAx0cbGnKHyYY_yHusCO_WPE3qas-Bk1Dw",
@@ -32,8 +32,6 @@ const EMPTY_DATA: AppData = {
     { id: "persoenlich", label: "Persönlich",  color: "#f472b6" },
     { id: "sonstiges",   label: "Sonstiges",   color: "#7a7a8c" },
   ],
-  flashcards: [],
-  decks: [],
 };
 
 export const firebaseApp = initializeApp(firebaseConfig);
@@ -63,9 +61,6 @@ export class StorageService {
       const raw = snapshot.exists()
         ? (snapshot.data() as AppData)
         : structuredClone(EMPTY_DATA);
-      // Normalise fields added after initial release
-      if (!raw.flashcards) raw.flashcards = [];
-      if (!raw.decks)      raw.decks      = [];
       this.cache = raw;
       return structuredClone(raw);
     } catch (e) {
@@ -110,8 +105,6 @@ export class StorageService {
       current.completions.map((c) => `${c.taskId}|${c.completedAt}`)
     );
     const existingCategoryIds = new Set(current.categories.map((c) => c.id));
-    const existingFlashcardIds = new Set(current.flashcards.map((f: Flashcard) => f.id));
-    const existingDeckIds      = new Set((current.decks ?? []).map((d: Deck) => d.id));
 
     const merged: AppData = {
       version: current.version,
@@ -130,16 +123,6 @@ export class StorageService {
         ...(imported.categories ?? []).filter(
           (c) => !existingCategoryIds.has(c.id)
         ),
-      ],
-      flashcards: [
-        ...current.flashcards,
-        ...(imported.flashcards ?? []).filter(
-          (f: Flashcard) => !existingFlashcardIds.has(f.id)
-        ),
-      ],
-      decks: [
-        ...(current.decks ?? []),
-        ...(imported.decks ?? []).filter((d: Deck) => !existingDeckIds.has(d.id)),
       ],
     };
 

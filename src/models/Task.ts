@@ -16,7 +16,6 @@ export interface Category {
   id: string;
   label: string;
   color: string;
-  // Spiegelt das Deck-Muster (parentId: string | null) — null/undefined = Top-Level-Kategorie
   parentId?: string | null;
 }
 
@@ -50,32 +49,6 @@ export interface CompletionLog {
   actualMinutes?: number;
 }
 
-// Deck repräsentiert einen Ordner (parentId === null) oder eine Sammlung (parentId = Ordner-ID).
-// Die zwei-Ebenen-Hierarchie spiegelt Angulars Router-Konzept: Parent-Route (Thema) → Child-Route (Sammlung).
-export interface Deck {
-  id: string;
-  name: string;
-  parentId: string | null;
-  color?: string;
-  createdAt: string;
-}
-
-export interface Flashcard {
-  id: string;
-  question: string;
-  answer?: string;
-  tags: string[];
-  createdAt: string;
-  answeredAt?: string;
-  lastReviewed?: string;
-  deckId?: string;         // Referenz zur Sammlung (Deck mit parentId !== null)
-  // SM2 Spaced-Repetition state — optional so existing cards without review history stay valid
-  reps?: number;           // consecutive correct answers; 0 means new or reset card
-  easeFactor?: number;     // interval growth multiplier; starts at 2.5 per SM2 spec
-  interval?: number;       // days until the next review
-  nextReviewDate?: string; // ISO timestamp of the next scheduled review
-}
-  
 export interface DailyReflection {
   date: string;
   dayRating: number;
@@ -89,7 +62,5 @@ export interface AppData {
   tasks: Task[];
   completions: CompletionLog[];
   categories: Category[];
-  flashcards: Flashcard[];
-  decks: Deck[];
   reflections?: DailyReflection[];
 }

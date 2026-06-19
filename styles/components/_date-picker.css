@@ -1,0 +1,139 @@
+/* ── Date Picker ── */
+
+.date-picker-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-picker-wrapper input[type="date"] {
+  flex: 1;
+}
+
+/* Natives Browser-Icon unterdrücken, damit nur unser eigener Button sichtbar ist */
+.date-picker-wrapper input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+.date-picker-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--transition), color var(--transition);
+}
+
+.date-picker-icon:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Popup */
+.mini-cal-popup {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 200;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  width: 240px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.mini-cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.mini-cal-month {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.mini-cal-nav {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), color var(--transition);
+}
+
+.mini-cal-nav:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.mini-cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+
+.mini-cal-weekdays span {
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  padding: 2px 0;
+}
+
+.mini-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.mini-cal-empty {
+  display: block;
+}
+
+.mini-cal-day {
+  width: 100%;
+  aspect-ratio: 1;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-cal-day:hover {
+  background: var(--bg);
+}
+
+.mini-cal-day.today {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.mini-cal-day.selected {
+  background: var(--accent);
+  color: #000;
+  font-weight: 700;
+}
