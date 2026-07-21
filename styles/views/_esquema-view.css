@@ -38,6 +38,19 @@
   animation: day-pulse 3s ease-in-out infinite;
 }
 
+/* Ziehbarkeit der Tages-Blase signalisieren (Herausziehen → neue Aufgabe) */
+.esquema-day-bubble {
+  cursor: grab;
+}
+
+.esquema-day-bubble.is-dragging {
+  cursor: grabbing;
+}
+
+.esquema-day-bubble.is-dragging ellipse {
+  animation-play-state: paused;
+}
+
 /* Toggle-Button-Gruppe im Header */
 .header-actions {
   display: flex;

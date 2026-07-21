@@ -6,6 +6,7 @@
 
 import type { Task, Category } from "../models/Task.js";
 import type { TaskService } from "../services/TaskService.js";
+import type { TaskFormModal } from "./TaskFormModal.js";
 import { today, formatDisplay } from "../utils/DateUtils.js";
 
 const DAY_NAMES = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
@@ -37,8 +38,15 @@ export class EsquemaView {
   // weil innerHTML das DOM ersetzt und alte Listener verloren gehen.
   private onBack: (() => void) | null = null;
 
+  // Mittelpunkt der Tages-Blase in SVG-Koordinaten — wird beim Bau des SVGs
+  // gesetzt und beim Drag-Out-Gesture gebraucht, um zu prüfen ob der Loslass-
+  // Punkt noch innerhalb der Tages-Blase liegt (dann: kein echter "Zieh"-Vorgang).
+  private centerX = 0;
+  private centerY = 0;
+
   constructor(
     private readonly taskService: TaskService,
+    private readonly modal: TaskFormModal,
     private readonly container: HTMLElement
   ) {}
 
@@ -86,6 +94,8 @@ export class EsquemaView {
     const H  = Math.round((R + BUBBLE_H) * 2 + 40);
     const cx = W / 2;
     const cy = H / 2;
+    this.centerX = cx;
+    this.centerY = cy;
 
     const dayName   = DAY_NAMES[new Date().getDay()];
     const dateLabel = formatDisplay(today());
@@ -205,5 +215,50 @@ export class EsquemaView {
         }
         await this.render();
       });
+
+    this.attachCreateByDrag();
+  }
+
+  // ─── Neue Aufgabe durch Herausziehen aus der Tages-Blase ──
+  private attachCreateByDrag(): void {
+    const svg = this.container.querySelector<SVGSVGElement>(".esquema-svg");
+    const dayBubble = this.container.querySelector<SVGGElement>(".esquema-day-bubble");
+    if (!svg || !dayBubble) return;
+
+    dayBubble.addEventListener("mousedown", (e) => {
+      e.preventDefault(); // verhindert Textauswahl während des Ziehens
+      dayBubble.classList.add("is-dragging");
+
+      const onMouseUp = (upEvent: MouseEvent) => {
+        dayBubble.classList.remove("is-dragging");
+
+        // Losgelassen auf einer bestehenden Aufgaben-Blase → abbrechen,
+        // dort ist bereits eine Aufgabe, kein Platz für eine neue.
+        const target = document.elementFromPoint(upEvent.clientX, upEvent.clientY);
+        if (target?.closest(".esquema-task")) return;
+
+        // Losgelassen noch innerhalb der Tages-Blase → kein echtes
+        // Herausziehen, sondern eher ein Klick auf die Mitte → abbrechen.
+        const p = this.toSvgPoint(svg, upEvent.clientX, upEvent.clientY);
+        const dx = (p.x - this.centerX) / DAY_RX;
+        const dy = (p.y - this.centerY) / DAY_RY;
+        if (dx * dx + dy * dy <= 1) return;
+
+        this.modal.open();
+      };
+
+      document.addEventListener("mouseup", onMouseUp, { once: true });
+    });
+  }
+
+  // Rechnet Bildschirm-Koordinaten (clientX/clientY) in SVG-Koordinaten um —
+  // nötig weil das SVG über viewBox skaliert wird und Mausposition sonst
+  // nicht mit den intern verwendeten cx/cy-Werten vergleichbar wäre.
+  private toSvgPoint(svg: SVGSVGElement, clientX: number, clientY: number): DOMPoint {
+    const pt = svg.createSVGPoint();
+    pt.x = clientX;
+    pt.y = clientY;
+    const ctm = svg.getScreenCTM();
+    return ctm ? pt.matrixTransform(ctm.inverse()) : pt;
   }
 }
