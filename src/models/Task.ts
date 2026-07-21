@@ -41,6 +41,10 @@ export interface Task {
   dueDate?: string;
   priority?: Priority;
   isAutoPrioritized?: boolean;
+  // true = startDate/dueDate wurde beim Beenden des Urlaubsmodus automatisch
+  // verschoben (echtes Update, kein reiner Anzeige-Wert) — steuert die kleine
+  // Markierung auf der Task-Karte, damit der Nutzer den Grund der Verschiebung erkennt.
+  dateShiftedByVacation?: boolean;
 }
 
 export interface CompletionLog {
@@ -57,10 +61,21 @@ export interface DailyReflection {
   funCategoryIds: string[];
 }
 
+// Ein Objekt statt eines reinen Booleans, weil "an/aus" allein nicht reicht:
+// wir müssen uns merken SEIT WANN pausiert wird (startDate) und OB/WANN es
+// automatisch enden soll (endDate). endDate = null ist die bewusste
+// Entscheidung "unbegrenzt", kein vergessener Wert.
+export interface VacationMode {
+  active: boolean;
+  startDate: string;
+  endDate: string | null;
+}
+
 export interface AppData {
   version: number;
   tasks: Task[];
   completions: CompletionLog[];
   categories: Category[];
   reflections?: DailyReflection[];
+  vacationMode?: VacationMode;
 }

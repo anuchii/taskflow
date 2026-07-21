@@ -236,6 +236,9 @@ export class TodoView {
     const priorityInfo = task.priority ? priorityMap[task.priority] : null;
     const autoIcon = task.isAutoPrioritized ? ' ⚡' : '';
     const priorityHtml = priorityInfo ? `<span class="priority-badge ${priorityInfo.cls}">${priorityInfo.label}${autoIcon}</span>` : "";
+    const vacationBadgeHtml = task.dateShiftedByVacation
+      ? `<span class="vacation-badge" title="Datum wurde beim Beenden des Urlaubsmodus automatisch angepasst">🌴 Verschoben</span>`
+      : "";
 
     const timeLogHtml = isDone ? `
       <div class="time-log" data-id="${task.id}">
@@ -252,6 +255,7 @@ export class TodoView {
         </button>
         <div class="task-body">
           <div class="task-top">
+            ${vacationBadgeHtml}
             ${priorityHtml}
             <span class="task-title">${escapeHtml(task.title)}</span>
             ${overdue ? `<span class="overdue-badge">${overdueLabel}</span>` : ""}

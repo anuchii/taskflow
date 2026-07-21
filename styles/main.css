@@ -42,6 +42,7 @@
 @import './views/_upcoming-view.css';
 @import './views/_stats-view.css';
 @import './views/_category-view.css';
+@import './views/_settings-view.css';
 
 /* Responsive */
 @import './_responsive.css';
