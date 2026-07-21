@@ -21,7 +21,7 @@ export class TodoView {
     private readonly modal: TaskFormModal,
     private readonly container: HTMLElement
   ) {
-    this.esquemaView = new EsquemaView(taskService, container);
+    this.esquemaView = new EsquemaView(taskService, modal, container);
   }
 
   async render(): Promise<void> {
