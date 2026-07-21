@@ -38,6 +38,7 @@
 
 /* Views */
 @import './views/_todo-view.css';
+@import './views/_esquema-view.css';
 @import './views/_upcoming-view.css';
 @import './views/_stats-view.css';
 @import './views/_category-view.css';
