@@ -20,7 +20,7 @@ class FakeStorageService {
   saveCallCount = 0;
   private data: AppData = {
     version: 1, tasks: [], completions: [],
-    categories: [], flashcards: [], decks: [],
+    categories: [],
   };
 
   async load(): Promise<AppData> { return structuredClone(this.data); }

@@ -18,6 +18,8 @@ import { aggregateCategoryStats } from "../utils/categoryStatsUtils.js";
 import type { CategoryTimeStat } from "../utils/categoryStatsUtils.js";
 import { computeCategoryAnalytics } from "../utils/categoryAnalyticsUtils.js";
 import type { CategoryAnalytics } from "../utils/categoryAnalyticsUtils.js";
+import { isVacationActive } from "../utils/VacationUtils.js";
+import type { VacationMode } from "../models/Task.js";
 
 export interface DayStat {
   date: string;
@@ -126,6 +128,9 @@ export class TaskService {
 
   async getTasksForDate(dateStr: string): Promise<Task[]> {
     const data = await this.storage.load();
+    // Während des Urlaubsmodus gilt dieser Tag als komplett pausiert —
+    // keine Aufgabe erscheint, egal ob einmalig oder wiederkehrend.
+    if (isVacationActive(data.vacationMode, dateStr)) return [];
     return data.tasks.filter((t) => !t.archived && this.isActiveOn(t, dateStr));
   }
 
@@ -222,6 +227,10 @@ export class TaskService {
     const todayStr = today();
 
     return dates.map((date) => {
+      // Urlaubstage tauchen in der Statistik als "0 von 0" auf, nicht als
+      // verpasste Aufgaben — sie sollen die Erledigungsrate nicht verfälschen.
+      if (isVacationActive(data.vacationMode, date)) return { date, total: 0, completed: 0 };
+
       const scheduled = data.tasks.filter((t) => !t.archived && this.isActiveOn(t, date));
 
       let tasks = scheduled;
@@ -258,8 +267,11 @@ export class TaskService {
   }
   // ─── Überfällige Aufgaben ────────────────────────────
 
-  isOverdue(task: Task, data: { completions: Array<{ taskId: string; completedAt: string }> }): number {
+  isOverdue(task: Task, data: { completions: Array<{ taskId: string; completedAt: string }>; vacationMode?: VacationMode }): number {
     const todayStr = today();
+    // Im Urlaubsmodus wird grundsätzlich nichts als überfällig markiert —
+    // das ist der ganze Zweck der Funktion (siehe Erklärungsdatei).
+    if (isVacationActive(data.vacationMode, todayStr)) return 0;
     const hasAnyCompletion = data.completions.some(c => c.taskId === task.id);
 
     // Condition 1: dueDate exceeded
@@ -286,6 +298,10 @@ export class TaskService {
 
   async getTasksForDateWithOverdue(dateStr: string): Promise<(Task & { daysOverdue: number })[]> {
     const data = await this.storage.load();
+
+    // Urlaubsmodus: für diesen Tag wird nichts angezeigt, auch keine überfälligen
+    // Aufgaben — sie gelten als pausiert, nicht als versäumt.
+    if (isVacationActive(data.vacationMode, dateStr)) return [];
 
     const scheduledTasks = data.tasks.filter((t) => !t.archived && this.isActiveOn(t, dateStr));
 
@@ -354,6 +370,7 @@ export class TaskService {
     const result: { date: string; tasks: Task[] }[] = [];
     for (let i = 1; i <= days; i++) {
       const dateStr = addDays(today(), i);
+      if (isVacationActive(data.vacationMode, dateStr)) continue;
       const tasks = data.tasks.filter((t) => !t.archived && this.isActiveOn(t, dateStr));
       if (tasks.length > 0) result.push({ date: dateStr, tasks });
     }

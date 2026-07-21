@@ -7,19 +7,31 @@ import type { TaskService } from "../services/TaskService.js";
 import type { TaskFormModal } from "./TaskFormModal.js";
 import { today, formatDisplay } from "../utils/DateUtils.js";
 import { PriorityInfoPopup } from "./PriorityInfoPopup.js";
+import { EsquemaView } from "./EsquemaView.js";
 
 type TaskWithOverdue = Task & { daysOverdue: number };
 
 export class TodoView {
   private readonly priorityInfoPopup = new PriorityInfoPopup();
+  private readonly esquemaView: EsquemaView;
+  private esquemaMode = false;
 
   constructor(
     private readonly taskService: TaskService,
     private readonly modal: TaskFormModal,
     private readonly container: HTMLElement
-  ) {}
+  ) {
+    this.esquemaView = new EsquemaView(taskService, container);
+  }
 
   async render(): Promise<void> {
+    if (this.esquemaMode) {
+      await this.esquemaView.render(() => {
+        this.esquemaMode = false;
+        this.render();
+      });
+      return;
+    }
     this.container.innerHTML = `<div class="loading">Lädt…</div>`;
     await this.taskService.runAutoPrioritization();
     const todayStr = today();
@@ -59,7 +71,10 @@ export class TodoView {
           <h1 class="view-title">Aufgaben ${this.priorityInfoPopup.getIconHtml()}</h1>
           <p class="view-subtitle">${formatDisplay(todayStr)} · ${done.length}/${tasks.length} erledigt${timeLabel}</p>
         </div>
-        <button class="btn btn-primary" id="btn-new-task">+ Aufgabe</button>
+        <div class="header-actions">
+          <button class="btn btn-ghost" id="btn-esquema-toggle">☀ Esquema</button>
+          <button class="btn btn-primary" id="btn-new-task">+ Aufgabe</button>
+        </div>
       </div>
 
       <div class="progress-bar-wrap">
@@ -86,6 +101,11 @@ export class TodoView {
     `;
 
     this.priorityInfoPopup.mount(this.container);
+
+    this.container.querySelector("#btn-esquema-toggle")?.addEventListener("click", () => {
+      this.esquemaMode = true;
+      this.render();
+    });
 
     this.container.querySelector("#btn-new-task")?.addEventListener("click", () => {
       this.modal.open();
@@ -216,6 +236,9 @@ export class TodoView {
     const priorityInfo = task.priority ? priorityMap[task.priority] : null;
     const autoIcon = task.isAutoPrioritized ? ' ⚡' : '';
     const priorityHtml = priorityInfo ? `<span class="priority-badge ${priorityInfo.cls}">${priorityInfo.label}${autoIcon}</span>` : "";
+    const vacationBadgeHtml = task.dateShiftedByVacation
+      ? `<span class="vacation-badge" title="Datum wurde beim Beenden des Urlaubsmodus automatisch angepasst">🌴 Verschoben</span>`
+      : "";
 
     const timeLogHtml = isDone ? `
       <div class="time-log" data-id="${task.id}">
@@ -232,6 +255,7 @@ export class TodoView {
         </button>
         <div class="task-body">
           <div class="task-top">
+            ${vacationBadgeHtml}
             ${priorityHtml}
             <span class="task-title">${escapeHtml(task.title)}</span>
             ${overdue ? `<span class="overdue-badge">${overdueLabel}</span>` : ""}

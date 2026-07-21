@@ -63,3 +63,18 @@
 .rate-badge.good { background: var(--green-dim); color: var(--green); }
 .rate-badge.ok   { background: var(--accent-dim); color: var(--accent); }
 .rate-badge.low  { background: var(--red-dim); color: var(--red); }
+
+/* Vacation-shifted badge (Urlaubsmodus hat das Datum dieser Aufgabe verschoben) */
+.vacation-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--text-muted) 12%, transparent);
+  color: var(--text-muted);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 25%, transparent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}

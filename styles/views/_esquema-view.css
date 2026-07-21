@@ -1,0 +1,46 @@
+/* ── Esquema View ── */
+
+.esquema-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 16px 0;
+  overflow: auto;
+}
+
+.esquema-svg {
+  width: 100%;
+  max-width: 860px;
+  height: auto;
+  font-family: var(--font-sans, system-ui, sans-serif);
+}
+
+/* Aufgaben-Blasen: Hover-Feedback */
+.esquema-task rect {
+  transition: filter 0.15s ease;
+}
+
+.esquema-task:hover rect {
+  filter: brightness(0.92);
+}
+
+.esquema-task:active rect {
+  filter: brightness(0.82);
+}
+
+/* Tag-Blase leichtes Pulsieren damit sie als Zentrum auffällt */
+@keyframes day-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.88; }
+}
+
+.esquema-day-bubble ellipse {
+  animation: day-pulse 3s ease-in-out infinite;
+}
+
+/* Toggle-Button-Gruppe im Header */
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}

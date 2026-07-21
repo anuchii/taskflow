@@ -28,7 +28,7 @@ class FakeStorageService {
   constructor(initial: Partial<AppData> = {}) {
     this.data = {
       version: 1, tasks: [], completions: [],
-      categories: [], flashcards: [], decks: [],
+      categories: [],
       ...initial,
     };
   }
