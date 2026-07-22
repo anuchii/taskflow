@@ -17,3 +17,10 @@
   font-size: 13px;
   margin-top: 3px;
 }
+
+/* Ab Tablet zeigt bereits die Topbar den Seitennamen (siehe layout/_topbar.css
+   #topbar-title) — der große Titel hier würde sich sonst doppeln. Untertitel
+   und Header-Aktionen (z.B. "+ Aufgabe") bleiben auf jeder Breite sichtbar. */
+@media (min-width: 768px) {
+  .view-title { display: none; }
+}

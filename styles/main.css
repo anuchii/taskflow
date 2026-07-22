@@ -2,16 +2,19 @@
    styles/main.css — entry point, only imports
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,300;400;500;600&display=swap');
-
 /* Tokens müssen vor allen anderen Imports stehen, damit die CSS-Variablen
-   bei der Kaskade bereits definiert sind wenn Layout und Komponenten sie verwenden. */
+   bei der Kaskade bereits definiert sind wenn Layout und Komponenten sie verwenden.
+   (Der Google-Fonts-Import lebt jetzt in base/_tokens.css, direkt neben den
+   Variablen, die ihn nutzen — siehe --font-mono dort.) */
 @import './base/_tokens.css';
 @import './base/_reset.css';
 
 /* Layout */
 @import './layout/_app-shell.css';
-@import './layout/_sidebar.css';
+@import './layout/_topbar.css';
+@import './layout/_icon-rail.css';
+@import './layout/_bottom-nav.css';
+@import './layout/_fab.css';
 
 /* Shared */
 @import './shared/_view-header.css';
@@ -35,6 +38,11 @@
 @import './components/_time-log.css';
 @import './components/_priority-info-popup.css';
 @import './components/_date-picker.css';
+@import './components/_login.css';
+@import './components/_today-overview.css';
+@import './components/_category-donut.css';
+@import './components/_upcoming-widget.css';
+@import './components/_week-overview.css';
 
 /* Views */
 @import './views/_todo-view.css';
@@ -43,14 +51,8 @@
 @import './views/_stats-view.css';
 @import './views/_category-view.css';
 @import './views/_settings-view.css';
+@import './views/_reflection-view.css';
 
-/* Responsive */
+/* Responsive (übergreifende Media Queries, die keiner einzelnen Komponente
+   allein zugeordnet werden können) */
 @import './_responsive.css';
-@import './base.css';
-@import './tasks.css';
-@import './modal.css';
-@import './categories.css';
-@import './stats.css';
-@import './upcoming.css';
-@import './reflection.css';
-@import './toast.css';

@@ -20,8 +20,10 @@
 }
 .kpi-card {
   background: var(--surface);
-  border: none;
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
   box-shadow: var(--shadow-sm);
   padding: 18px 20px;
   display: flex; flex-direction: column; gap: 4px;
@@ -41,8 +43,10 @@
 /* Line chart */
 .chart-section {
   background: var(--surface);
-  border: none;
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
   box-shadow: var(--shadow-sm);
   padding: 20px;
   margin-bottom: 24px;
@@ -123,7 +127,7 @@
   border-bottom: 1px solid var(--border);
 }
 .stats-table tr:last-child td { border-bottom: none; }
-.stats-table .today-row td { background: rgba(245,166,35,0.05); }
+.stats-table .today-row td { background: color-mix(in srgb, var(--accent) 6%, transparent); }
 
 /* Table week navigation */
 .table-nav {
@@ -146,8 +150,10 @@
 /* Time comparison chart */
 .time-chart-section {
   background: var(--surface);
-  border: none;
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
   box-shadow: var(--shadow-sm);
   padding: 20px;
   margin-top: 24px;

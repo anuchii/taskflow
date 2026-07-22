@@ -1,0 +1,35 @@
+/* ============================================================
+   layout/_fab.css
+   Floating Action Button — mobiler Ersatz für den "+ Aufgabe"-Button,
+   der auf Tablet/Desktop weiterhin im jeweiligen View-Header lebt.
+   Öffnet immer das gemeinsame TaskFormModal (siehe app.ts) unabhängig
+   von der aktuellen Route, weil dasselbe Modal bereits app-weit für
+   Aufgaben/Upcoming/Kategorien wiederverwendet wird.
+   ============================================================ */
+
+.fab {
+  display: none;
+  position: fixed;
+  left: 50%;
+  bottom: 38px;
+  transform: translateX(-50%);
+  width: var(--fab-size);
+  height: var(--fab-size);
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 35;
+  font-size: 26px;
+  line-height: 1;
+  box-shadow: 0 10px 24px rgba(0, 122, 255, 0.4);
+  transition: transform var(--transition);
+}
+.fab:active { transform: translateX(-50%) scale(0.94); }
+
+@media (max-width: 767px) {
+  .fab { display: flex; }
+}

@@ -1,0 +1,80 @@
+/* ============================================================
+   components/_login.css
+   War zuvor komplett unstyled (LoginView.ts rendert Klassen, für die es
+   nirgends CSS gab — Browser-Standardstyling). Fällt beim Apple-Style-
+   Redesign besonders auf, weil der Rest der App jetzt die Glass-Optik trägt;
+   deshalb hier mit demselben Kartenmuster nachgezogen (kein neues Konzept,
+   nur bestehende Tokens/Klassen-Bausteine angewendet).
+   ============================================================ */
+
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.login-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  box-shadow: var(--shadow-lg);
+  padding: 40px 36px;
+  width: min(360px, 100%);
+  text-align: center;
+}
+
+.login-logo {
+  font-family: var(--font-ui);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--accent);
+}
+
+.login-subtitle {
+  color: var(--text-muted);
+  font-size: 13.5px;
+  margin-top: 6px;
+}
+
+.login-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 22px 0;
+}
+
+.login-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.btn-google {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.btn-google:hover { background: color-mix(in srgb, var(--text) 6%, var(--surface2)); }
+.btn-google:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.login-error {
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--red);
+}

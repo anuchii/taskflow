@@ -3,8 +3,11 @@
 .cat-item {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   overflow: hidden;
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  box-shadow: var(--shadow-sm);
   transition: border-color var(--transition);
 }
 .cat-item:hover { border-color: var(--accent-dim); }

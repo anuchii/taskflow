@@ -6,8 +6,10 @@
   gap: 14px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
   box-shadow: var(--shadow-sm);
   transition: box-shadow var(--transition), transform var(--transition), opacity var(--transition);
 }

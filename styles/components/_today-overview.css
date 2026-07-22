@@ -1,0 +1,47 @@
+/* ============================================================
+   components/_today-overview.css
+   Siehe components/TodayOverviewCard.ts — dieselbe Karte wird zweimal
+   eingebunden (gestapelt vs. Widget-Spalte), die Sichtbarkeit steuert
+   ausschließlich der jeweilige Elternselektor in views/_todo-view.css.
+   ============================================================ */
+
+.today-overview-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  box-shadow: var(--shadow-sm);
+}
+
+.today-overview-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.today-overview-heading { font-weight: 700; font-size: 16px; }
+.today-overview-date { color: var(--text-muted); font-size: 12.5px; margin-top: 1px; }
+.today-overview-percent { font-size: 24px; font-weight: 800; color: var(--accent); }
+
+.today-overview-bar-track {
+  height: 8px;
+  border-radius: 5px;
+  background: var(--surface2);
+  overflow: hidden;
+}
+.today-overview-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: var(--accent);
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+
+.today-overview-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 12.5px;
+}

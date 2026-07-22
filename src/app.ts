@@ -20,6 +20,18 @@ import { VacationService } from "./services/VacationService.js";
 
 type Route = "todo" | "upcoming" | "stats" | "kategorien" | "reflexion" | "einstellungen";
 
+// Seitentitel für die Topbar (Tablet/Desktop) — auf Mobil zeigt die Topbar
+// stattdessen die Marke, siehe .rail-visible-only / .rail-hidden-only in
+// layout/_topbar.css.
+const PAGE_TITLES: Record<Route, string> = {
+  todo: "Aufgaben",
+  upcoming: "Upcoming",
+  stats: "Statistik",
+  kategorien: "Kategorien",
+  reflexion: "Reflexion",
+  einstellungen: "Einstellungen",
+};
+
 class App {
   private readonly authService = new AuthService();
   private readonly themeService = new ThemeService();
@@ -27,7 +39,11 @@ class App {
   private readonly taskService = new TaskService(this.storage);
   private readonly vacationService = new VacationService(this.storage);
   private readonly mainEl: HTMLElement;
-  private readonly sidebarEl: HTMLElement;
+  private readonly appChromeEl: HTMLElement;
+  private readonly topbarTitleEl: HTMLElement;
+  private readonly topbarAvatarEl: HTMLElement;
+  private readonly viewToggleEl: HTMLElement;
+  private readonly moreMenuEl: HTMLElement;
   private modal!: TaskFormModal;
   private todoView!: TodoView;
   private upcomingView!: UpcomingView;
@@ -39,10 +55,14 @@ class App {
 
   constructor() {
     this.mainEl = document.getElementById("main-content")!;
-    this.sidebarEl = document.querySelector(".sidebar")!;
+    this.appChromeEl = document.getElementById("app-chrome")!;
+    this.topbarTitleEl = document.getElementById("topbar-title")!;
+    this.topbarAvatarEl = document.getElementById("topbar-avatar")!;
+    this.viewToggleEl = document.getElementById("view-toggle")!;
+    this.moreMenuEl = document.getElementById("topbar-more-menu")!;
     this.loginView = new LoginView(this.authService, this.mainEl);
 
-    
+
     getRedirectResult(getAuth(firebaseApp)).catch(console.error);
 
 
@@ -61,33 +81,15 @@ class App {
 
   private showLogin(): void {
     this.storage.clearCache(); // Cache leeren, damit beim nächsten Login frische Daten aus Firestore geladen werden
-    this.sidebarEl.classList.add("hidden");
+    this.appChromeEl.classList.add("hidden");
     this.loginView.render();
   }
 
   // ─── App initialisieren ───────────────────────────────────
 
   private async initApp(displayName: string): Promise<void> {
-    this.sidebarEl.classList.remove("hidden");
-
-    const footer = document.querySelector(".sidebar-footer")!;
-    footer.innerHTML = `
-      <div class="user-info">
-        <span class="user-name">${displayName}</span>
-      </div>
-      <button class="btn btn-ghost" id="btn-export" style="width:100%;justify-content:center;">
-        ↓ Export JSON
-      </button>
-      <button class="btn btn-ghost" id="btn-import" style="width:100%;justify-content:center;margin-top:6px;">
-        ↑ Import JSON
-      </button>
-      <button class="btn btn-ghost" id="btn-theme-toggle" style="width:100%;justify-content:center;margin-top:6px;">
-        ${this.themeService.getToggleLabel()}
-      </button>
-      <button class="btn btn-ghost" id="btn-logout" style="width:100%;justify-content:center;margin-top:6px;">
-        Abmelden
-      </button>
-    `;
+    this.appChromeEl.classList.remove("hidden");
+    this.topbarAvatarEl.textContent = this.initials(displayName);
 
     this.modal = new TaskFormModal(this.taskService);
     this.todoView = new TodoView(this.taskService, this.modal, this.mainEl);
@@ -111,7 +113,18 @@ class App {
     await this.taskService.runAutoPrioritization();
     this.setupNav();
     this.setupButtons();
+    this.setupTopbarMore();
+    this.setupViewToggle();
+    this.setupFab();
+    this.themeService.syncButtonLabel();
     this.navigate(this.currentRoute());
+  }
+
+  private initials(name: string): string {
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return "?";
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
 
   // ─── Navigation ───────────────────────────────────────────
@@ -131,6 +144,10 @@ class App {
     document.querySelectorAll(".nav-link").forEach((el) => {
       el.classList.toggle("active", el.getAttribute("data-route") === route);
     });
+    this.topbarTitleEl.textContent = PAGE_TITLES[route];
+    this.closeMoreMenu();
+    this.syncViewToggle(route);
+
     if (route === "stats") this.statsView.render();
     else if (route === "kategorien") this.categoryView.render();
     else if (route === "reflexion") this.reflectionView.render();
@@ -149,6 +166,71 @@ class App {
     });
 
     window.addEventListener("hashchange", () => this.navigate(this.currentRoute()));
+  }
+
+  // ─── Liste/Schema-Umschalter (Topbar) ──────────────────────
+  // Lebt in app.ts statt in TodoView, weil er app-weit zur Route "todo"
+  // gehört (Topbar ist Teil der Shell, nicht der einzelnen Ansicht) —
+  // TodoView bleibt so unabhängig davon, WO der Umschalter angezeigt wird.
+
+  private setupViewToggle(): void {
+    this.viewToggleEl.querySelectorAll<HTMLButtonElement>(".view-toggle-opt").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        this.todoView.setEsquemaMode(btn.dataset.view === "schema");
+        this.syncViewToggle(this.currentRoute());
+      });
+    });
+  }
+
+  private syncViewToggle(route: Route): void {
+    this.viewToggleEl.classList.toggle("hidden", route !== "todo");
+    if (route !== "todo") return;
+    const isSchema = this.todoView.getEsquemaMode();
+    this.viewToggleEl.querySelectorAll<HTMLButtonElement>(".view-toggle-opt").forEach((btn) => {
+      btn.classList.toggle("active", (btn.dataset.view === "schema") === isSchema);
+    });
+  }
+
+  // ─── "⋯"-Overflow-Menü (mobil: Reflexion/Einstellungen + Konto-Aktionen) ──
+
+  private setupTopbarMore(): void {
+    const btn = document.getElementById("btn-topbar-more");
+    btn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.moreMenuEl.classList.toggle("hidden");
+    });
+    document.addEventListener("click", (e) => {
+      if (!this.moreMenuEl.classList.contains("hidden") && !this.moreMenuEl.contains(e.target as Node)) {
+        this.closeMoreMenu();
+      }
+    });
+    // Konto-Aktionen im mobilen Menü delegieren an die bereits verdrahteten
+    // Icon-Rail-Buttons, statt dieselbe Export/Import/Theme/Logout-Logik
+    // ein zweites Mal zu implementieren.
+    const delegate = (mobileId: string, targetId: string) => {
+      document.getElementById(mobileId)?.addEventListener("click", () => {
+        document.getElementById(targetId)?.click();
+        this.closeMoreMenu();
+      });
+    };
+    delegate("btn-export-mobile", "btn-export");
+    delegate("btn-import-mobile", "btn-import");
+    delegate("btn-theme-toggle-mobile", "btn-theme-toggle");
+    delegate("btn-logout-mobile", "btn-logout");
+  }
+
+  private closeMoreMenu(): void {
+    this.moreMenuEl.classList.add("hidden");
+  }
+
+  // ─── FAB (mobil) ────────────────────────────────────────────
+  // Öffnet dasselbe Modal wie die "+ Aufgabe"-Buttons der Views — siehe
+  // layout/_fab.css für die Begründung, warum das routenunabhängig ist.
+
+  private setupFab(): void {
+    document.getElementById("fab-new-task")?.addEventListener("click", () => {
+      this.modal.open();
+    });
   }
 
   private setupButtons(): void {

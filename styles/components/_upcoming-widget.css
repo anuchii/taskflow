@@ -1,0 +1,26 @@
+/* ============================================================
+   components/_upcoming-widget.css — siehe UpcomingWidget.ts
+   Nutzt bereits .widget-card / .widget-card-title / .widget-empty
+   aus _category-donut.css (gemeinsame Widget-Karten-Basis).
+   ============================================================ */
+
+.upcoming-widget-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.upcoming-widget-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--border);
+}
+.upcoming-widget-row:last-child { border-bottom: none; padding-bottom: 0; }
+.upcoming-widget-title { font-size: 13px; }
+.upcoming-widget-when {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}

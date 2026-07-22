@@ -8,49 +8,98 @@
 </head>
 <body>
   <div class="app-shell">
-    <aside class="sidebar">
-      <div class="sidebar-logo">
-        TaskFlow
-        <span>Aufgabenverwaltung</span>
-      </div>
-      <nav class="sidebar-nav">
-        <button class="nav-link active" data-route="todo">
-          <span class="nav-icon">☑</span>
-          <span>Aufgaben</span>
+
+    <!-- Chrome = Topbar + Icon-Rail + Bottom-Nav + FAB. Wird als Einheit
+         versteckt solange niemand eingeloggt ist (siehe app.ts showLogin()),
+         analog zur früheren .sidebar.hidden-Logik. -->
+    <div id="app-chrome">
+      <header class="topbar" id="topbar">
+        <div class="topbar-title rail-visible-only" id="topbar-title">Aufgaben</div>
+        <div class="topbar-brand rail-hidden-only" id="topbar-brand">
+          <span class="topbar-logo-mark">T</span>
+          <span class="topbar-logo-text">TaskFlow</span>
+        </div>
+
+        <div class="topbar-right">
+          <div class="view-toggle hidden" id="view-toggle">
+            <button class="view-toggle-opt active" data-view="list" type="button">Liste</button>
+            <button class="view-toggle-opt" data-view="schema" type="button">Schema</button>
+          </div>
+
+          <div class="topbar-avatar rail-visible-only" id="topbar-avatar">–</div>
+
+          <div class="topbar-more-wrap rail-hidden-only">
+            <button class="icon-btn topbar-more-btn" id="btn-topbar-more" type="button" title="Mehr">⋯</button>
+            <div class="topbar-more-menu hidden" id="topbar-more-menu">
+              <button class="topbar-more-item nav-link" data-route="reflexion" type="button">◉ Reflexion</button>
+              <button class="topbar-more-item nav-link" data-route="einstellungen" type="button">⚙ Einstellungen</button>
+              <div class="topbar-more-divider"></div>
+              <button class="topbar-more-item" id="btn-export-mobile" type="button">↓ Export JSON</button>
+              <button class="topbar-more-item" id="btn-import-mobile" type="button">↑ Import JSON</button>
+              <button class="topbar-more-item" id="btn-theme-toggle-mobile" type="button">☾ Dark Mode</button>
+              <button class="topbar-more-item" id="btn-logout-mobile" type="button">Abmelden</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <aside class="icon-rail" id="icon-rail">
+        <div class="rail-brand">T</div>
+        <nav class="rail-nav">
+          <button class="nav-link active" data-route="todo" type="button" title="Aufgaben">
+            <span class="nav-icon">☑</span>
+            <span class="rail-tooltip">Aufgaben</span>
+          </button>
+          <button class="nav-link" data-route="upcoming" type="button" title="Upcoming">
+            <span class="nav-icon">◷</span>
+            <span class="rail-tooltip">Upcoming</span>
+          </button>
+          <button class="nav-link" data-route="stats" type="button" title="Statistik">
+            <span class="nav-icon">◈</span>
+            <span class="rail-tooltip">Statistik</span>
+          </button>
+          <button class="nav-link" data-route="kategorien" type="button" title="Kategorien">
+            <span class="nav-icon">⊞</span>
+            <span class="rail-tooltip">Kategorien</span>
+          </button>
+          <button class="nav-link" data-route="reflexion" type="button" title="Reflexion">
+            <span class="nav-icon">◉</span>
+            <span class="rail-tooltip">Reflexion</span>
+          </button>
+          <button class="nav-link" data-route="einstellungen" type="button" title="Einstellungen">
+            <span class="nav-icon">⚙</span>
+            <span class="rail-tooltip">Einstellungen</span>
+          </button>
+        </nav>
+        <div class="rail-footer">
+          <button class="icon-btn" id="btn-export" type="button" title="Export JSON">↓</button>
+          <button class="icon-btn" id="btn-import" type="button" title="Import JSON">↑</button>
+          <button class="icon-btn" id="btn-theme-toggle" type="button" title="Theme wechseln">☾</button>
+          <button class="icon-btn" id="btn-logout" type="button" title="Abmelden">⏻</button>
+        </div>
+      </aside>
+
+      <nav class="bottom-nav" id="bottom-nav">
+        <button class="nav-link active" data-route="todo" type="button">
+          <span class="nav-icon">☑</span><span class="nav-label">Aufgaben</span>
         </button>
-        <button class="nav-link" data-route="upcoming">
-          <span class="nav-icon">◷</span>
-          <span>Upcoming</span>
+        <button class="nav-link" data-route="upcoming" type="button">
+          <span class="nav-icon">◷</span><span class="nav-label">Upcoming</span>
         </button>
-        <button class="nav-link" data-route="stats">
-          <span class="nav-icon">◈</span>
-          <span>Statistik</span>
+        <button class="nav-link" data-route="stats" type="button">
+          <span class="nav-icon">◈</span><span class="nav-label">Statistik</span>
         </button>
-        <button class="nav-link" data-route="kategorien">
-          <span class="nav-icon">⊞</span>
-          <span>Kategorien</span>
-        </button>
-        <button class="nav-link" data-route="reflexion">
-          <span class="nav-icon">◉</span>
-          <span>Reflexion</span>
-        </button>
-        <button class="nav-link" data-route="einstellungen">
-          <span class="nav-icon">⚙</span>
-          <span>Einstellungen</span>
+        <button class="nav-link" data-route="kategorien" type="button">
+          <span class="nav-icon">⊞</span><span class="nav-label">Kategorien</span>
         </button>
       </nav>
-      <div class="sidebar-footer">
-        <button class="btn btn-ghost" id="btn-export" style="width:100%;justify-content:center;">
-          ↓ Export JSON
-        </button>
-        <button class="btn btn-ghost" id="btn-import" style="width:100%;justify-content:center;margin-top:6px;">
-          ↑ Import JSON
-        </button>
-        <input type="file" id="f-import" accept=".json" class="hidden" />
-      </div>
-    </aside>
+      <button class="fab" id="fab-new-task" type="button" title="Neue Aufgabe">+</button>
+    </div>
+
     <main class="main-content" id="main-content"></main>
   </div>
+
+  <input type="file" id="f-import" accept=".json" class="hidden" />
   <script type="module" src="dist/bundle.js"></script>
 </body>
 </html>
