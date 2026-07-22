@@ -1,0 +1,42 @@
+/* ============================================================
+   layout/_bottom-nav.css
+   Mobile Navigation (<768px): die vier häufigsten Routen direkt
+   erreichbar, die restlichen zwei (Reflexion/Einstellungen) über
+   das "⋯"-Menü in der Topbar (siehe _topbar.css .topbar-more-menu).
+   ============================================================ */
+
+.bottom-nav {
+  display: none;
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: var(--bottom-nav-h);
+  background: var(--surface);
+  backdrop-filter: blur(var(--blur-nav));
+  -webkit-backdrop-filter: blur(var(--blur-nav));
+  border-top: 1px solid var(--border);
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px;
+  z-index: 30;
+}
+
+@media (max-width: 767px) {
+  .bottom-nav { display: flex; }
+}
+
+.bottom-nav .nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 6px 10px;
+  transition: color var(--transition), transform var(--transition);
+}
+.bottom-nav .nav-link:active { transform: scale(0.92); }
+.bottom-nav .nav-link.active { color: var(--accent); }
+.bottom-nav .nav-link .nav-icon { font-size: 21px; line-height: 1; }
+.bottom-nav .nav-link .nav-label { font-size: 10.5px; font-weight: 600; }

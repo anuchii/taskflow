@@ -1,51 +1,114 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
 
-/* Dark Mode (Standard) */
+/* Redesign 2026-07-22: Palette/Radien/Blur folgen dem geteilten Apple-Mockup
+   ("TaskFlow Redesign"). -apple-system/BlinkMacSystemFont rendern nativ als
+   San Francisco auf Apple-Geräten — kein Font-Download nötig, deshalb kein
+   Google-Fonts-Import mehr für die UI-Schrift (nur Space Mono bleibt, siehe
+   --font-mono weiter unten). Segoe UI/Roboto greifen als System-Pendant auf
+   Windows/Android, damit auch dort ein natives statt ein generisches Aussehen
+   entsteht. */
 :root {
-  --bg:          #0f0f11;
-  --surface:     #18181c;
-  --surface2:    #22222a;
-  --border:      #2e2e38;
-  --text:        #e8e8ec;
-  --text-muted:  #7a7a8c;
-  --accent:      #f5a623;
-  --accent-dim:  #7a5112;
-  /* Getrennte Variable für Akzentfarbe als Textfarbe — im Dark Mode identisch mit accent-dim,
-     im Light Mode aber deutlich dunkler, da accent-dim dort als Hintergrund dient (#fdebd0
-     hätte auf hellem Hintergrund kein ausreichendes Kontrastverhältnis). */
-  --accent-text: #7a5112;
-  --green:       #4caf82;
-  --green-dim:   #1e3d2f;
-  --red:         #e05c5c;
-  --red-dim:     #3d1e1e;
+  --bg:          #f2f2f7;
+  /* Glass-Karten: teiltransparente Fläche + backdrop-filter (siehe Komponenten-
+     CSS) ergibt den "Frosted Glass"-Effekt. rgba statt hex, weil die Deckkraft
+     selbst Teil des Effekts ist, nicht nur die Farbe. */
+  --surface:     rgba(255, 255, 255, 0.72);
+  --surface2:    rgba(120, 120, 128, 0.16);
+  --border:      rgba(0, 0, 0, 0.08);
+  --text:        #1c1c1e;
+  --text-muted:  #8e8e93;
+  --accent:      #007aff;
+  --accent-dim:  rgba(0, 122, 255, 0.12);
+  /* Getrennte Textvariante: #007aff selbst hat auf hellem Grund bei 10-11px
+     Badge-Schrift zu wenig Kontrast (WCAG AA). Ein dunkleres Blau bleibt als
+     Fläche/Icon-Farbe der Marke treu, ist aber als Fließtext lesbar. */
+  --accent-text: #0051a8;
+  --green:       #34c759;
+  --green-dim:   rgba(52, 199, 89, 0.12);
+  --red:         #ff3b30;
+  --red-dim:     rgba(255, 59, 48, 0.12);
 
-  --chart-total: #f5a623;
-  --chart-done:  #4caf82;
+  --chart-total: #007aff;
+  --chart-done:  #34c759;
 
-  --radius:      8px;
-  --radius-lg:   14px;
-  --font-ui:     'DM Sans', sans-serif;
+  --radius:      12px;
+  --radius-lg:   16px;
+  --font-ui:     -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono:   'Space Mono', monospace;
-  --sidebar-w:   220px;
-  --transition:  180ms ease;
+
+  /* Layout-Maße der neuen Shell (Topbar/Icon-Rail/Bottom-Nav/FAB) —
+     zentral hier definiert, damit layout/*.css und app.ts (Inline-Styles)
+     nie hartcodierte Pixelwerte duplizieren müssen. */
+  --topbar-h:      64px;
+  --rail-w:        76px;
+  --bottom-nav-h:  68px;
+  --fab-size:      60px;
+
+  /* Blur-Stärken: 20px für schwebende Navigationsflächen (Topbar/Rail/Bottom-
+     Nav — großflächig, viel Inhalt dahinter), 10px für Karten (kleinflächiger,
+     weniger Bewegung dahinter, spart zudem Rendering-Kosten bei vielen Karten
+     auf einer Seite). */
+  --blur-nav:  20px;
+  --blur-card: 10px;
+
+  --transition: 180ms ease;
+
+  /* Schatten: dezent tintiert statt reinem Schwarz, damit sie auf der hellen
+     Fläche nicht hart wirken. */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.14);
 }
 
-/* Light Mode — überschreibt nur die Farbvariablen; Layout-Tokens bleiben unverändert */
-html[data-theme="light"] {
-  --bg:          #f5f5f7;
-  --surface:     #ffffff;
-  --surface2:    #ebebf0;
-  --border:      #d1d1da;
-  --text:        #1a1a2e;
-  --text-muted:  #5a5a6e;
-  --accent:      #f5a623;
-  --accent-dim:  #fdebd0;
-  --accent-text: #8a5f00;
-  --green:       #2e8f5e;
-  --green-dim:   #e8f5ee;
-  --red:         #c0392b;
-  --red-dim:     #fce8e8;
+/* Dark Mode — eigenständige Apple-Dark-Palette (iOS Dark-Mode-Farbrollen),
+   keine reine Invertierung der hellen Werte, da z.B. Systemblau im Dunkeln
+   heller sein muss (#0a84ff statt #007aff) um genug Kontrast zu behalten. */
+html[data-theme="dark"] {
+  --bg:          #000000;
+  --surface:     rgba(28, 28, 30, 0.75);
+  --surface2:    rgba(120, 120, 128, 0.24);
+  --border:      rgba(255, 255, 255, 0.09);
+  --text:        #f2f2f7;
+  --text-muted:  #98989d;
+  --accent:      #0a84ff;
+  --accent-dim:  rgba(10, 132, 255, 0.18);
+  --accent-text: #6cb8ff;
+  --green:       #30d158;
+  --green-dim:   rgba(48, 209, 88, 0.16);
+  --red:         #ff453a;
+  --red-dim:     rgba(255, 69, 58, 0.16);
 
-  --chart-total: #d4890a;
-  --chart-done:  #2e8f5e;
+  --chart-total: #0a84ff;
+  --chart-done:  #30d158;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.55);
+}
+
+/* Kompatibilität: ThemeService schreibt aktuell auch explizit data-theme="light"
+   (siehe services/ThemeService.ts) — die :root-Werte oben sind bereits das
+   Light-Theme, dieser Block existiert nur, damit ein zukünftiges drittes Theme
+   den hellen Zustand nicht implizit über :root "erben" muss. */
+html[data-theme="light"] {
+  --bg:          #f2f2f7;
+  --surface:     rgba(255, 255, 255, 0.72);
+  --surface2:    rgba(120, 120, 128, 0.16);
+  --border:      rgba(0, 0, 0, 0.08);
+  --text:        #1c1c1e;
+  --text-muted:  #8e8e93;
+  --accent:      #007aff;
+  --accent-dim:  rgba(0, 122, 255, 0.12);
+  --accent-text: #0051a8;
+  --green:       #34c759;
+  --green-dim:   rgba(52, 199, 89, 0.12);
+  --red:         #ff3b30;
+  --red-dim:     rgba(255, 59, 48, 0.12);
+
+  --chart-total: #007aff;
+  --chart-done:  #34c759;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.14);
 }

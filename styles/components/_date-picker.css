@@ -45,9 +45,11 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  backdrop-filter: blur(var(--blur-nav));
+  -webkit-backdrop-filter: blur(var(--blur-nav));
   padding: 12px;
   width: 240px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-lg);
 }
 
 .mini-cal-header {
@@ -132,8 +134,11 @@
   color: var(--accent);
 }
 
+/* Weiße statt schwarze Schrift: Systemblau (#007aff) ist dunkler als das
+   vorherige Orange, Schwarz-auf-Blau hätte zu wenig Kontrast (siehe auch
+   views/_reflection-view.css .rating-circle.selected für dasselbe Muster). */
 .mini-cal-day.selected {
   background: var(--accent);
-  color: #000;
+  color: #fff;
   font-weight: 700;
 }

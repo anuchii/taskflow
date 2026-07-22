@@ -11,3 +11,42 @@
   border-radius: 99px;
   transition: width 0.5s cubic-bezier(.4,0,.2,1);
 }
+
+/* ── Übersicht-Karte + Widget-Spalte (Apple-Style-Redesign 2026-07-22) ──
+   Die "gestapelte" Karte (volle Breite über der Liste) und die Widget-Spalte
+   schließen sich per Breakpoint gegenseitig aus, siehe TodoView.ts:
+   dieselbe TodayOverviewCard wird zweimal ins Markup gerendert, nur eine
+   der beiden Hüllen ist je nach Bildschirmbreite sichtbar. */
+.todo-overview--stacked { margin-bottom: 20px; }
+
+@media (min-width: 1200px) {
+  .todo-overview--stacked { display: none; }
+}
+
+.todo-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (min-width: 1200px) {
+  .todo-grid {
+    grid-template-columns: 1fr 360px;
+    gap: 32px;
+  }
+}
+
+.todo-widgets {
+  display: none;
+}
+
+@media (min-width: 1200px) {
+  .todo-widgets {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: calc(var(--topbar-h) + 24px);
+  }
+}

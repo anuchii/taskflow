@@ -34,10 +34,6 @@ function truncate(s: string, max: number): string {
 }
 
 export class EsquemaView {
-  // onBack wird von TodoView übergeben und bei jedem Re-Render neu verdrahtet,
-  // weil innerHTML das DOM ersetzt und alte Listener verloren gehen.
-  private onBack: (() => void) | null = null;
-
   // Mittelpunkt der Tages-Blase in SVG-Koordinaten — wird beim Bau des SVGs
   // gesetzt und beim Drag-Out-Gesture gebraucht, um zu prüfen ob der Loslass-
   // Punkt noch innerhalb der Tages-Blase liegt (dann: kein echter "Zieh"-Vorgang).
@@ -50,8 +46,7 @@ export class EsquemaView {
     private readonly container: HTMLElement
   ) {}
 
-  async render(onBack?: () => void): Promise<void> {
-    if (onBack) this.onBack = onBack;
+  async render(): Promise<void> {
     this.container.innerHTML = `<div class="loading">Lädt…</div>`;
 
     const todayStr = today();
@@ -71,7 +66,6 @@ export class EsquemaView {
           <h1 class="view-title">Esquema</h1>
           <p class="view-subtitle">${formatDisplay(todayStr)} · ${completedIds.size}/${tasks.length} erledigt</p>
         </div>
-        <button class="btn btn-ghost" id="btn-esquema-back">☰ Liste</button>
       </div>
       <div class="esquema-wrap">
         ${this.buildSVG(tasks, completedIds, cats)}
@@ -144,11 +138,11 @@ export class EsquemaView {
         <ellipse cx="${cx}" cy="${cy}" rx="${DAY_RX}" ry="${DAY_RY}"
           fill="var(--accent)" stroke="none"/>
         <text x="${cx}" y="${cy - 12}" text-anchor="middle"
-          fill="#000" font-size="15" font-weight="700">${escapeHtml(dayName)}</text>
+          fill="#fff" font-size="15" font-weight="700">${escapeHtml(dayName)}</text>
         <text x="${cx}" y="${cy + 6}" text-anchor="middle"
-          fill="#000" font-size="11">${escapeHtml(dateLabel)}</text>
+          fill="#fff" font-size="11">${escapeHtml(dateLabel)}</text>
         <text x="${cx}" y="${cy + 22}" text-anchor="middle"
-          fill="#00000099" font-size="10">${progress}</text>
+          fill="#ffffffcc" font-size="10">${progress}</text>
       </g>`;
   }
 
@@ -192,9 +186,6 @@ export class EsquemaView {
   }
 
   private attachEvents(tasks: Task[], completedIds: Set<string>, todayStr: string): void {
-    this.container.querySelector("#btn-esquema-back")
-      ?.addEventListener("click", () => this.onBack?.());
-
     // Klick auf Aufgaben-Blase → erledigen / rückgängig
     this.container.querySelector(".esquema-wrap")
       ?.addEventListener("click", async (e) => {

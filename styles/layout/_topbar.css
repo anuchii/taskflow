@@ -1,0 +1,142 @@
+/* ============================================================
+   layout/_topbar.css
+   Fixe, geblurrte Kopfleiste. Zeigt je Breakpoint entweder den
+   Seitentitel (Rail sichtbar) oder die Marke (Rail versteckt) —
+   gesteuert über die Klassen .rail-visible-only / .rail-hidden-only,
+   die auch in _icon-rail.css / _bottom-nav.css wiederverwendet werden.
+   ============================================================ */
+
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+  background: var(--surface);
+  backdrop-filter: blur(var(--blur-nav));
+  -webkit-backdrop-filter: blur(var(--blur-nav));
+  border-bottom: 1px solid var(--border);
+  z-index: 40;
+  transition: margin-left var(--transition);
+}
+
+@media (min-width: 768px) {
+  .topbar { margin-left: var(--rail-w); }
+}
+
+.topbar-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.topbar-logo-mark {
+  width: 30px; height: 30px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 15px;
+  flex-shrink: 0;
+}
+.topbar-logo-text { font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+/* ── Liste/Schema-Umschalter (nur auf der Aufgaben-Ansicht sichtbar,
+     wird über app.ts per [hidden] gesteuert) ── */
+.view-toggle {
+  display: flex;
+  background: var(--surface2);
+  border-radius: 9px;
+  padding: 2px;
+  gap: 2px;
+}
+.view-toggle-opt {
+  padding: 6px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  transition: background var(--transition), color var(--transition);
+}
+.view-toggle-opt.active {
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.topbar-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  color: var(--accent-text);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px;
+  flex-shrink: 0;
+}
+
+.topbar-more-wrap { position: relative; }
+.topbar-more-menu {
+  position: absolute;
+  top: 46px; right: 0;
+  background: var(--surface);
+  backdrop-filter: blur(var(--blur-nav));
+  -webkit-backdrop-filter: blur(var(--blur-nav));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  min-width: 190px;
+  z-index: 45;
+}
+.topbar-more-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+}
+.topbar-more-item:hover { background: var(--surface2); }
+.topbar-more-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 6px 4px;
+}
+
+/* ── Sichtbarkeit nach Breakpoint ──
+   Rail sichtbar = Tablet/Desktop (≥768px): Titel + Avatar, kein Dots-Menü
+   (Reflexion/Einstellungen sind dort direkt in der Icon-Rail erreichbar). */
+.rail-hidden-only { display: none; }
+@media (min-width: 768px) {
+  .rail-visible-only { display: flex; }
+  .rail-hidden-only   { display: none !important; }
+}
+@media (max-width: 767px) {
+  .rail-visible-only { display: none !important; }
+  .rail-hidden-only   { display: flex; }
+}

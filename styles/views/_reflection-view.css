@@ -1,4 +1,10 @@
-/* ── Reflexion ── */
+/* ============================================================
+   views/_reflection-view.css
+   (verschoben aus dem Root-Level styles/reflection.css — war die einzige
+   Quelle für diese Ansicht und wird jetzt an der modularen Stelle geführt,
+   siehe ChangeLog 2026-07-22 "Apple-Style-Redesign".)
+   ============================================================ */
+
 .reflection-sections { display: flex; flex-direction: column; gap: 16px; }
 
 .reflection-section {
@@ -6,8 +12,11 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 22px 24px;
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  box-shadow: var(--shadow-sm);
 }
-.reflection-question { font-family: var(--font-mono); font-size: 14px; font-weight: 700; margin-bottom: 16px; }
+.reflection-question { font-family: var(--font-ui); font-size: 15px; font-weight: 700; margin-bottom: 16px; }
 .reflection-hint { font-size: 12px; color: var(--text-muted); margin-top: -10px; margin-bottom: 14px; }
 
 .rating-circles { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -17,7 +26,7 @@
   border: 2px solid var(--border);
   background: transparent;
   color: var(--text-muted);
-  font-family: var(--font-mono);
+  font-family: var(--font-ui);
   font-size: 12px; font-weight: 700;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
@@ -25,7 +34,9 @@
   flex-shrink: 0;
 }
 .rating-circle:hover { border-color: var(--accent); color: var(--accent); }
-.rating-circle.selected { background: var(--accent); border-color: var(--accent); color: #000; }
+/* Weiße statt schwarze Schrift auf dem Akzent-Kreis: Systemblau (#007aff) ist
+   dunkler als das vorherige Orange, Schwarz-auf-Blau hätte zu wenig Kontrast. */
+.rating-circle.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
 
 .fun-tasks-picker { display: flex; flex-wrap: wrap; gap: 8px; }
 .fun-task-chip {
@@ -40,7 +51,7 @@
 }
 .fun-task-chip:hover { border-color: var(--accent-dim); color: var(--text); }
 .fun-task-chip.selected {
-  background: color-mix(in srgb, var(--green) 15%, transparent);
+  background: var(--green-dim);
   border-color: var(--green);
   color: var(--green);
   font-weight: 600;

@@ -1,0 +1,101 @@
+/* ============================================================
+   layout/_icon-rail.css
+   Schmale Icon-only-Navigation, ersetzt die frühere textbasierte
+   Sidebar (siehe ChangeLog 2026-07-22). Nur ab Tablet (≥768px)
+   sichtbar — auf Mobil übernehmen Bottom-Nav + FAB die Navigation
+   (layout/_bottom-nav.css).
+   ============================================================ */
+
+.icon-rail {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: var(--rail-w);
+  background: var(--surface);
+  backdrop-filter: blur(var(--blur-nav));
+  -webkit-backdrop-filter: blur(var(--blur-nav));
+  border-right: 1px solid var(--border);
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0 20px;
+  z-index: 30;
+}
+
+@media (min-width: 768px) {
+  .icon-rail { display: flex; }
+}
+
+.rail-brand {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 18px;
+  margin-bottom: 28px;
+  flex-shrink: 0;
+}
+
+.rail-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+/* .nav-link wird von app.ts sowohl in der Rail als auch in der Bottom-Nav
+   für die Routing-Logik referenziert (document.querySelectorAll(".nav-link")) —
+   die visuelle Ausprägung unterscheidet sich pro Kontext über die jeweilige
+   Elternklasse (.rail-nav / .bottom-nav). */
+.rail-nav .nav-link {
+  position: relative;
+  width: 48px; height: 48px;
+  border-radius: 13px;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  color: var(--text-muted);
+  transition: background var(--transition), color var(--transition), transform var(--transition);
+}
+.rail-nav .nav-link:hover { background: var(--surface2); }
+.rail-nav .nav-link:active { transform: scale(0.94); }
+.rail-nav .nav-link.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+.rail-nav .nav-link .nav-icon { font-size: 19px; line-height: 1; }
+
+/* Tooltip beim Hover — ersetzt das frühere Text-Label neben dem Icon */
+.rail-nav .nav-link .rail-tooltip {
+  position: absolute;
+  left: 60px; top: 6px;
+  background: rgba(28, 28, 30, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+  z-index: 45;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+.rail-nav .nav-link:hover .rail-tooltip { opacity: 1; }
+
+.rail-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  width: 100%;
+  align-items: center;
+}
+.rail-footer .icon-btn {
+  width: 40px; height: 40px;
+  font-size: 16px;
+}

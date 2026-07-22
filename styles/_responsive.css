@@ -1,7 +1,12 @@
-@media (max-width: 680px) {
-  .sidebar { width: 60px; }
-  .nav-link span:not(.nav-icon) { display: none; }
-  .sidebar-logo span, .sidebar-logo { font-size: 0; }
-  .main-content { margin-left: 60px; padding: 20px 16px; }
+/* ============================================================
+   _responsive.css — Media Queries, die mehrere Komponenten
+   gleichzeitig betreffen (siehe docs/changesLog/2026-05-01-css-refactoring.md).
+   Die Sidebar-Regeln von hier sind mit dem Apple-Style-Redesign
+   entfallen: Topbar/Icon-Rail/Bottom-Nav/FAB bringen ihre eigenen
+   Breakpoints direkt in layout/*.css mit (dort leben sie näher am
+   Code, den sie betreffen).
+   ============================================================ */
+
+@media (max-width: 767px) {
   .stats-kpi-row { grid-template-columns: 1fr 1fr; }
 }

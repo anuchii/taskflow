@@ -1,11 +1,42 @@
+/* ============================================================
+   layout/_app-shell.css
+   Grundgerüst der neuen Shell: Topbar (oben, fix) + Icon-Rail
+   (links, fix, ab Tablet) + Bottom-Nav/FAB (unten, fix, nur Mobil)
+   + Main-Content, das sich je nach Breakpoint per margin-left/
+   padding an die sichtbare Navigation anpasst.
+   Breakpoints (siehe _responsive.css): Mobil <768px, Tablet
+   768–1199px, Desktop ≥1200px — identisch zum Mockup, damit sich
+   diese Datei 1:1 als Referenz nutzen lässt.
+   ============================================================ */
+
 .app-shell {
-  display: flex;
   min-height: 100vh;
 }
 
 .main-content {
-  margin-left: var(--sidebar-w);
-  flex: 1;
-  padding: 36px 40px;
-  max-width: 860px;
+  padding-top: calc(var(--topbar-h) + 24px);
+  /* Auf Mobil braucht der Inhalt unten Platz für Bottom-Nav + FAB,
+     sonst reicht ein normaler Seitenabstand. */
+  padding-bottom: calc(var(--bottom-nav-h) + 40px);
+  padding-left: 16px;
+  padding-right: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  transition: margin-left var(--transition);
+}
+
+@media (min-width: 768px) {
+  .main-content {
+    margin-left: var(--rail-w);
+    padding-bottom: 32px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .main-content {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
 }

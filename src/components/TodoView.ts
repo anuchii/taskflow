@@ -5,15 +5,26 @@
 import type { Task } from "../models/Task.js";
 import type { TaskService } from "../services/TaskService.js";
 import type { TaskFormModal } from "./TaskFormModal.js";
-import { today, formatDisplay } from "../utils/DateUtils.js";
+import { today, formatDisplay, formatWeekday, formatShort, parseDate, currentWeekDates, lastNDays } from "../utils/DateUtils.js";
+import { computeStreak } from "../utils/streakUtils.js";
 import { PriorityInfoPopup } from "./PriorityInfoPopup.js";
 import { EsquemaView } from "./EsquemaView.js";
+import { TodayOverviewCard } from "./TodayOverviewCard.js";
+import { CategoryDonutWidget } from "./CategoryDonutWidget.js";
+import type { DonutSlice } from "./CategoryDonutWidget.js";
+import { UpcomingWidget } from "./UpcomingWidget.js";
+import type { UpcomingEntry } from "./UpcomingWidget.js";
+import { WeekOverviewWidget } from "./WeekOverviewWidget.js";
 
 type TaskWithOverdue = Task & { daysOverdue: number };
 
 export class TodoView {
   private readonly priorityInfoPopup = new PriorityInfoPopup();
   private readonly esquemaView: EsquemaView;
+  private readonly overviewCard = new TodayOverviewCard();
+  private readonly donutWidget = new CategoryDonutWidget();
+  private readonly upcomingWidget = new UpcomingWidget();
+  private readonly weekWidget = new WeekOverviewWidget();
   private esquemaMode = false;
 
   constructor(
@@ -24,12 +35,22 @@ export class TodoView {
     this.esquemaView = new EsquemaView(taskService, modal, container);
   }
 
+  // Wird vom Liste/Schema-Umschalter in der Topbar aufgerufen (app.ts) —
+  // der Umschalter selbst lebt jetzt außerhalb dieser Komponente, da er
+  // app-weit zur Route "todo" gehört statt zu einem einzelnen View-Header.
+  setEsquemaMode(on: boolean): void {
+    if (this.esquemaMode === on) return;
+    this.esquemaMode = on;
+    this.render();
+  }
+
+  getEsquemaMode(): boolean {
+    return this.esquemaMode;
+  }
+
   async render(): Promise<void> {
     if (this.esquemaMode) {
-      await this.esquemaView.render(() => {
-        this.esquemaMode = false;
-        this.render();
-      });
+      await this.esquemaView.render();
       return;
     }
     this.container.innerHTML = `<div class="loading">Lädt…</div>`;
@@ -65,47 +86,58 @@ export class TodoView {
     const totalMinutes = tasks.reduce((sum, t) => sum + (t.estimatedMinutes ?? 0), 0);
     const timeLabel = totalMinutes > 0 ? ` · ~${formatEstimatedTime(totalMinutes)} geplant` : "";
 
+    // Übersicht-Karte + Widget-Spalte kommen aus derselben Datengrundlage wie
+    // die Liste selbst (kein Zusatz-Request) — siehe buildOverviewHtml().
+    const overviewHtml = await this.buildOverviewHtml(tasks, done, todayStr);
+
     this.container.innerHTML = `
       <div class="view-header">
         <div>
-          <h1 class="view-title">Aufgaben ${this.priorityInfoPopup.getIconHtml()}</h1>
-          <p class="view-subtitle">${formatDisplay(todayStr)} · ${done.length}/${tasks.length} erledigt${timeLabel}</p>
+          <h1 class="view-title">Aufgaben</h1>
+          <p class="view-subtitle">${formatDisplay(todayStr)} · ${done.length}/${tasks.length} erledigt${timeLabel} ${this.priorityInfoPopup.getIconHtml()}</p>
         </div>
         <div class="header-actions">
-          <button class="btn btn-ghost" id="btn-esquema-toggle">☀ Esquema</button>
           <button class="btn btn-primary" id="btn-new-task">+ Aufgabe</button>
         </div>
       </div>
 
-      <div class="progress-bar-wrap">
-        <div class="progress-bar" style="width:${tasks.length ? (done.length / tasks.length) * 100 : 0}%"></div>
-      </div>
+      <div class="todo-overview todo-overview--stacked">${overviewHtml.overviewCardHtml}</div>
 
-      <section class="task-section">
-        ${pending.length === 0 && done.length === 0
-          ? `<div class="empty-state">
-               <span class="empty-icon">✓</span>
-               <p>Keine Aufgaben heute.<br>Erstelle eine neue Aufgabe!</p>
-             </div>`
-          : ""}
-        ${pendingCards.join("")}
-      </section>
-
-      ${done.length > 0 ? `
-        <details class="done-section" ${done.length < 3 ? "open" : ""}>
-          <summary>Erledigt (${done.length})</summary>
-          <div class="task-section done-list">
-            ${doneCards.join("")}
+      <div class="todo-grid">
+        <div class="todo-main">
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" style="width:${tasks.length ? (done.length / tasks.length) * 100 : 0}%"></div>
           </div>
-        </details>` : ""}
+
+          <section class="task-section">
+            ${pending.length === 0 && done.length === 0
+              ? `<div class="empty-state">
+                   <span class="empty-icon">✓</span>
+                   <p>Keine Aufgaben heute.<br>Erstelle eine neue Aufgabe!</p>
+                 </div>`
+              : ""}
+            ${pendingCards.join("")}
+          </section>
+
+          ${done.length > 0 ? `
+            <details class="done-section" ${done.length < 3 ? "open" : ""}>
+              <summary>Erledigt (${done.length})</summary>
+              <div class="task-section done-list">
+                ${doneCards.join("")}
+              </div>
+            </details>` : ""}
+        </div>
+
+        <aside class="todo-widgets">
+          <div class="todo-overview todo-overview--sidebar">${overviewHtml.overviewCardHtml}</div>
+          ${overviewHtml.donutHtml}
+          ${overviewHtml.upcomingHtml}
+          ${overviewHtml.weekHtml}
+        </aside>
+      </div>
     `;
 
     this.priorityInfoPopup.mount(this.container);
-
-    this.container.querySelector("#btn-esquema-toggle")?.addEventListener("click", () => {
-      this.esquemaMode = true;
-      this.render();
-    });
 
     this.container.querySelector("#btn-new-task")?.addEventListener("click", () => {
       this.modal.open();
@@ -184,6 +216,67 @@ export class TodoView {
         timeLog.querySelector(".log-time-cancel")!.addEventListener("click", () => this.render());
       });
     });
+  }
+
+  // Baut die "Heute"-Übersichtskarte + die drei Widgets der rechten Spalte.
+  // Beide Einbindungsorte (gestapelt/Widget-Spalte, siehe render()) bekommen
+  // exakt dasselbe overviewCardHtml — nur CSS entscheidet, welche Hülle je
+  // Breakpoint sichtbar ist (views/_todo-view.css).
+  private async buildOverviewHtml(
+    tasks: TaskWithOverdue[],
+    done: TaskWithOverdue[],
+    todayStr: string
+  ): Promise<{ overviewCardHtml: string; donutHtml: string; upcomingHtml: string; weekHtml: string }> {
+    const weekdayLong = parseDate(todayStr).toLocaleDateString("de-AT", { weekday: "long" });
+
+    const streakStats = await this.taskService.getStatsForDates(lastNDays(60));
+    const streakDays = computeStreak(streakStats);
+
+    const overviewCardHtml = this.overviewCard.render({
+      weekdayLabel: `Heute · ${weekdayLong}`,
+      dateLabel: formatDisplay(todayStr),
+      doneCount: done.length,
+      totalCount: tasks.length,
+      streakDays,
+    });
+
+    // ── Kategorien-Donut: Verteilung der heutigen Aufgaben ──
+    const catCounts = new Map<string, number>();
+    for (const t of tasks) catCounts.set(t.category, (catCounts.get(t.category) ?? 0) + 1);
+    const slices: DonutSlice[] = [];
+    for (const [catId, count] of catCounts) {
+      const cat = await this.taskService.getCategoryById(catId);
+      slices.push({ label: cat?.label ?? catId, color: cat?.color ?? "var(--text-muted)", count });
+    }
+    const donutHtml = this.donutWidget.render(slices);
+
+    // ── Upcoming: die ersten 3 geplanten Aufgaben als Kurzüberblick ──
+    const upcomingGroups = await this.taskService.getUpcomingByDate(30);
+    const upcomingEntries: UpcomingEntry[] = [];
+    outer: for (const group of upcomingGroups) {
+      const diffDays = Math.round(
+        (parseDate(group.date).getTime() - parseDate(todayStr).getTime()) / 86_400_000
+      );
+      const when = diffDays === 1 ? "Morgen" : `${formatWeekday(group.date)}, ${formatShort(group.date)}`;
+      for (const t of group.tasks) {
+        upcomingEntries.push({ title: t.title, when });
+        if (upcomingEntries.length >= 3) break outer;
+      }
+    }
+    const upcomingHtml = this.upcomingWidget.render(upcomingEntries);
+
+    // ── Wochenübersicht: Erledigungsrate Mo–So der aktuellen Woche ──
+    const weekDates = currentWeekDates();
+    const weekStats = await this.taskService.getStatsForDates(weekDates);
+    const weekHtml = this.weekWidget.render(
+      weekStats.map((s) => ({
+        label: formatWeekday(s.date),
+        percent: s.total > 0 ? Math.round((s.completed / s.total) * 100) : 0,
+        isToday: s.date === todayStr,
+      }))
+    );
+
+    return { overviewCardHtml, donutHtml, upcomingHtml, weekHtml };
   }
 
   private showTimeDialog(estimated: number | undefined, onConfirm: (minutes: number | undefined) => void): void {

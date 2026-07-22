@@ -79,6 +79,9 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  backdrop-filter: blur(var(--blur-nav));
+  -webkit-backdrop-filter: blur(var(--blur-nav));
+  box-shadow: var(--shadow-lg);
   padding: 32px 28px 28px;
   max-width: 480px;
   width: 100%;
