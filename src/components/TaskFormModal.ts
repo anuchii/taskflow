@@ -39,6 +39,7 @@ export class TaskFormModal {
     el.innerHTML = `
       <div class="modal-card">
         <button class="modal-close" aria-label="Schließen">✕</button>
+        <div class="modal-body">
         <h2 class="modal-title">Neue Aufgabe</h2>
 
         <div class="form-group">
@@ -120,6 +121,7 @@ export class TaskFormModal {
               </svg>
             </button>
           </div>
+        </div>
         </div>
 
         <div class="form-actions">

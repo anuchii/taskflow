@@ -18,11 +18,30 @@
   box-shadow: var(--shadow-lg);
   padding: 28px;
   width: min(480px, calc(100vw - 40px));
+  /* Karte darf nie höher als der sichtbare Viewport werden — sonst rutschen
+     Speichern/Abbrechen (in .form-actions) auf kleinen Screens außerhalb des
+     Bildschirms und sind nicht mehr erreichbar. dvh berücksichtigt zusätzlich
+     ein-/ausblendende Mobil-Browser-Leisten, vh bleibt als Fallback. */
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  display: flex;
+  flex-direction: column;
   position: relative;
   transform: translateY(12px);
   transition: transform 200ms ease;
 }
 .modal-overlay.active .modal-card { transform: translateY(0); }
+
+/* Nur dieser Bereich scrollt bei vielen Formularfeldern (z.B. TaskFormModal
+   auf Mobil) — .form-actions bleibt als Geschwister-Element außerhalb davon
+   immer sichtbar, siehe TaskFormModal.ts buildDOM(). */
+.modal-body {
+  overflow-y: auto;
+  /* Negatives Margin + gleich großes Padding: der Scrollbar bekommt Platz,
+     ohne dass der Inhalt selbst schmaler wird oder der Rand hässlich einrückt. */
+  margin: -4px -4px 0;
+  padding: 4px 4px 0;
+}
 
 .modal-close {
   position: absolute; top: 16px; right: 16px;
