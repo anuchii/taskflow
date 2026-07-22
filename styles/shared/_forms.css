@@ -34,4 +34,8 @@
   display: flex; justify-content: flex-end; gap: 8px;
   margin-top: 20px; padding-top: 16px;
   border-top: 1px solid var(--border);
+  /* Innerhalb von .modal-card (flex column, siehe components/_modal.css) darf
+     dieser Bereich nie schrumpfen — sonst könnten Speichern/Abbrechen auf
+     kleinen Screens von .modal-body verdrängt werden. */
+  flex-shrink: 0;
 }
