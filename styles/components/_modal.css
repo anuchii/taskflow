@@ -10,7 +10,7 @@
 .modal-overlay.active { opacity: 1; pointer-events: all; }
 
 .modal-card {
-  background: var(--surface);
+  background: var(--surface-solid);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   backdrop-filter: blur(var(--blur-nav));
