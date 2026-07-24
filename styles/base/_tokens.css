@@ -13,6 +13,11 @@
      CSS) ergibt den "Frosted Glass"-Effekt. rgba statt hex, weil die Deckkraft
      selbst Teil des Effekts ist, nicht nur die Farbe. */
   --surface:     rgba(255, 255, 255, 0.72);
+  /* Deckendere Variante von --surface: Karten mit farbigem Inhalt (z.B. Tags
+     im Aufgaben-Modal) brauchen mehr Kontrast zum durchscheinenden Hintergrund
+     als das normale Glass-Surface bietet — bewusst als eigenes Token statt
+     --surface global zu erhöhen, da Letzteres auch Topbar/Rail betrifft. */
+  --surface-solid: rgba(255, 255, 255, 0.83);
   --surface2:    rgba(120, 120, 128, 0.16);
   --border:      rgba(0, 0, 0, 0.08);
   --text:        #1c1c1e;
@@ -66,6 +71,7 @@
 html[data-theme="dark"] {
   --bg:          #000000;
   --surface:     rgba(28, 28, 30, 0.75);
+  --surface-solid: rgba(28, 28, 30, 0.86);
   --surface2:    rgba(120, 120, 128, 0.24);
   --border:      rgba(255, 255, 255, 0.09);
   --text:        #f2f2f7;
@@ -93,6 +99,7 @@ html[data-theme="dark"] {
 html[data-theme="light"] {
   --bg:          #f2f2f7;
   --surface:     rgba(255, 255, 255, 0.72);
+  --surface-solid: rgba(255, 255, 255, 0.83);
   --surface2:    rgba(120, 120, 128, 0.16);
   --border:      rgba(0, 0, 0, 0.08);
   --text:        #1c1c1e;

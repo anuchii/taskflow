@@ -6,9 +6,11 @@ import type { Task, RepeatConfig, RepeatUnit, Priority } from "../models/Task.js
 import type { TaskService } from "../services/TaskService.js";
 import { today, addDays } from "../utils/DateUtils.js";
 import { MiniCalendarPicker } from "./MiniCalendarPicker.js";
+import { CategoryTagInput, NEW_CATEGORY_COLOR } from "./CategoryTagInput.js";
 
 export class TaskFormModal {
   private overlay: HTMLElement;
+  private categoryTagInput!: CategoryTagInput;
   private onSaved: (() => void) | null = null;
   private editingId: string | null = null;
 
@@ -44,7 +46,9 @@ export class TaskFormModal {
 
         <div class="form-group">
           <label for="f-title">Titel *</label>
-          <input id="f-title" type="text" placeholder="Was ist zu tun?" maxlength="80" />
+          <div class="title-input-wrapper">
+            <input id="f-title" type="text" placeholder="Was ist zu tun? („#“ für Kategorie)" maxlength="80" />
+          </div>
         </div>
 
         <div class="form-group">
@@ -54,7 +58,7 @@ export class TaskFormModal {
 
         <div class="form-group">
           <label>Kategorie</label>
-          <div class="category-picker" id="f-category"></div>
+          <div class="cat-tag-display" id="f-category"></div>
         </div>
 
         <div class="form-group">
@@ -138,6 +142,13 @@ export class TaskFormModal {
     new MiniCalendarPicker(this.overlay.querySelector<HTMLInputElement>("#f-end")!);
     new MiniCalendarPicker(this.overlay.querySelector<HTMLInputElement>("#f-due")!);
 
+    this.categoryTagInput = new CategoryTagInput(
+      this.overlay.querySelector<HTMLInputElement>("#f-title")!,
+      this.overlay.querySelector<HTMLElement>(".title-input-wrapper")!,
+      this.overlay.querySelector<HTMLElement>("#f-category")!,
+      (label) => this.taskService.createCategory(label, NEW_CATEGORY_COLOR),
+    );
+
     this.overlay.querySelector(".modal-close")!.addEventListener("click", () => this.close());
     this.overlay.querySelector("#f-cancel")!.addEventListener("click", () => this.close());
     this.overlay.addEventListener("click", (e) => {
@@ -177,27 +188,13 @@ export class TaskFormModal {
     const dueDate = this.overlay.querySelector<HTMLInputElement>("#f-due")!;
     const priorityPicker = this.overlay.querySelector<HTMLElement>("#f-priority")!;
 
-    // Rebuild category chips dynamically
-    const catPicker = this.overlay.querySelector<HTMLElement>("#f-category")!;
     const cats = await this.taskService.getCategories();
     const selectedCatId = task?.category
       ?? cats.find(c => c.id === "sonstiges")?.id
       ?? cats[0]?.id
-      ?? "";
-
-    catPicker.innerHTML = cats.map(c => `
-      <button type="button" class="cat-chip${c.id === selectedCatId ? " selected" : ""}"
-        data-id="${c.id}" style="--cat-color:${c.color}">
-        ${escapeHtml(c.label)}
-      </button>
-    `).join("");
-
-    catPicker.querySelectorAll<HTMLButtonElement>(".cat-chip").forEach(btn => {
-      btn.addEventListener("click", () => {
-        catPicker.querySelectorAll(".cat-chip").forEach(b => b.classList.remove("selected"));
-        btn.classList.add("selected");
-      });
-    });
+      ?? null;
+    this.categoryTagInput.setCategories(cats);
+    this.categoryTagInput.setSelected(selectedCatId);
 
     priorityPicker.querySelectorAll(".priority-chip").forEach(b => b.classList.remove("selected"));
 
@@ -239,8 +236,7 @@ export class TaskFormModal {
     const repeatUnit = this.overlay.querySelector<HTMLSelectElement>("#f-repeat")!.value as RepeatUnit;
     const startDateVal = this.overlay.querySelector<HTMLInputElement>("#f-date")!.value || today();
     const endDateVal = this.overlay.querySelector<HTMLInputElement>("#f-end")!.value;
-    const catPicker = this.overlay.querySelector<HTMLElement>("#f-category")!;
-    const selectedCat = catPicker.querySelector<HTMLButtonElement>(".cat-chip.selected")?.dataset.id ?? "sonstiges";
+    const selectedCat = this.categoryTagInput.getSelected() ?? "sonstiges";
     const estRaw = this.overlay.querySelector<HTMLInputElement>("#f-est")!.value;
     const estimatedMinutes = estRaw ? Math.max(1, parseInt(estRaw, 10)) : undefined;
     const dueDateVal = this.overlay.querySelector<HTMLInputElement>("#f-due")!.value || undefined;
@@ -269,8 +265,4 @@ export class TaskFormModal {
     this.close();
     this.onSaved?.();
   }
-}
-
-function escapeHtml(s: string): string {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }

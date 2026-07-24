@@ -1,0 +1,97 @@
+/* ── Kategorie-Tagging per # (ersetzt die alte Chip-Sammlung) ── */
+
+.title-input-wrapper {
+  position: relative;
+}
+
+/* Autocomplete-Dropdown, das beim Tippen von "#" im Titel erscheint */
+.cat-tag-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(var(--blur-nav));
+  -webkit-backdrop-filter: blur(var(--blur-nav));
+  padding: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.cat-tag-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.cat-tag-option:hover,
+.cat-tag-option.active {
+  background: color-mix(in srgb, var(--cat-color, var(--accent)) 14%, transparent);
+}
+
+.cat-tag-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cat-color);
+  flex-shrink: 0;
+}
+
+.cat-tag-option--create {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Kompakte Anzeige der ausgewählten Kategorie im Modal */
+.cat-tag-display {
+  display: flex;
+}
+
+.cat-tag-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.cat-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px 5px 12px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--cat-color) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cat-color) 35%, transparent);
+  /* Rohe Kategorie-Farbe reicht als Schriftfarbe nicht für jeden Hex-Ton (z.B.
+     helle/blasse Töne) — gleiches Prinzip wie --accent vs. --accent-text in
+     _tokens.css: Richtung Theme-Textfarbe mischen, statt die reine Akzentfarbe
+     direkt als Fließtext zu verwenden. Funktioniert automatisch in Hell/Dunkel,
+     da --text sich je Theme umkehrt. */
+  color: color-mix(in srgb, var(--cat-color) 60%, var(--text) 40%);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cat-tag-remove {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.7;
+  transition: opacity var(--transition);
+}
+
+.cat-tag-remove:hover {
+  opacity: 1;
+}
