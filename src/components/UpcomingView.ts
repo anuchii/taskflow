@@ -3,6 +3,7 @@
 // ============================================================
 
 import type { Task } from "../models/Task.js";
+import type { CategoryService } from "../services/CategoryService.js";
 import type { TaskService } from "../services/TaskService.js";
 import type { TaskFormModal } from "./TaskFormModal.js";
 import { parseDate } from "../utils/DateUtils.js";
@@ -10,6 +11,7 @@ import { parseDate } from "../utils/DateUtils.js";
 export class UpcomingView {
   constructor(
     private readonly taskService: TaskService,
+    private readonly categoryService: CategoryService,
     private readonly modal: TaskFormModal,
     private readonly container: HTMLElement
   ) {}
@@ -65,7 +67,7 @@ export class UpcomingView {
   }
 
   private async taskCard(task: Task): Promise<string> {
-    const cat = await this.taskService.getCategoryById(task.category);
+    const cat = await this.categoryService.getCategoryById(task.category);
     const map: Record<string, string> = {
       none: "Einmalig", daily: "Täglich", weekly: "Wöchentlich", monthly: "Monatlich",
     };

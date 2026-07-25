@@ -9,6 +9,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { JSDOM } from "jsdom";
 import { TaskService } from "../services/TaskService.js";
+import { CategoryService } from "../services/CategoryService.js";
 import { EsquemaView } from "./EsquemaView.js";
 import type { AppData } from "../models/Task.js";
 import { today } from "../utils/DateUtils.js";
@@ -45,10 +46,11 @@ async function tick() {
 test("Klick auf eine offene Aufgaben-Blase markiert sie als erledigt", async () => {
   const storage = new FakeStorageService();
   const svc = new TaskService(storage as any);
+  const categoryService =  new CategoryService(storage as any);
   await svc.createTask("Testaufgabe", "", "sonstiges", DAILY);
 
   const container = dom.window.document.createElement("div");
-  const view = new EsquemaView(svc, new FakeTaskFormModal() as any, container);
+  const view = new EsquemaView(svc, categoryService, new FakeTaskFormModal() as any, container);
   await view.render();
 
   const g = container.querySelector<SVGGElement>(".esquema-task")!;
@@ -66,11 +68,12 @@ test("Klick auf eine offene Aufgaben-Blase markiert sie als erledigt", async () 
 test("Klick auf eine erledigte Aufgaben-Blase macht die Erledigung rückgängig", async () => {
   const storage = new FakeStorageService();
   const svc = new TaskService(storage as any);
+  const categoryService = new CategoryService(storage as any);
   const task = await svc.createTask("Testaufgabe", "", "sonstiges", DAILY);
   await svc.markDone(task.id);
 
   const container = dom.window.document.createElement("div");
-  const view = new EsquemaView(svc, new FakeTaskFormModal() as any, container);
+  const view = new EsquemaView(svc,categoryService, new FakeTaskFormModal() as any, container);
   await view.render();
 
   const g = container.querySelector<SVGGElement>(".esquema-task")!;
@@ -94,9 +97,10 @@ test("Herausziehen aus der Tages-Blase und Loslassen auf freier Fläche öffnet 
   const storage = new FakeStorageService();
   const svc = new TaskService(storage as any);
   const fakeModal = new FakeTaskFormModal();
+  const categoryService =  new CategoryService(storage as any);
 
   const container = dom.window.document.createElement("div");
-  const view = new EsquemaView(svc, fakeModal as any, container);
+  const view = new EsquemaView(svc, categoryService, fakeModal as any, container);
   await view.render();
 
   // Weit außerhalb der Tages-Blasen-Ellipse simulieren
@@ -112,10 +116,11 @@ test("Herausziehen aus der Tages-Blase und Loslassen auf freier Fläche öffnet 
 test("Loslassen noch innerhalb der Tages-Blase öffnet nichts (kein echtes Herausziehen)", async () => {
   const storage = new FakeStorageService();
   const svc = new TaskService(storage as any);
+  const categoryService= new CategoryService(storage as any);
   const fakeModal = new FakeTaskFormModal();
 
   const container = dom.window.document.createElement("div");
-  const view = new EsquemaView(svc, fakeModal as any, container);
+  const view = new EsquemaView(svc, categoryService, fakeModal as any, container);
   await view.render();
 
   // Loslass-Punkt = exakt der Mittelpunkt → eindeutig innerhalb der Ellipse
@@ -131,11 +136,12 @@ test("Loslassen noch innerhalb der Tages-Blase öffnet nichts (kein echtes Herau
 test("Loslassen auf einer bestehenden Aufgaben-Blase öffnet nichts", async () => {
   const storage = new FakeStorageService();
   const svc = new TaskService(storage as any);
+  const categoryService  = new CategoryService(storage as any);
   await svc.createTask("Bestehende Aufgabe", "", "sonstiges", DAILY);
   const fakeModal = new FakeTaskFormModal();
 
   const container = dom.window.document.createElement("div");
-  const view = new EsquemaView(svc, fakeModal as any, container);
+  const view = new EsquemaView(svc, categoryService, fakeModal as any, container);
   await view.render();
 
   (view as any).toSvgPoint = () => ({ x: (view as any).centerX + 500, y: (view as any).centerY });

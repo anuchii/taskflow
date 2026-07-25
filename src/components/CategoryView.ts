@@ -4,18 +4,20 @@
 
 import type { Category, Task } from "../models/Task.js";
 import type { TaskService } from "../services/TaskService.js";
+import type { CategoryService } from "../services/CategoryService.js";
 import type { TaskFormModal } from "./TaskFormModal.js";
 
 export class CategoryView {
   constructor(
     private readonly taskService: TaskService,
+    private readonly categoryService: CategoryService,
     private readonly container: HTMLElement,
     private readonly modal: TaskFormModal
   ) {}
 
   async render(): Promise<void> {
     this.container.innerHTML = `<div class="loading">Lädt…</div>`;
-    const cats = await this.taskService.getCategories();
+    const cats = await this.categoryService.getCategories();
     const allTasks = (await this.taskService.getAllTasks()).filter(t => !t.archived);
 
     const subMap = this.buildSubMap(cats);
@@ -107,7 +109,7 @@ export class CategoryView {
       btn.addEventListener("click", async (e) => {
         e.stopPropagation();
         const id = btn.dataset.id!;
-        const cats = await this.taskService.getCategories();
+        const cats = await this.categoryService.getCategories();
         const cat = cats.find(c => c.id === id);
         if (cat) this.showEditForm(cat);
       });
@@ -117,7 +119,7 @@ export class CategoryView {
       btn.addEventListener("click", async (e) => {
         e.stopPropagation();
         const id = btn.dataset.id!;
-        const count = await this.taskService.deleteCategory(id);
+        const count = await this.categoryService.deleteCategory(id);
         if (count > 0) {
           showToast(`Kategorie wird von ${count} Aufgabe${count !== 1 ? "n" : ""} verwendet – bitte zuerst neu zuweisen.`, "error");
         } else {
@@ -129,7 +131,7 @@ export class CategoryView {
     this.container.querySelectorAll<HTMLButtonElement>(".cat-detach-btn").forEach(btn => {
       btn.addEventListener("click", async (e) => {
         e.stopPropagation();
-        await this.taskService.setCategoryParent(btn.dataset.id!, null);
+        await this.categoryService.setCategoryParent(btn.dataset.id!, null);
         await this.render();
       });
     });
@@ -194,7 +196,7 @@ export class CategoryView {
           return;
         }
 
-        await this.taskService.setCategoryParent(draggedId, targetId);
+        await this.categoryService.setCategoryParent(draggedId, targetId);
         await this.render();
       });
     });
@@ -300,7 +302,7 @@ export class CategoryView {
       saveBtn.disabled = true;
       saveBtn.textContent = "Speichert…";
       try {
-        await this.taskService.updateCategory(cat.id, label, color);
+        await this.categoryService.updateCategory(cat.id, label, color);
         await this.render();
       } catch (e) {
         console.error("[CategoryView] Kategorie konnte nicht gespeichert werden:", e);
@@ -341,7 +343,7 @@ export class CategoryView {
       saveBtn.disabled = true;
       saveBtn.textContent = "Erstellt…";
       try {
-        await this.taskService.createCategory(label, color);
+        await this.categoryService.createCategory(label, color);
         await this.render();
       } catch (e) {
         console.error("[CategoryView] Kategorie konnte nicht erstellt werden:", e);

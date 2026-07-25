@@ -10,6 +10,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { JSDOM } from "jsdom";
 import { TaskService } from "../services/TaskService.js";
+import { CategoryService } from "../services/CategoryService.js";
 import { CategoryView } from "./CategoryView.js";
 import type { Task, AppData, Category } from "../models/Task.js";
 
@@ -54,6 +55,7 @@ const CAT_B: Category = { id: "cat-b", label: "Schule", color: "#a78bfa" };
 async function setup(tasksForA = 0, tasksForB = 0) {
   const storage = new FakeStorageService({ categories: [CAT_A, CAT_B] });
   const svc = new TaskService(storage as any);
+const categoryService =  new CategoryService(storage as any);  
 
   for (let i = 0; i < tasksForA; i++) {
     await svc.createTask(`A-Task ${i + 1}`, "", "cat-a", DAILY);
@@ -64,7 +66,7 @@ async function setup(tasksForA = 0, tasksForB = 0) {
 
   const modal = new FakeTaskFormModal();
   const container = dom.window.document.createElement("div");
-  const view = new CategoryView(svc, container, modal as any);
+  const view = new CategoryView(svc,categoryService, container, modal as any);
   await view.render();
 
   return { container, modal, svc, storage };

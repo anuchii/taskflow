@@ -17,6 +17,7 @@ import { LoginView } from "./components/LoginView.js";
 import { getAuth, getRedirectResult } from "firebase/auth";
 import { StorageService, firebaseApp } from "./services/StorageService.js";
 import { VacationService } from "./services/VacationService.js";
+import { CategoryService } from "./services/CategoryService.js";
 
 type Route = "todo" | "upcoming" | "stats" | "kategorien" | "reflexion" | "einstellungen";
 
@@ -37,6 +38,7 @@ class App {
   private readonly themeService = new ThemeService();
   private readonly storage = new StorageService();
   private readonly taskService = new TaskService(this.storage);
+  private readonly categoryService =  new CategoryService(this.storage);
   private readonly vacationService = new VacationService(this.storage);
   private readonly mainEl: HTMLElement;
   private readonly appChromeEl: HTMLElement;
@@ -91,11 +93,11 @@ class App {
     this.appChromeEl.classList.remove("hidden");
     this.topbarAvatarEl.textContent = this.initials(displayName);
 
-    this.modal = new TaskFormModal(this.taskService);
-    this.todoView = new TodoView(this.taskService, this.modal, this.mainEl);
-    this.upcomingView = new UpcomingView(this.taskService, this.modal, this.mainEl);
-    this.statsView = new StatsView(this.taskService, this.mainEl);
-    this.categoryView = new CategoryView(this.taskService, this.mainEl, this.modal);
+    this.modal = new TaskFormModal(this.taskService, this.categoryService);
+    this.todoView = new TodoView(this.taskService, this.categoryService, this.modal, this.mainEl);
+    this.upcomingView = new UpcomingView(this.taskService,this.categoryService, this.modal, this.mainEl);
+    this.statsView = new StatsView(this.taskService, this.categoryService, this.mainEl);
+    this.categoryView = new CategoryView(this.taskService, this.categoryService, this.mainEl, this.modal);
     this.reflectionView = new ReflectionView(this.taskService, this.mainEl);
     this.settingsView = new SettingsView(this.vacationService, this.mainEl);
 

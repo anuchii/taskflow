@@ -6,6 +6,7 @@
 
 import type { Task, Category } from "../models/Task.js";
 import type { TaskService } from "../services/TaskService.js";
+import { CategoryService}  from "../services/CategoryService.js";
 import type { TaskFormModal } from "./TaskFormModal.js";
 import { today, formatDisplay } from "../utils/DateUtils.js";
 
@@ -42,6 +43,7 @@ export class EsquemaView {
 
   constructor(
     private readonly taskService: TaskService,
+    private readonly categoryService: CategoryService,
     private readonly modal: TaskFormModal,
     private readonly container: HTMLElement
   ) {}
@@ -51,7 +53,7 @@ export class EsquemaView {
 
     const todayStr = today();
     const tasks    = await this.taskService.getTasksForDateWithOverdue(todayStr);
-    const cats     = await this.taskService.getCategories();
+    const cats     = await this.categoryService.getCategories();
 
     const completedIds = new Set<string>();
     for (const t of tasks) {
