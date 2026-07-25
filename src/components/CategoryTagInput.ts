@@ -1,7 +1,4 @@
 // ============================================================
-// components/CategoryTagInput.ts
-// ============================================================
-
 import type { Category } from "../models/Task.js";
 
 // Neue Kategorien werden ohne Farbwahl erstellt (Inline-Erstellung per #-Tag) —
@@ -22,6 +19,7 @@ type DropdownItem =
  * Formular wiederverwenden, das ein Titel-/Textfeld mit Kategorie-Zuordnung braucht.
  */
 export class CategoryTagInput {
+ 
   private categories: Category[] = [];
   private selectedId: string | null = null;
   private dropdown: HTMLElement | null = null;
@@ -32,7 +30,7 @@ export class CategoryTagInput {
     private readonly input: HTMLInputElement,
     private readonly anchor: HTMLElement,
     private readonly tagHost: HTMLElement,
-    private readonly createCategory: (label: string) => Promise<Category>,
+    private readonly createCategory: (label: string) => Promise<Category>
   ) {
     this.attachEvents();
     this.renderTag();

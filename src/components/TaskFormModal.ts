@@ -4,6 +4,7 @@
 
 import type { Task, RepeatConfig, RepeatUnit, Priority } from "../models/Task.js";
 import type { TaskService } from "../services/TaskService.js";
+import { CategoryService } from "../services/CategoryService.js";
 import { today, addDays } from "../utils/DateUtils.js";
 import { MiniCalendarPicker } from "./MiniCalendarPicker.js";
 import { CategoryTagInput, NEW_CATEGORY_COLOR } from "./CategoryTagInput.js";
@@ -14,7 +15,10 @@ export class TaskFormModal {
   private onSaved: (() => void) | null = null;
   private editingId: string | null = null;
 
-  constructor(private readonly taskService: TaskService) {
+  constructor(
+              private readonly taskService: TaskService, 
+              private readonly categoryService: CategoryService
+            ){
     this.overlay = this.buildDOM();
     document.body.appendChild(this.overlay);
     this.attachEvents();
@@ -146,7 +150,7 @@ export class TaskFormModal {
       this.overlay.querySelector<HTMLInputElement>("#f-title")!,
       this.overlay.querySelector<HTMLElement>(".title-input-wrapper")!,
       this.overlay.querySelector<HTMLElement>("#f-category")!,
-      (label) => this.taskService.createCategory(label, NEW_CATEGORY_COLOR),
+      (label) => this.categoryService.createCategory(label, NEW_CATEGORY_COLOR),
     );
 
     this.overlay.querySelector(".modal-close")!.addEventListener("click", () => this.close());
@@ -188,7 +192,7 @@ export class TaskFormModal {
     const dueDate = this.overlay.querySelector<HTMLInputElement>("#f-due")!;
     const priorityPicker = this.overlay.querySelector<HTMLElement>("#f-priority")!;
 
-    const cats = await this.taskService.getCategories();
+    const cats = await this.categoryService.getCategories();
     const selectedCatId = task?.category
       ?? cats.find(c => c.id === "sonstiges")?.id
       ?? cats[0]?.id

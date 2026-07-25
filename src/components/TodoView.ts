@@ -4,6 +4,7 @@
 
 import type { Task } from "../models/Task.js";
 import type { TaskService } from "../services/TaskService.js";
+import type { CategoryService } from "../services/CategoryService.js";
 import type { TaskFormModal } from "./TaskFormModal.js";
 import { today, formatDisplay, formatWeekday, formatShort, parseDate, currentWeekDates, lastNDays } from "../utils/DateUtils.js";
 import { computeStreak } from "../utils/streakUtils.js";
@@ -29,10 +30,11 @@ export class TodoView {
 
   constructor(
     private readonly taskService: TaskService,
+    private readonly categoryService: CategoryService,
     private readonly modal: TaskFormModal,
     private readonly container: HTMLElement
   ) {
-    this.esquemaView = new EsquemaView(taskService, modal, container);
+    this.esquemaView = new EsquemaView(taskService, categoryService, modal, container);
   }
 
   // Wird vom Liste/Schema-Umschalter in der Topbar aufgerufen (app.ts) —
@@ -245,7 +247,7 @@ export class TodoView {
     for (const t of tasks) catCounts.set(t.category, (catCounts.get(t.category) ?? 0) + 1);
     const slices: DonutSlice[] = [];
     for (const [catId, count] of catCounts) {
-      const cat = await this.taskService.getCategoryById(catId);
+      const cat = await this.categoryService.getCategoryById(catId);
       slices.push({ label: cat?.label ?? catId, color: cat?.color ?? "var(--text-muted)", count });
     }
     const donutHtml = this.donutWidget.render(slices);
@@ -320,7 +322,7 @@ export class TodoView {
   }
 
   private async taskCard(task: TaskWithOverdue, isDone: boolean, actualMinutes?: number): Promise<string> {
-    const cat = await this.taskService.getCategoryById(task.category);
+    const cat = await this.categoryService.getCategoryById(task.category);
     const repeatLabel = this.repeatLabel(task);
     const overdue = !isDone && task.daysOverdue > 0;
     const overdueLabel = task.daysOverdue === 1 ? "1 Tag überfällig" : `${task.daysOverdue} Tage überfällig`;
